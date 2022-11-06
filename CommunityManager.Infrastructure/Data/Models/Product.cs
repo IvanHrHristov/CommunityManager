@@ -27,13 +27,13 @@ namespace CommunityManager.Infrastructure.Data.Models
         public string ImageUrl { get; set; } = null!;
 
         [Required]
-        public Guid SellerId { get; set; }
+        public string SellerId { get; set; } = null!;
 
         [Required]
         [ForeignKey(nameof(SellerId))]
         public ApplicationUser Seller { get; set; } = null!;
 
-        public Guid? BuyerId { get; set; }
+        public string? BuyerId { get; set; }
 
         [ForeignKey(nameof(BuyerId))]
         public ApplicationUser? Buyer { get; set; }

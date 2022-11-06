@@ -11,9 +11,9 @@ namespace CommunityManager.Infrastructure.Data
         {
         }
 
-        public DbSet<Product> Products { get; set; }
+        public DbSet<Product> Products { get; set; } = null!;
 
-        public DbSet<Community> Communities { get; set; }
+        public DbSet<Community> Communities { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

@@ -6,17 +6,17 @@ namespace CommunityManager.Infrastructure.Data.Models
     public class CommunityMember
     {
         [Required]
+        [ForeignKey(nameof(ApplicationUser))]
         public string ApplicationUserId { get; set; } = null!;
 
         [Required]
-        [ForeignKey(nameof(ApplicationUserId))]
         public ApplicationUser ApplicationUser { get; set; } = null!;
 
         [Required]
-        public string CommunityId { get; set; } = null!;
+        [ForeignKey(nameof(Community))]
+        public Guid CommunityId { get; set; }
 
         [Required]
-        [ForeignKey(nameof(CommunityId))]
-        public ApplicationUser Community { get; set; } = null!;
+        public Community Community { get; set; } = null!;
     }
 }

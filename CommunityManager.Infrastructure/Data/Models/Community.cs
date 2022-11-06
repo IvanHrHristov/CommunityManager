@@ -21,13 +21,12 @@ namespace CommunityManager.Infrastructure.Data.Models
         public DateTime CreatedOn { get; set; }
 
         [Required]
-        public Guid CreatorId { get; set; }
+        public string CreatorId { get; set; } = null!;
 
         [Required]
         [ForeignKey(nameof(CreatorId))]
         public ApplicationUser Creator { get; set; } = null!;
 
-        [Required]
         public List<CommunityMember> CommunitiesMembers { get; set; } = new List<CommunityMember>();
 
         [Required]

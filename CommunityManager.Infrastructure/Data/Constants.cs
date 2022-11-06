@@ -22,5 +22,17 @@
             public const int DescriptionMaxLenght = 500;
             public const int DescriptionMinLenght = 5;
         }
+
+        public class UserConstants
+        {
+            public const int UsernameMaxLenght = 20;
+            public const int UsernameMinLenght = 5;
+
+            public const int EmailMaxLenght = 60;
+            public const int EmailMinLenght = 10;
+
+            public const int PasswordMaxLenght = 20;
+            public const int PasswordMinLenght = 5;
+        }
     }
 }
