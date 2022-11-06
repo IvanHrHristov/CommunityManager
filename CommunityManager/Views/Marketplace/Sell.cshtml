@@ -4,13 +4,14 @@
     ViewBag.Title = "Sell a product";
 }
 
-
 <h2 class="text-center">@ViewBag.Title</h2>
 <hr />
 
+<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 <div class="row">
     <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
         <form asp-action="Sell" method="post">
+            <input type="hidden" asp-for="@Model.SellerId" value="@ViewBag.SellerId"/>
             <div class="mb-3">
                 <label asp-for="@Model.Name" class="form-label">Name</label>
                 <input asp-for="@Model.Name" class="form-control" aria-required="true" />
@@ -33,7 +34,7 @@
             </div>
             <div class="mb-3">
                 <label asp-for="@Model.Price" class="form-label">Price</label>
-                <input asp-for="@Model.Price" class="form-control" value="" />
+                <input asp-for="@Model.Price" class="form-control" aria-required="true" type="number"/>
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
             @*<div class="mb-3">

@@ -1,6 +1,8 @@
 ﻿using CommunityManager.Core.Contracts;
 using CommunityManager.Core.Models.Marketplace;
+using CommunityManager.Infrastructure.Data.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CommunityManager.Controllers
@@ -9,10 +11,14 @@ namespace CommunityManager.Controllers
     public class MarketplaceController : Controller
     {
         private readonly IMarketplaceServices service;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public MarketplaceController(IMarketplaceServices service)
+        public MarketplaceController(
+            IMarketplaceServices service,
+            UserManager<ApplicationUser> userManager)
         {
             this.service = service;
+            this.userManager = userManager;
         }
 
         [HttpGet]
@@ -24,12 +30,13 @@ namespace CommunityManager.Controllers
         }
 
         [HttpGet]
-        public IActionResult Sell()
+        public async Task<IActionResult> Sell()
         {
-            var model = new SellProductViewModel()
-            {
-                Seller = User.Identity.Name
-            };
+            var user = await userManager.GetUserAsync(User);
+
+            ViewBag.SellerId = user.Id;
+
+            var model = new SellProductViewModel();
 
             return View(model);
         }
@@ -50,10 +57,12 @@ namespace CommunityManager.Controllers
             }
             catch (Exception)
             {
+
                 ModelState.AddModelError("", "Something went wrong.");
 
                 return View(model);
             }
+            
         }
     }
 }

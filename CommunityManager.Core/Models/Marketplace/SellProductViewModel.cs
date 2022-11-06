@@ -24,7 +24,6 @@ namespace CommunityManager.Core.Models.Marketplace
         [Required]
         public string ImageUrl { get; set; } = null!;
 
-        [Required]
-        public string Seller { get; set; } = null!;
+        public string SellerId { get; set; } = null!;
     }
 }

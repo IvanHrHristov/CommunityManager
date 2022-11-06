@@ -22,7 +22,8 @@ namespace CommunityManager.Core.Services
                 Name = model.Name,
                 Description = model.Description,
                 Price = model.Price,
-                ImageUrl = model.ImageUrl
+                ImageUrl = model.ImageUrl,
+                SellerId = model.SellerId
             };
 
             await context.Products.AddAsync(entity);
