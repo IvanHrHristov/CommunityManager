@@ -10,8 +10,8 @@
             public const int DescriptionMaxLenght = 500;
             public const int DescriptionMinLenght = 5;
 
-            public const int PriceMaxValue = 1000000;
-            public const int PriveMinValue = 0;
+            public const string PriceMaxValue = "1000000";
+            public const string PriceMinValue = "0";
         }
 
         public class CommunityConstants
