@@ -7,6 +7,12 @@ namespace CommunityManager.Core.Contracts
     {
         Task<IEnumerable<ProductsQueryModel>> GetAllAsync();
 
-        Task SellProductAsync(SellProductViewModel model);
+        Task<DetailsProductViewModel> GetProductByIdAsync(Guid id);
+
+        Task SellProductAsync(ManageProductViewModel model);
+
+        Task DeleteProductAsync(Guid id);
+
+        Task EditProducAsync(Guid id, ManageProductViewModel model);
     }
 }

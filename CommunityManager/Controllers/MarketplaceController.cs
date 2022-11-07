@@ -1,30 +1,35 @@
 ﻿using CommunityManager.Core.Contracts;
 using CommunityManager.Core.Models.Marketplace;
 using CommunityManager.Infrastructure.Data.Models;
+using HouseRentingSystem.Infrastructure.Data.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
 
 namespace CommunityManager.Controllers
 {
     [Authorize]
     public class MarketplaceController : Controller
     {
-        private readonly IMarketplaceServices service;
+        private readonly IRepository repository;
+        private readonly IMarketplaceServices marketplaceService;
         private readonly UserManager<ApplicationUser> userManager;
 
         public MarketplaceController(
+            IRepository repository,
             IMarketplaceServices service,
             UserManager<ApplicationUser> userManager)
         {
-            this.service = service;
+            this.marketplaceService = service;
             this.userManager = userManager;
+            this.repository = repository;
         }
 
         [HttpGet]
         public async Task<IActionResult> All()
         {
-            var model = await service.GetAllAsync();
+            var model = await marketplaceService.GetAllAsync();
 
             return View(model);
         }
@@ -36,13 +41,13 @@ namespace CommunityManager.Controllers
 
             ViewBag.SellerId = user.Id;
 
-            var model = new SellProductViewModel();
+            var model = new ManageProductViewModel();
 
             return View(model);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Sell(SellProductViewModel model)
+        public async Task<IActionResult> Sell(ManageProductViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -51,7 +56,7 @@ namespace CommunityManager.Controllers
 
             try
             {
-                await service.SellProductAsync(model);
+                await marketplaceService.SellProductAsync(model);
 
                 return RedirectToAction(nameof(All));
             }
@@ -63,6 +68,52 @@ namespace CommunityManager.Controllers
                 return View(model);
             }
             
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var product = await repository.GetByIdAsync<Product>(id);
+
+            ManageProductViewModel model = new ManageProductViewModel()
+            {
+                Name = product.Name,
+                Description = product.Description,
+                Price = product.Price,
+                ImageUrl = product.ImageUrl
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(Guid id, ManageProductViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            await marketplaceService.EditProducAsync(id, model);
+
+            return RedirectToAction(nameof(All));
+        }
+
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var product = await repository.GetByIdAsync<Product>(id);
+
+            await marketplaceService.DeleteProductAsync(id);
+
+            return RedirectToAction(nameof(All));
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            var product = await marketplaceService.GetProductByIdAsync(id);
+
+            return View(product);
         }
     }
 }

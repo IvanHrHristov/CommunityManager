@@ -4,7 +4,7 @@ using static CommunityManager.Infrastructure.Data.Constants.ProductConstants;
 
 namespace CommunityManager.Core.Models.Marketplace
 {
-    public class SellProductViewModel
+    public class ManageProductViewModel
     {
         [Required]
         [MaxLength(NameMaxLenght)]

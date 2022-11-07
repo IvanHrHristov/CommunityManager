@@ -17,10 +17,24 @@
                 <h5 class="card-title mt-1">@product.Name</h5>
                 <p class="mb-0">Seller: @product.Seller</p>
                 <p class="mb-0">Price: @product.Price.ToString("0.00")</p>
-                <p>Description: @product.Description</p>
             </div>
 
-            @*<form class="input-group-sm" asp-controller="Books" asp-action="AddToCollection" asp-route-bookId="@book.Id">
+            @if (this.User?.Identity != null && this.User.Identity.Name != product.Seller)
+            {
+                <a asp-controller="Marketplace" asp-action="Buy" asp-route-id="@product.Id" class="btn btn-success mb-2">Buy</a>
+                <span></span>
+                <a asp-controller="Marketplace" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary mb-2">Details</a>
+            }
+
+            @if (this.User?.Identity != null && this.User.Identity.Name == product.Seller)
+            {
+                <a asp-controller="Marketplace" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary mb-2">Details</a>
+                <span></span>
+                <a asp-controller="Marketplace" asp-action="Edit" asp-route-id="@product.Id" class="btn btn-primary mb-2">Edit</a>
+                <span></span>
+                <a asp-controller="Marketplace" asp-action="Delete" asp-route-id="@product.Id" class="btn btn-danger mb-2">Delete</a>
+            }
+             @*<form class="input-group-sm" asp-controller="Books" asp-action="AddToCollection" asp-route-bookId="@book.Id">
                 <input type="submit" value="Add to Collection" class="fs-6 btn btn-success mb-3 p-2" />
             </form>*@
         </div>
