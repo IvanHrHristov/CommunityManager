@@ -11,5 +11,7 @@ namespace CommunityManager.Infrastructure.Data.Models
         public List<CommunityMember> CommunitiesMembers { get; set; } = new List<CommunityMember>();
 
         public DateTime CreatedOn { get; set; }
+
+        public int Age { get; set; }
     }
 }

@@ -24,5 +24,9 @@ namespace CommunityManager.Core.Models
         [Compare(nameof(Password))]
         [DataType(DataType.Password)]
         public string ConfirmPassword { get; set; } = null!;
+
+        [Required]
+        [Range(AgeMinValue, AgeMaxValue)]
+        public int Age { get; set; }
     }
 }

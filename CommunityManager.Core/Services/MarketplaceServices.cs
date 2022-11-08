@@ -39,6 +39,7 @@ namespace CommunityManager.Core.Services
         {
             var entities = await context.Products
                 .Include(p => p.Seller)
+                .Where(p => p.BuyerId == null)
                 .ToListAsync();
 
             return entities.Select(p => new ProductsQueryModel()
@@ -48,6 +49,26 @@ namespace CommunityManager.Core.Services
                 Price = p.Price,
                 ImageUrl = p.ImageUrl,
                 Seller = p?.Seller?.UserName
+            });
+        }
+
+        public async Task<IEnumerable<ProductsQueryModel>> GetMineAsync(string id)
+        {
+            var entities = await context.Products
+                .Include(p => p.Seller)
+                .Include(p => p.Buyer)
+                .Where(p => p.SellerId == id)
+                .ToListAsync();
+
+            return entities.Select(p => new ProductsQueryModel()
+            {
+                Id = p.Id,
+                Name = p.Name,
+                Price = p.Price,
+                ImageUrl = p.ImageUrl,
+                Seller = p?.Seller?.UserName,
+                Buyer = p?.Buyer?.UserName,
+                BuyerId = p?.Buyer?.Id
             });
         }
 
@@ -61,18 +82,23 @@ namespace CommunityManager.Core.Services
 
         public async Task<DetailsProductViewModel> GetProductByIdAsync(Guid id)
         {
-            var entities = await context.Products
+            var entity = await context.Products
                 .Include(p => p.Seller)
                 .FirstOrDefaultAsync(p => p.Id == id);
 
+            if (entity == null)
+            {
+                return new DetailsProductViewModel();
+            }
+
             return new DetailsProductViewModel()
             {
-                Id = entities.Id,
-                Name = entities.Name,
-                Price = entities.Price,
-                Description = entities.Description,
-                ImageUrl = entities.ImageUrl,
-                Seller = entities?.Seller?.UserName
+                Id = entity.Id,
+                Name = entity.Name,
+                Price = entity.Price,
+                Description = entity.Description,
+                ImageUrl = entity.ImageUrl,
+                Seller = entity?.Seller?.UserName
             };
         }
 
@@ -84,6 +110,15 @@ namespace CommunityManager.Core.Services
             product.Description = model.Description;
             product.Price = model.Price;
             product.ImageUrl = model.ImageUrl;
+
+            await repository.SaveChangesAsync();
+        }
+
+        public async Task BuyProductAsync(Guid id, string buyerId)
+        {
+            var product = await repository.GetByIdAsync<Product>(id);
+
+            product.BuyerId = buyerId;
 
             await repository.SaveChangesAsync();
         }

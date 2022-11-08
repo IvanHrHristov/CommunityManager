@@ -4,6 +4,7 @@ using CommunityManager.Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,10 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CommunityManager.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20221108101037_UpdateUserTable")]
+    partial class UpdateUserTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,22 +143,6 @@ namespace CommunityManager.Infrastructure.Data.Migrations
                     b.ToTable("CommunityMember");
                 });
 
-            modelBuilder.Entity("CommunityManager.Infrastructure.Data.Models.Marketplace", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("CommunityId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CommunityId");
-
-                    b.ToTable("Marketplaces");
-                });
-
             modelBuilder.Entity("CommunityManager.Infrastructure.Data.Models.Product", b =>
                 {
                     b.Property<Guid>("Id")
@@ -175,9 +161,6 @@ namespace CommunityManager.Infrastructure.Data.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<Guid>("MarketplaceId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(50)
@@ -194,8 +177,6 @@ namespace CommunityManager.Infrastructure.Data.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BuyerId");
-
-                    b.HasIndex("MarketplaceId");
 
                     b.HasIndex("SellerId");
 
@@ -369,29 +350,12 @@ namespace CommunityManager.Infrastructure.Data.Migrations
                     b.Navigation("Community");
                 });
 
-            modelBuilder.Entity("CommunityManager.Infrastructure.Data.Models.Marketplace", b =>
-                {
-                    b.HasOne("CommunityManager.Infrastructure.Data.Models.Community", "Community")
-                        .WithMany("Marketplaces")
-                        .HasForeignKey("CommunityId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Community");
-                });
-
             modelBuilder.Entity("CommunityManager.Infrastructure.Data.Models.Product", b =>
                 {
                     b.HasOne("CommunityManager.Infrastructure.Data.Models.ApplicationUser", "Buyer")
                         .WithMany("ProductsPurchased")
                         .HasForeignKey("BuyerId")
                         .OnDelete(DeleteBehavior.Restrict);
-
-                    b.HasOne("CommunityManager.Infrastructure.Data.Models.Marketplace", "Marketplace")
-                        .WithMany("Products")
-                        .HasForeignKey("MarketplaceId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
 
                     b.HasOne("CommunityManager.Infrastructure.Data.Models.ApplicationUser", "Seller")
                         .WithMany("ProductsSold")
@@ -400,8 +364,6 @@ namespace CommunityManager.Infrastructure.Data.Migrations
                         .IsRequired();
 
                     b.Navigation("Buyer");
-
-                    b.Navigation("Marketplace");
 
                     b.Navigation("Seller");
                 });
@@ -469,13 +431,6 @@ namespace CommunityManager.Infrastructure.Data.Migrations
             modelBuilder.Entity("CommunityManager.Infrastructure.Data.Models.Community", b =>
                 {
                     b.Navigation("CommunitiesMembers");
-
-                    b.Navigation("Marketplaces");
-                });
-
-            modelBuilder.Entity("CommunityManager.Infrastructure.Data.Models.Marketplace", b =>
-                {
-                    b.Navigation("Products");
                 });
 #pragma warning restore 612, 618
         }

@@ -33,6 +33,16 @@
 
             public const int PasswordMaxLenght = 20;
             public const int PasswordMinLenght = 5;
+
+            public const int AgeMaxValue = 100;
+            public const int AgeMinValue = 1;
+        }
+
+        public class MessageConstants
+        {
+            public const string ErrorMessage = "ErrorMessage";
+            public const string WarningMessage = "WarningMessage";
+            public const string SuccessMessage = "SuccessMessage";
         }
     }
 }

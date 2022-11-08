@@ -21,6 +21,9 @@ namespace CommunityManager.Infrastructure.Data.Models
         public DateTime CreatedOn { get; set; }
 
         [Required]
+        public bool AgeRestricted { get; set; }
+
+        [Required]
         public string CreatorId { get; set; } = null!;
 
         [Required]
@@ -29,7 +32,6 @@ namespace CommunityManager.Infrastructure.Data.Models
 
         public List<CommunityMember> CommunitiesMembers { get; set; } = new List<CommunityMember>();
 
-        [Required]
-        public bool AgeRestricted { get; set; }
+        public List<Marketplace> Marketplaces { get; set; } = new List<Marketplace>();
     }
 }

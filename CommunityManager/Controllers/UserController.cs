@@ -48,6 +48,7 @@ namespace CommunityManager.Controllers
                 Email = model.Email,
                 UserName = model.UserName,
                 CreatedOn = DateTime.UtcNow,
+                Age = model.Age
             };
 
             var result = await userManager.CreateAsync(user, model.Password);

@@ -13,6 +13,8 @@ namespace CommunityManager.Infrastructure.Data
 
         public DbSet<Product> Products { get; set; } = null!;
 
+        public DbSet<Marketplace> Marketplaces { get; set; } = null!;
+
         public DbSet<Community> Communities { get; set; } = null!;
 
         protected override void OnModelCreating(ModelBuilder builder)
@@ -28,12 +30,24 @@ namespace CommunityManager.Infrastructure.Data
                 .HasForeignKey(p => p.SellerId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            builder.
-                Entity<Product>()
+            builder
+                .Entity<Product>()
                 .HasOne(p => p.Buyer)
                 .WithMany(s => s.ProductsPurchased)
                 .HasForeignKey(p => p.BuyerId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            builder
+                .Entity<Product>()
+                .HasOne(p => p.Marketplace)
+                .WithMany(m => m.Products)
+                .HasForeignKey(p => p.MarketplaceId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder
+                .Entity<Community>()
+                .HasMany(c => c.Marketplaces)
+                .WithOne(m => m.Community);
 
             base.OnModelCreating(builder);
         }

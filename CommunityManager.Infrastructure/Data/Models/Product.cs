@@ -37,5 +37,12 @@ namespace CommunityManager.Infrastructure.Data.Models
 
         [ForeignKey(nameof(BuyerId))]
         public ApplicationUser? Buyer { get; set; }
+
+        [Required]
+        public Guid MarketplaceId { get; set; }
+
+        [Required]
+        [ForeignKey(nameof(MarketplaceId))]
+        public Marketplace Marketplace { get; set; } = null!;
     }
 }

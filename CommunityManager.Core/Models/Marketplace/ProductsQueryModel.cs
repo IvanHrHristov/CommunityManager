@@ -11,5 +11,9 @@
         public string ImageUrl { get; set; } = null!;
 
         public string Seller { get; set; } = null!;
+
+        public string BuyerId { get; set; } = null!;
+
+        public string Buyer { get; set; } = null!;
     }
 }
