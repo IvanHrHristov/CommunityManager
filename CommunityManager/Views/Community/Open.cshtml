@@ -11,20 +11,24 @@
             
             @foreach (var marketplace in Model.Marketplaces)
             {
-                <a asp-controller="Marketplace" asp-action="All" asp-route-id="@marketplace.Id" asp-route-param"@Model.Id"
+                <a asp-controller="Marketplace" asp-action="All" asp-route-id="@marketplace.Id" asp-route-param="@Model.Id"
                class="list-group-item list-group-item-action py-2 ripple"
                aria-current="true">
-                    <span>All products</span>
+                    <span>@marketplace.Name</span>
+                    <div> All products</div>
                 </a>
             }
 
-            @*<a asp-controller="Marketplace" asp-action="Mine" asp-route-id="@Model.Id"
+            @if (Model.CreatorId == ViewBag.currentUserId)
+            {
+                <a asp-controller="Community" asp-action="Add" asp-route-id="@((Guid)Model.Id)"
                class="list-group-item list-group-item-action py-2 ripple"
                aria-current="true">
-                <span>My products</span>
-            </a>
+                    <span>Create a new marketplace</span>
+                </a>
+            }
 
-            <a asp-controller="Marketplace" asp-action="Sell"
+            @*<a asp-controller="Marketplace" asp-action="Sell"
                class="list-group-item list-group-item-action py-2 ripple"
                aria-current="true">
                 <span>Sell a product</span>

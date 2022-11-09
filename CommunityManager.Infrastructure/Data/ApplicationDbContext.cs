@@ -17,6 +17,8 @@ namespace CommunityManager.Infrastructure.Data
 
         public DbSet<Community> Communities { get; set; } = null!;
 
+        public DbSet<CommunityMember> CommunityMember { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder

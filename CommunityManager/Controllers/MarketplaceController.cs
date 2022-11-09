@@ -28,7 +28,7 @@ namespace CommunityManager.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> All(Guid id)
+        public async Task<IActionResult> All(Guid marketplaceId, Guid communityId)
         {
             var model = await marketplaceService.GetAllAsync();
 
@@ -50,11 +50,11 @@ namespace CommunityManager.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Sell()
+        public IActionResult Sell()
         {
-            var user = await userManager.GetUserAsync(User);
+            var sellerId = User.Id();
 
-            ViewBag.SellerId = user.Id;
+            ViewBag.SellerId = sellerId;
 
             var model = new ManageProductViewModel();
 

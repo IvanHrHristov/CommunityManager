@@ -7,6 +7,14 @@ namespace CommunityManager.Core.Contracts
     {
         Task<IEnumerable<CommunityViewModel>> GetAllAsync();
 
+        Task<IEnumerable<CommunityViewModel>> GetMineAsync(string id);
+
+        Task JoinCommunityAsync(Guid communityId, string userId);
+
         Task<CommunityDetailsViewModel> GetCommunityByIdAsync(Guid id);
+
+        Task AddMarketplaceToCommunityAsync(AddMarketplaceViewModel model, Guid id);
+
+        Task CreateCommunityAsync(CreateCommunityViewModel model);
     }
 }

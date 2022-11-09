@@ -2,6 +2,12 @@
 {
     public  class Constants
     {
+        public class MarketplaceConstants
+        {
+            public const int NameMaxLenght = 50;
+            public const int NameMinLenght = 3;
+        }
+
         public class ProductConstants
         {
             public const int NameMaxLenght = 50;
