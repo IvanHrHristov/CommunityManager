@@ -39,13 +39,23 @@ namespace CommunityManager.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Join(Guid communityId)
+        public async Task<IActionResult> Join(Guid id)
         {
             var currentUserId = User.Id();
 
-            await communityService.JoinCommunityAsync(communityId, currentUserId);
+            try
+            {
+                await communityService.JoinCommunityAsync(id, currentUserId);
 
-            return RedirectToAction(nameof(All));
+                return RedirectToAction(nameof(All));
+            }
+            catch (Exception)
+            {
+
+                ModelState.AddModelError("", "Something went wrong.");
+
+                return RedirectToAction(nameof(All));
+            }
         }
 
         public async Task<IActionResult> Mine()
@@ -144,6 +154,64 @@ namespace CommunityManager.Controllers
 
                 return View(model);
             }
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Details(Guid id)
+        {
+            var currentUserId = User.Id();
+
+            ViewBag.currentUserId = currentUserId;
+
+            var model = await communityService.GetCommunityByIdAsync(id);
+
+            if (model.Name == null)
+            {
+                TempData[ErrorMessage] = "Incorrect product ID";
+
+                return RedirectToAction(nameof(All));
+            }
+
+            return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Manage(Guid id)
+        {
+            var community = await communityService.GetCommunityByIdAsync(id);
+
+            if (community.Name == null)
+            {
+                TempData[ErrorMessage] = "Incorrect product ID";
+
+                return RedirectToAction(nameof(All));
+            }
+
+            CreateCommunityViewModel model = new CreateCommunityViewModel()
+            {
+                Name = community.Name,
+                Description = community.Description,
+                CreatedOn = community.CreatedOn,
+                AgeRestricted = community.AgeRestricted,
+                CreatorId = community.CreatorId
+            };
+
+            ViewBag.CreatorId = community.CreatorId;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Manage(Guid id, CreateCommunityViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            await communityService.ManageCommunityAsync(id, model);
+
+            return RedirectToAction(nameof(Mine));
         }
     }
 }

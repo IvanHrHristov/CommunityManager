@@ -63,6 +63,7 @@ namespace CommunityManager.Core.Services
 
             var community = new Community()
             {
+                Id = model.Id,
                 Name = model.Name,
                 Description = model.Description,
                 CreatedOn = model.CreatedOn,
@@ -73,7 +74,7 @@ namespace CommunityManager.Core.Services
             var communitiesMembers = new CommunityMember()
             {
                 ApplicationUserId = userId,
-                Community = community
+                CommunityId = community.Id
             };
 
             await context.CommunityMember.AddAsync(communitiesMembers);
@@ -167,6 +168,19 @@ namespace CommunityManager.Core.Services
                     Name = cm.ApplicationUser.UserName
                 }).ToList()
             };
+        }
+
+        public async Task ManageCommunityAsync(Guid id, CreateCommunityViewModel model)
+        {
+            var community = await repository.GetByIdAsync<Community>(id);
+
+            community.Name = model.Name;
+            community.Description = model.Description;
+            community.CreatedOn = model.CreatedOn;
+            community.CreatorId = model.CreatorId;
+            community.AgeRestricted = model.AgeRestricted;
+
+            await repository.SaveChangesAsync();
         }
     }
 }

@@ -82,7 +82,6 @@ namespace CommunityManager.Controllers
 
                 return View(model);
             }
-            
         }
 
         [HttpGet]
