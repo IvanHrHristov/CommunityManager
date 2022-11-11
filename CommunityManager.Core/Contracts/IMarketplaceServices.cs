@@ -4,9 +4,9 @@ namespace CommunityManager.Core.Contracts
 {
     public interface IMarketplaceServices
     {
-        Task<IEnumerable<ProductsQueryModel>> GetAllAsync();
+        Task<IEnumerable<ProductsQueryModel>> GetAllAsync(Guid marketplaceId);
 
-        Task<IEnumerable<ProductsQueryModel>> GetMineAsync(string id);
+        Task<IEnumerable<ProductsQueryModel>> GetMineAsync(string id, Guid marketplaceId);
 
         Task<DetailsProductViewModel> GetProductByIdAsync(Guid id);
 

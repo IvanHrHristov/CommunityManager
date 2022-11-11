@@ -25,5 +25,7 @@ namespace CommunityManager.Core.Models.Marketplace
         public string ImageUrl { get; set; } = null!;
 
         public string SellerId { get; set; } = null!;
+
+        public Guid MarketplaceId { get; set; }
     }
 }

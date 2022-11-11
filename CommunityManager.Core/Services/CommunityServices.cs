@@ -170,6 +170,32 @@ namespace CommunityManager.Core.Services
             };
         }
 
+        public async Task DeleteCommunityAsync(Guid communityId)
+        {
+            var community = await repository.GetByIdAsync<Community>(communityId);
+
+            var communityMembers = await context.CommunityMember
+                .Where(cm => cm.CommunityId == communityId)
+                .ToListAsync();
+
+            context.CommunityMember.RemoveRange(communityMembers);
+            context.Communities.Remove(community);
+            context.SaveChanges();
+        }
+
+        public async Task DeleteMarketplaceAsync(Guid marketplaceId)
+        {
+            var marketplace = await repository.GetByIdAsync<Marketplace>(marketplaceId);
+
+            var products = await context.Products
+                .Where(p => p.MarketplaceId == marketplaceId)
+                .ToListAsync();
+
+            context.Products.RemoveRange(products);
+            context.Marketplaces.Remove(marketplace);
+            await repository.SaveChangesAsync();
+        }
+
         public async Task ManageCommunityAsync(Guid id, CreateCommunityViewModel model)
         {
             var community = await repository.GetByIdAsync<Community>(id);

@@ -29,17 +29,18 @@ namespace CommunityManager.Core.Services
                 Price = model.Price,
                 ImageUrl = model.ImageUrl,
                 SellerId = model.SellerId,
+                MarketplaceId = model.MarketplaceId
             };
 
             await context.Products.AddAsync(entity);
             await context.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<ProductsQueryModel>> GetAllAsync()
+        public async Task<IEnumerable<ProductsQueryModel>> GetAllAsync(Guid marketplaceId)
         {
             var entities = await context.Products
                 .Include(p => p.Seller)
-                .Where(p => p.BuyerId == null)
+                .Where(p => p.BuyerId == null && p.MarketplaceId == marketplaceId)
                 .ToListAsync();
 
             return entities.Select(p => new ProductsQueryModel()
@@ -48,16 +49,16 @@ namespace CommunityManager.Core.Services
                 Name = p.Name,
                 Price = p.Price,
                 ImageUrl = p.ImageUrl,
-                Seller = p?.Seller?.UserName
+                Seller = p?.Seller?.UserName,
             });
         }
 
-        public async Task<IEnumerable<ProductsQueryModel>> GetMineAsync(string id)
+        public async Task<IEnumerable<ProductsQueryModel>> GetMineAsync(string id, Guid marketplaceId)
         {
             var entities = await context.Products
                 .Include(p => p.Seller)
                 .Include(p => p.Buyer)
-                .Where(p => p.SellerId == id)
+                .Where(p => p.SellerId == id && p.MarketplaceId == marketplaceId)
                 .ToListAsync();
 
             return entities.Select(p => new ProductsQueryModel()
@@ -77,7 +78,7 @@ namespace CommunityManager.Core.Services
             var product = await repository.GetByIdAsync<Product>(id);
 
             context.Products.Remove(product);
-            context.SaveChanges();
+            await repository.SaveChangesAsync();
         }
 
         public async Task<DetailsProductViewModel> GetProductByIdAsync(Guid id)

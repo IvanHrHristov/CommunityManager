@@ -18,5 +18,9 @@ namespace CommunityManager.Core.Contracts
         Task CreateCommunityAsync(CreateCommunityViewModel model);
 
         Task ManageCommunityAsync(Guid id, CreateCommunityViewModel model);
+
+        Task DeleteCommunityAsync(Guid communityId);
+
+        Task DeleteMarketplaceAsync(Guid marketplaceId);
     }
 }

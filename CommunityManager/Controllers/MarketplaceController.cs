@@ -28,9 +28,9 @@ namespace CommunityManager.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> All(Guid marketplaceId, Guid communityId)
+        public async Task<IActionResult> All(Guid id)
         {
-            var model = await marketplaceService.GetAllAsync();
+            var model = await marketplaceService.GetAllAsync(id);
 
             ViewBag.Title = "All Products";
 
@@ -38,11 +38,11 @@ namespace CommunityManager.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Mine()
+        public async Task<IActionResult> Mine(Guid id)
         {
             var sellerId = User.Id();
 
-            var model = await marketplaceService.GetMineAsync(sellerId);
+            var model = await marketplaceService.GetMineAsync(sellerId, id);
 
             ViewBag.Title = "My Products";
 
@@ -50,11 +50,12 @@ namespace CommunityManager.Controllers
         }
 
         [HttpGet]
-        public IActionResult Sell()
+        public IActionResult Sell(Guid id)
         {
             var sellerId = User.Id();
 
             ViewBag.SellerId = sellerId;
+            ViewBag.MarketplaceId = id;
 
             var model = new ManageProductViewModel();
 
@@ -73,7 +74,7 @@ namespace CommunityManager.Controllers
             {
                 await marketplaceService.SellProductAsync(model);
 
-                return RedirectToAction(nameof(All));
+                return RedirectToAction(nameof(All), new { id = model.MarketplaceId });
             }
             catch (Exception)
             {
@@ -93,7 +94,7 @@ namespace CommunityManager.Controllers
             {
                 TempData[ErrorMessage] = "Incorrect product ID";
 
-                return RedirectToAction(nameof(All));
+                return RedirectToAction("All", "Community");
             }
 
             ManageProductViewModel model = new ManageProductViewModel()
@@ -101,8 +102,11 @@ namespace CommunityManager.Controllers
                 Name = product.Name,
                 Description = product.Description,
                 Price = product.Price,
-                ImageUrl = product.ImageUrl
+                ImageUrl = product.ImageUrl,
             };
+
+            ViewBag.SellerId = product.SellerId;
+            ViewBag.MarketplaceId = product.MarketplaceId;
 
             return View(model);
         }
@@ -117,7 +121,7 @@ namespace CommunityManager.Controllers
 
             await marketplaceService.EditProducAsync(id, model);
 
-            return RedirectToAction(nameof(All));
+            return RedirectToAction(nameof(All), new { id = model.MarketplaceId });
         }
 
         public async Task<IActionResult> Delete(Guid id)
@@ -133,7 +137,7 @@ namespace CommunityManager.Controllers
 
             await marketplaceService.DeleteProductAsync(id);
 
-            return RedirectToAction(nameof(All));
+            return RedirectToAction(nameof(All), new { id = product.MarketplaceId });
         }
 
         [HttpGet]
@@ -166,7 +170,7 @@ namespace CommunityManager.Controllers
 
             await marketplaceService.BuyProductAsync(id, buyerId);
 
-            return RedirectToAction(nameof(All));
+            return RedirectToAction(nameof(All), new { id = product.MarketplaceId });
         }
     }
 }

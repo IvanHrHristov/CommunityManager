@@ -130,7 +130,7 @@ namespace CommunityManager.Controllers
 
             var model = new CreateCommunityViewModel();
 
-            return View();
+            return View(model);
         }
 
         [HttpPost]
@@ -212,6 +212,20 @@ namespace CommunityManager.Controllers
             await communityService.ManageCommunityAsync(id, model);
 
             return RedirectToAction(nameof(Mine));
+        }
+
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            await communityService.DeleteCommunityAsync(id);
+
+            return RedirectToAction(nameof(Mine));
+        }
+
+        public async Task<IActionResult> DeleteMarketplace(Guid id, Guid communityId)
+        {
+            await communityService.DeleteMarketplaceAsync(id);
+
+            return RedirectToAction(nameof(Open), new {id = communityId });
         }
     }
 }
