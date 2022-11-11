@@ -15,6 +15,10 @@ namespace CommunityManager.Infrastructure.Data
 
         public DbSet<Marketplace> Marketplaces { get; set; } = null!;
 
+        public DbSet<Message> Messages { get; set; } = null!;
+
+        public DbSet<Chatroom> Chatrooms { get; set; } = null!;
+
         public DbSet<Community> Communities { get; set; } = null!;
 
         public DbSet<CommunityMember> CommunityMember { get; set; } = null!;
@@ -47,8 +51,27 @@ namespace CommunityManager.Infrastructure.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
             builder
+                .Entity<Message>()
+                .HasOne(m => m.Chatroom)
+                .WithMany(c => c.Messages)
+                .HasForeignKey(m => m.ChatroomId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder
+                .Entity<Message>()
+                .HasOne(m => m.Sender)
+                .WithMany(s => s.Messages)
+                .HasForeignKey(m => m.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            builder
                 .Entity<Community>()
                 .HasMany(c => c.Marketplaces)
+                .WithOne(m => m.Community);
+
+            builder
+                .Entity<Community>()
+                .HasMany(c => c.Chatrooms)
                 .WithOne(m => m.Community);
 
             base.OnModelCreating(builder);

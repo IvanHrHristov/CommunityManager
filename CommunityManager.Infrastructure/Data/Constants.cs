@@ -20,6 +20,18 @@
             public const string PriceMinValue = "0";
         }
 
+        public class ChatroomConstants
+        {
+            public const int NameMaxLenght = 50;
+            public const int NameMinLenght = 3;
+        }
+
+        public class MessagesConstants
+        {
+            public const int MessageMaxLenght = 250;
+            public const int MessageMinLenght = 1;
+        }
+
         public class CommunityConstants
         {
             public const int NameMaxLenght = 50;

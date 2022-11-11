@@ -8,6 +8,8 @@ namespace CommunityManager.Infrastructure.Data.Models
 
         public List<Product>? ProductsSold { get; set; } = new List<Product>();
 
+        public List<Message>? Messages { get; set; } = new List<Message>();
+
         public List<CommunityMember> CommunitiesMembers { get; set; } = new List<CommunityMember>();
 
         public DateTime CreatedOn { get; set; }
