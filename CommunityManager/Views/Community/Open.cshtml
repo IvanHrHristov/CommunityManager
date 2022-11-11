@@ -43,7 +43,7 @@
 
             @if (Model.CreatorId == ViewBag.currentUserId)
             {
-                <a asp-controller="Community" asp-action="Add" asp-route-id="@((Guid)Model.Id)"
+                <a asp-controller="Community" asp-action="AddMarketplace" asp-route-id="@((Guid)Model.Id)"
                class="list-group-item list-group-item-action py-2 ripple"
                aria-current="true">
                     <span>Create a new marketplace</span>

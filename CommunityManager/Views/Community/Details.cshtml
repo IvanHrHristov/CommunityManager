@@ -15,11 +15,14 @@
             <p class="card-text"><span class="fw-bold">Created on: </span>@Model.CreatedOn.ToShortDateString()</p>
         </div>
 
-        <div class="mb-3 d-flex justify-content-center">
-            <a asp-controller="Community" asp-action="Manage" asp-route-id="@Model.Id" class="btn btn-primary mb-2">Manage</a>
-            <span></span>
-            <a asp-controller="Marketplace" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger mb-2">Delete</a>
-        </div>
+        @if (Model.CreatorId == ViewBag.currentUserId)
+        {
+            <div class="mb-3 d-flex justify-content-center">
+                <a asp-controller="Community" asp-action="Manage" asp-route-id="@Model.Id" class="btn btn-primary mb-2">Manage</a>
+                <span></span>
+                <a asp-controller="Community" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger mb-2">Delete</a>
+            </div>
+        }
 
         @*<div class="mb-3 d-flex justify-content-center">
             @if (this.User?.Identity != null && this.User.Identity.Name != Model.Seller)
@@ -45,17 +48,39 @@
 
             @foreach (var marketplace in Model.Marketplaces)
             {
-                <a asp-controller="Marketplace" asp-action="All" asp-route-id="@marketplace.Id" asp-route-param="@Model.Id"
+                @*<a asp-controller="Marketplace" asp-action="All" asp-route-id="@marketplace.Id"
+            class="list-group-item list-group-item-action py-2 ripple"
+            aria-current="true">
+            <span><b>@marketplace.Name</b></span>
+            </a>*@
+
+                <span><b>@marketplace.Name</b></span>
+
+                <a asp-controller="Marketplace" asp-action="All" asp-route-id="@marketplace.Id"
                class="list-group-item list-group-item-action py-2 ripple"
                aria-current="true">
-                    <span><b>@marketplace.Name</b></span>
-                    <div> All products</div>
+                    <i class="fa-solid fa-sack-dollar"></i><span>All products</span>
                 </a>
+
+                <a asp-controller="Marketplace" asp-action="Mine" asp-route-id="@marketplace.Id"
+               class="list-group-item list-group-item-action py-2 ripple"
+               aria-current="true">
+                    <i class="fa-solid fa-sack-dollar"></i><span>My products</span>
+                </a>
+
+                <a asp-controller="Marketplace" asp-action="Sell" asp-route-id="@marketplace.Id"
+               class="list-group-item list-group-item-action py-2 ripple"
+               aria-current="true">
+                    <i class="fa-solid fa-sack-dollar"></i><span>Sell a product</span>
+                </a>
+
+                <a asp-controller="Community" asp-action="DeleteMarketplace" asp-route-id="@marketplace.Id" asp-route-communityId="@((Guid)(Model.Id))"
+               type="button" class="btn btn-danger">X</a>
             }
 
             @if (Model.CreatorId == ViewBag.currentUserId)
             {
-                <a asp-controller="Community" asp-action="Add" asp-route-id="@((Guid)Model.Id)"
+                <a asp-controller="Community" asp-action="AddMarketplace" asp-route-id="@((Guid)Model.Id)"
                class="list-group-item list-group-item-action py-2 ripple"
                aria-current="true">
                     <span>Create a new marketplace</span>

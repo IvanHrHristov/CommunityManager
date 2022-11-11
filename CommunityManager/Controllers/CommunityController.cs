@@ -89,7 +89,7 @@ namespace CommunityManager.Controllers
         }
 
         [HttpGet]
-        public IActionResult Add(Guid communityId)
+        public IActionResult AddMarketplace(Guid communityId)
         {
             var model = new AddMarketplaceViewModel();
 
@@ -99,7 +99,7 @@ namespace CommunityManager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(AddMarketplaceViewModel model, Guid id)
+        public async Task<IActionResult> AddMarketplace(AddMarketplaceViewModel model, Guid id)
         {
             if (!ModelState.IsValid)
             {
