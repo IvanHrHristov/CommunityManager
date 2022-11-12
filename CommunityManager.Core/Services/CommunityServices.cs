@@ -79,22 +79,10 @@ namespace CommunityManager.Core.Services
 
         public async Task JoinCommunityAsync(Guid communityId, string userId)
         {
-            var model = await GetCommunityByIdAsync(communityId);
-
-            var community = new Community()
-            {
-                Id = model.Id,
-                Name = model.Name,
-                Description = model.Description,
-                CreatedOn = model.CreatedOn,
-                AgeRestricted = model.AgeRestricted,
-                CreatorId = model.CreatorId
-            };
-
             var communitiesMembers = new CommunityMember()
             {
                 ApplicationUserId = userId,
-                CommunityId = community.Id
+                CommunityId = communityId
             };
 
             await context.CommunityMember.AddAsync(communitiesMembers);
@@ -266,11 +254,10 @@ namespace CommunityManager.Core.Services
 
         public async Task LeaveCommunityAsync(Guid communityId, string userId)
         {
-            var communityMembers = await context.CommunityMember
-                .Where(cm => cm.CommunityId == communityId && cm.ApplicationUserId == userId)
-                .ToListAsync();
+            var communityMember = await context.CommunityMember
+                .FirstAsync(cm => cm.CommunityId == communityId && cm.ApplicationUserId == userId);
 
-            context.CommunityMember.RemoveRange(communityMembers);
+            context.CommunityMember.Remove(communityMember);
             await repository.SaveChangesAsync();
         }
     }

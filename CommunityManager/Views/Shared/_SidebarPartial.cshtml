@@ -12,7 +12,7 @@
 
                 if (chatroom.Members.All(m => m.Id != ViewBag.currentUserId))
                 {
-                    <a asp-controller="Chatroom" asp-action="Join" asp-route-id="@chatroom.Id"
+                    <a asp-controller="Chatroom" asp-action="Join" asp-route-id="@chatroom.Id" asp-route-communityId="@((Guid)(Model.Id))"
                     class="list-group-item list-group-item-action py-2 ripple"
                     aria-current="true">
                        <span>Join chatroom</span>
@@ -28,7 +28,7 @@
 
                 if (chatroom.Members.Any(m => m.Id == ViewBag.currentUserId) && Model.CreatorId != ViewBag.currentUserId)
                 {
-                    <a asp-controller="Chatroom" asp-action="Leave" asp-route-id="@chatroom.Id"
+                    <a asp-controller="Chatroom" asp-action="Leave" asp-route-id="@chatroom.Id" asp-route-communityId="@((Guid)(Model.Id))"
                     class="list-group-item list-group-item-action py-2 ripple"
                     aria-current="true">
                         <span>Leave</span>

@@ -1,5 +1,6 @@
 ﻿using CommunityManager.Core.Contracts;
 using CommunityManager.Extensions;
+using CommunityManager.Infrastructure.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 using static CommunityManager.Infrastructure.Data.Constants.MessageConstants;
 
@@ -32,6 +33,40 @@ namespace CommunityManager.Controllers
             return View(model);
         }
 
+        public async Task<IActionResult> Join(Guid id, Guid communityId)
+        {
+            var userId = User.Id();
 
+            try
+            {
+                await chatroomService.JoinChatroomAsync(id, userId);
+
+                return RedirectToAction("Open", "Community", new { id = communityId });
+            }
+            catch (Exception)
+            {
+                TempData[ErrorMessage] = "Incorrect product ID";
+
+                return RedirectToAction("Open", "Community", new { id = communityId });
+            }
+        }
+
+        public async Task<IActionResult> Leave(Guid id, Guid communityId)
+        {
+            var userId = User.Id();
+
+            try
+            {
+                await chatroomService.LeaveChatroomAsync(id, userId);
+
+                return RedirectToAction("Open", "Community", new { id = communityId });
+            }
+            catch (Exception)
+            {
+                TempData[ErrorMessage] = "Incorrect product ID";
+
+                return RedirectToAction("Open", "Community", new { id = communityId });
+            }
+        }
     }
 }

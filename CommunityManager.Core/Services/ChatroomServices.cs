@@ -2,6 +2,7 @@
 using CommunityManager.Core.Models.Chatroom;
 using CommunityManager.Core.Models.User;
 using CommunityManager.Infrastructure.Data;
+using CommunityManager.Infrastructure.Data.Models;
 using HouseRentingSystem.Infrastructure.Data.Common;
 using Microsoft.EntityFrameworkCore;
 
@@ -50,6 +51,27 @@ namespace CommunityManager.Core.Services
                     CreatedOn = m.CreatedOn
                 }).ToList()
             };
+        }
+
+        public async Task JoinChatroomAsync(Guid id, string userId)
+        {
+            var chatroomMember = new ChatroomMember()
+            {
+                ApplicationUserId = userId,
+                ChatroomId = id
+            };
+
+            await context.ChatroomsMembers.AddAsync(chatroomMember);
+            await repository.SaveChangesAsync();
+        }
+
+        public async Task LeaveChatroomAsync(Guid id, string userId)
+        {
+            var chatroomMember = await context.ChatroomsMembers
+                .FirstAsync(chm => chm.ChatroomId == id && chm.ApplicationUserId == userId);
+
+            context.ChatroomsMembers.Remove(chatroomMember);
+            await repository.SaveChangesAsync();
         }
     }
 }
