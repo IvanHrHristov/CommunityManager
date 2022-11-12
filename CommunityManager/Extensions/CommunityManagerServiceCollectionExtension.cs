@@ -11,6 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IRepository, Repository>();
             services.AddScoped<IMarketplaceServices, MarketplaceServices>();
             services.AddScoped<ICommunityServices, CommunityServices>();
+            services.AddScoped<IChatroomServices, ChatroomServices>();
 
             return services;
         }

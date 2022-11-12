@@ -16,16 +16,13 @@ namespace CommunityManager.Controllers
     {
         private readonly IRepository repository;
         private readonly ICommunityServices communityService;
-        private readonly UserManager<ApplicationUser> userManager;
 
         public CommunityController(
             IRepository repository,
-            ICommunityServices communityService,
-            UserManager<ApplicationUser> userManager)
+            ICommunityServices communityService)
         {
             this.repository = repository;
             this.communityService = communityService;
-            this.userManager = userManager;
         }
 
         public async Task<IActionResult> All()
@@ -79,7 +76,7 @@ namespace CommunityManager.Controllers
 
             var model = await communityService.GetCommunityByIdAsync(id);
 
-            if (model == null)
+            if (model.Name == null)
             {
                 TempData[ErrorMessage] = "Incorrect product ID";
 

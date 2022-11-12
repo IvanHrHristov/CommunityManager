@@ -150,6 +150,7 @@ namespace CommunityManager.Core.Services
         {
             var entity = await context.Communities
                 .Include(c => c.Marketplaces)
+                .ThenInclude(m => m.Products)
                 .Include(c => c.Chatrooms)
                 .ThenInclude(ch => ch.ChatroomsMembers)
                 .ThenInclude(chm => chm.ApplicationUser)
@@ -170,11 +171,11 @@ namespace CommunityManager.Core.Services
                 CreatedOn = entity.CreatedOn,
                 CreatorId= entity.CreatorId,
                 AgeRestricted = entity.AgeRestricted,
-                Marketplaces = entity.Marketplaces.Select(m => new MarketplaceViewModel
+                Marketplaces = entity.Marketplaces.Select(m => new MarketplaceViewModel()
                 {
                     Id = m.Id,
                     Name = m.Name,
-                    Products = m?.Products?.Select(p => new ProductsQueryModel
+                    Products = m?.Products?.Select(p => new ProductsQueryModel()
                     {
                         Id = p.Id,
                         Name = p.Name,
@@ -185,16 +186,17 @@ namespace CommunityManager.Core.Services
                         Buyer = p?.Buyer?.UserName
                     }).ToList()
                 }).ToList(),
-                Chatrooms = entity.Chatrooms.Select(c => new ChatroomViewModel
+                Chatrooms = entity.Chatrooms.Select(c => new ChatroomViewModel()
                 {
                     Id = c.Id,
                     Name= c.Name,
-                    Messages = c?.Messages?.Select(m => new MessageViewModel
+                    Messages = c?.Messages?.Select(m => new MessageViewModel()
                     {
                         Id= m.Id,
                         Content = m.Content,
                         SenderId = m.SenderId,
-                        Sender = m.Sender.UserName
+                        Sender = m.Sender.UserName,
+                        CreatedOn = m.CreatedOn
                     }).ToList(),
                     Members = c?.ChatroomsMembers.Select(chm => new UserViewModel()
                     {
