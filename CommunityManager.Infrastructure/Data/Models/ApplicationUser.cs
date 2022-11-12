@@ -10,6 +10,8 @@ namespace CommunityManager.Infrastructure.Data.Models
 
         public List<Message>? Messages { get; set; } = new List<Message>();
 
+        public List<ChatroomMember> ChatroomsMembers { get; set; } = new List<ChatroomMember>();
+
         public List<CommunityMember> CommunitiesMembers { get; set; } = new List<CommunityMember>();
 
         public DateTime CreatedOn { get; set; }

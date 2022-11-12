@@ -21,5 +21,7 @@ namespace CommunityManager.Infrastructure.Data.Models
         [Required]
         [ForeignKey(nameof(CommunityId))]
         public Community Community { get; set; } = null!;
+
+        public List<ChatroomMember> ChatroomsMembers { get; set; } = new List<ChatroomMember>();
     }
 }

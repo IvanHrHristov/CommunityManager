@@ -23,6 +23,8 @@
                 <a asp-controller="Community" asp-action="Open" asp-route-id="@community.Id" class="btn btn-success mb-2">Open</a>
                 <span></span>
                 <a asp-controller="Community" asp-action="Details" asp-route-id="@community.Id" class="btn btn-primary mb-2">Details</a>
+                <span></span>
+                <a asp-controller="Community" asp-action="Leave" asp-route-id="@community.Id" class="btn btn-danger mb-2">Leave</a>
             }
 
             @if (community.Members.Any(m => m.Id == ViewBag.currentUserId) && ViewBag.currentUserId == community.CreatorId)

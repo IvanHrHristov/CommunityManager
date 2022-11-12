@@ -1,4 +1,5 @@
-﻿using CommunityManager.Core.Models.Community;
+﻿using CommunityManager.Core.Models.Chatroom;
+using CommunityManager.Core.Models.Community;
 using CommunityManager.Core.Models.Marketplace;
 
 namespace CommunityManager.Core.Contracts
@@ -15,12 +16,18 @@ namespace CommunityManager.Core.Contracts
 
         Task AddMarketplaceToCommunityAsync(AddMarketplaceViewModel model, Guid id);
 
+        Task AddChatroomToCommunityAsync(AddChatroomViewModel model, Guid id, string creatorId);
+
         Task CreateCommunityAsync(CreateCommunityViewModel model);
 
         Task ManageCommunityAsync(Guid id, CreateCommunityViewModel model);
 
         Task DeleteCommunityAsync(Guid communityId);
 
+        Task LeaveCommunityAsync(Guid communityId, string userId);
+
         Task DeleteMarketplaceAsync(Guid marketplaceId);
+
+        Task DeleteChatroomAsync(Guid chatroomId);
     }
 }

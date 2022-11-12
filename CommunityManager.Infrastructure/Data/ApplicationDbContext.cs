@@ -23,11 +23,17 @@ namespace CommunityManager.Infrastructure.Data
 
         public DbSet<CommunityMember> CommunityMember { get; set; } = null!;
 
+        public DbSet<ChatroomMember> ChatroomsMembers { get; set; } = null!;
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             builder
                 .Entity<CommunityMember>()
                 .HasKey(cm => new { cm.CommunityId, cm.ApplicationUserId });
+
+            builder
+                .Entity<ChatroomMember>()
+                .HasKey(cm => new { cm.ChatroomId, cm.ApplicationUserId });
 
             builder
                 .Entity<Product>()

@@ -1,4 +1,5 @@
 ﻿using CommunityManager.Core.Contracts;
+using CommunityManager.Core.Models.Chatroom;
 using CommunityManager.Core.Models.Community;
 using CommunityManager.Core.Models.Marketplace;
 using CommunityManager.Core.Services;
@@ -122,6 +123,41 @@ namespace CommunityManager.Controllers
         }
 
         [HttpGet]
+        public IActionResult AddChatroom(Guid communityId)
+        {
+            var model = new AddChatroomViewModel();
+
+            ViewBag.CommunityId = communityId;
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddChatroom(AddChatroomViewModel model, Guid id)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var creatorId = User.Id();
+
+            try
+            {
+                await communityService.AddChatroomToCommunityAsync(model, id, creatorId);
+
+                return RedirectToAction(nameof(Open), new { id });
+            }
+            catch (Exception)
+            {
+
+                ModelState.AddModelError("", "Something went wrong.");
+
+                return View(model);
+            }
+        }
+
+        [HttpGet]
         public IActionResult Create()
         {
             var creatorId = User.Id();
@@ -214,6 +250,15 @@ namespace CommunityManager.Controllers
             return RedirectToAction(nameof(Mine));
         }
 
+        public async Task<IActionResult> Leave(Guid id)
+        {
+            var userId = User.Id();
+
+            await communityService.LeaveCommunityAsync(id, userId);
+
+            return RedirectToAction(nameof(Mine));
+        }
+
         public async Task<IActionResult> Delete(Guid id)
         {
             await communityService.DeleteCommunityAsync(id);
@@ -226,6 +271,13 @@ namespace CommunityManager.Controllers
             await communityService.DeleteMarketplaceAsync(id);
 
             return RedirectToAction(nameof(Open), new {id = communityId });
+        }
+
+        public async Task<IActionResult> DeleteChatroom(Guid id, Guid communityId)
+        {
+            await communityService.DeleteChatroomAsync(id);
+
+            return RedirectToAction(nameof(Open), new { id = communityId });
         }
     }
 }

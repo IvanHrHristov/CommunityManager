@@ -1,4 +1,5 @@
-﻿using CommunityManager.Core.Models.Marketplace;
+﻿using CommunityManager.Core.Models.Chatroom;
+using CommunityManager.Core.Models.Marketplace;
 using CommunityManager.Core.Models.User;
 
 namespace CommunityManager.Core.Models.Community
@@ -20,5 +21,7 @@ namespace CommunityManager.Core.Models.Community
         public List<UserViewModel> Members { get; set; } = new List<UserViewModel>();
 
         public List<MarketplaceViewModel> Marketplaces { get; set; } = new List<MarketplaceViewModel>();
+
+        public List<ChatroomViewModel> Chatrooms { get; set; } = new List<ChatroomViewModel>();
     }
 }

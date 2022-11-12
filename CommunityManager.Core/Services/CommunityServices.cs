@@ -1,4 +1,5 @@
 ﻿using CommunityManager.Core.Contracts;
+using CommunityManager.Core.Models.Chatroom;
 using CommunityManager.Core.Models.Community;
 using CommunityManager.Core.Models.Marketplace;
 using CommunityManager.Core.Models.User;
@@ -31,7 +32,26 @@ namespace CommunityManager.Core.Services
             };
 
             await context.Marketplaces.AddAsync(entity);
-            await context.SaveChangesAsync();
+            await repository.SaveChangesAsync();
+        }
+
+        public async Task AddChatroomToCommunityAsync(AddChatroomViewModel model, Guid id, string creatorId)
+        {
+            var entity = new Chatroom()
+            {
+                Name = model.Name,
+                CommunityId = id
+            };
+
+            var chatroomMembers = new ChatroomMember()
+            {
+                ApplicationUserId = creatorId,
+                Chatroom = entity,
+            };
+
+            await context.Chatrooms.AddAsync(entity);
+            await context.ChatroomsMembers.AddAsync(chatroomMembers);
+            await repository.SaveChangesAsync();
         }
 
         public async Task CreateCommunityAsync(CreateCommunityViewModel model)
@@ -53,7 +73,7 @@ namespace CommunityManager.Core.Services
 
             await context.Communities.AddAsync(entity);
             await context.CommunityMember.AddAsync(communitiesMembers);
-            await context.SaveChangesAsync();
+            await repository.SaveChangesAsync();
         }
 
 
@@ -78,7 +98,7 @@ namespace CommunityManager.Core.Services
             };
 
             await context.CommunityMember.AddAsync(communitiesMembers);
-            await context.SaveChangesAsync();
+            await repository.SaveChangesAsync();
         }
 
         public async Task<IEnumerable<CommunityViewModel>> GetAllAsync()
@@ -130,6 +150,9 @@ namespace CommunityManager.Core.Services
         {
             var entity = await context.Communities
                 .Include(c => c.Marketplaces)
+                .Include(c => c.Chatrooms)
+                .ThenInclude(ch => ch.ChatroomsMembers)
+                .ThenInclude(chm => chm.ApplicationUser)
                 .Include(c => c.CommunitiesMembers)
                 .ThenInclude(cm => cm.ApplicationUser)
                 .FirstOrDefaultAsync(c => c.Id == id);
@@ -162,6 +185,23 @@ namespace CommunityManager.Core.Services
                         Buyer = p?.Buyer?.UserName
                     }).ToList()
                 }).ToList(),
+                Chatrooms = entity.Chatrooms.Select(c => new ChatroomViewModel
+                {
+                    Id = c.Id,
+                    Name= c.Name,
+                    Messages = c?.Messages?.Select(m => new MessageViewModel
+                    {
+                        Id= m.Id,
+                        Content = m.Content,
+                        SenderId = m.SenderId,
+                        Sender = m.Sender.UserName
+                    }).ToList(),
+                    Members = c?.ChatroomsMembers.Select(chm => new UserViewModel()
+                    {
+                        Id = chm.ApplicationUser.Id,
+                        Name = chm.ApplicationUser.UserName
+                    }).ToList()
+                }).ToList(),
                 Members = entity.CommunitiesMembers.Select(cm => new UserViewModel()
                 {
                     Id = cm.ApplicationUser.Id,
@@ -180,7 +220,7 @@ namespace CommunityManager.Core.Services
 
             context.CommunityMember.RemoveRange(communityMembers);
             context.Communities.Remove(community);
-            context.SaveChanges();
+            await repository.SaveChangesAsync();
         }
 
         public async Task DeleteMarketplaceAsync(Guid marketplaceId)
@@ -196,6 +236,19 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
+        public async Task DeleteChatroomAsync(Guid chatroomId)
+        {
+            var chatroom = await repository.GetByIdAsync<Chatroom>(chatroomId);
+
+            var chatroomMembers = await context.ChatroomsMembers
+                .Where(chm => chm.ChatroomId == chatroomId)
+                .ToListAsync();
+
+            context.ChatroomsMembers.RemoveRange(chatroomMembers);
+            context.Chatrooms.Remove(chatroom);
+            await repository.SaveChangesAsync();
+        }
+
         public async Task ManageCommunityAsync(Guid id, CreateCommunityViewModel model)
         {
             var community = await repository.GetByIdAsync<Community>(id);
@@ -206,6 +259,16 @@ namespace CommunityManager.Core.Services
             community.CreatorId = model.CreatorId;
             community.AgeRestricted = model.AgeRestricted;
 
+            await repository.SaveChangesAsync();
+        }
+
+        public async Task LeaveCommunityAsync(Guid communityId, string userId)
+        {
+            var communityMembers = await context.CommunityMember
+                .Where(cm => cm.CommunityId == communityId && cm.ApplicationUserId == userId)
+                .ToListAsync();
+
+            context.CommunityMember.RemoveRange(communityMembers);
             await repository.SaveChangesAsync();
         }
     }
