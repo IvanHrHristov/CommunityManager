@@ -25,9 +25,9 @@ namespace CommunityManager.Controllers
 
             if (model.Name == null)
             {
-                TempData[ErrorMessage] = "Incorrect product ID";
+                var errorMessage = "The chatroom you are trying to open does not exist";
 
-                return RedirectToAction("Open", "Community", new { id = communityId });
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
             }
 
             return View(model);
@@ -45,9 +45,9 @@ namespace CommunityManager.Controllers
             }
             catch (Exception)
             {
-                TempData[ErrorMessage] = "Incorrect product ID";
+                var errorMessage = "The chatroom you are trying to join does not exist";
 
-                return RedirectToAction("Open", "Community", new { id = communityId });
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
             }
         }
 
@@ -63,9 +63,9 @@ namespace CommunityManager.Controllers
             }
             catch (Exception)
             {
-                TempData[ErrorMessage] = "Incorrect product ID";
+                var errorMessage = "The chatroom you are trying to leave does not exist";
 
-                return RedirectToAction("Open", "Community", new { id = communityId });
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
             }
         }
     }

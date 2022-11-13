@@ -4,8 +4,14 @@
     <h1 class="display-4">Welcome to Communities</h1>
 </div>
 
-<div asp-validation-summary="ModelOnly" class="text-danger"></div>
 <div class="text-center row">
+    @if (ViewBag.errorMessage != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @ViewBag.errorMessage
+        </div>
+    }
+    
     @foreach (var community in Model)
     {
         <div class="card col-4" style="width: 20rem; ">
@@ -41,8 +47,6 @@
             @if (community.Members.All(m => m.Id != ViewBag.currentUserId) && ViewBag.currentUserId != community.CreatorId)
             {
                 <a asp-controller="Community" asp-action="Join" asp-route-id="@community.Id" class="btn btn-success mb-2">Join</a>
-                <span></span>
-                <a asp-controller="Community" asp-action="Details" asp-route-id="@community.Id" class="btn btn-primary mb-2">Details</a>
             }
 
             @*@if (this.User?.Identity != null && this.User.Identity.Name != community.Seller && community.BuyerId == null)

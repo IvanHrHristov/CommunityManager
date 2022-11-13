@@ -2,11 +2,9 @@
 using CommunityManager.Core.Models.Chatroom;
 using CommunityManager.Core.Models.Community;
 using CommunityManager.Core.Models.Marketplace;
-using CommunityManager.Core.Services;
 using CommunityManager.Extensions;
 using CommunityManager.Infrastructure.Data.Models;
 using HouseRentingSystem.Infrastructure.Data.Common;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using static CommunityManager.Infrastructure.Data.Constants.MessageConstants;
 
@@ -25,13 +23,14 @@ namespace CommunityManager.Controllers
             this.communityService = communityService;
         }
 
-        public async Task<IActionResult> All()
+        public async Task<IActionResult> All(string? errorMessage)
         {
             var currentUserId = User.Id();
 
             var model = await communityService.GetAllAsync();
 
             ViewBag.currentUserId = currentUserId;
+            ViewBag.errorMessage = errorMessage;
 
             return View(model);
         }
@@ -41,46 +40,61 @@ namespace CommunityManager.Controllers
         {
             var currentUserId = User.Id();
 
-            try
+            var community = await repository.GetByIdAsync<Community>(id);
+            var user = await repository.GetByIdAsync<ApplicationUser>(currentUserId);
+
+            if (community == null)
             {
-                await communityService.JoinCommunityAsync(id, currentUserId);
-
-                return RedirectToAction(nameof(All));
+                return NotFound();
             }
-            catch (Exception)
+
+            if (user == null)
             {
-
-                ModelState.AddModelError("", "Something went wrong.");
-
-                return RedirectToAction(nameof(All));
+                return NotFound();
             }
+
+            if (community.AgeRestricted)
+            {
+                if (user.Age < 18)
+                {
+                    var errorMessage = "You are too young to join that community";
+
+                    return RedirectToAction(nameof(All), new { errorMessage = errorMessage });
+                }
+            }
+
+            await communityService.JoinCommunityAsync(id, currentUserId);
+
+            return RedirectToAction(nameof(All));
         }
 
-        public async Task<IActionResult> Mine()
+        public async Task<IActionResult> Mine(string? errorMessage)
         {
             var currentUserId = User.Id();
 
             var model = await communityService.GetMineAsync(currentUserId);
 
             ViewBag.currentUserId = currentUserId;
+            ViewBag.errorMessage = errorMessage;
 
             return View(model);
         }
 
         [HttpGet]
-        public async Task<IActionResult> Open(Guid id)
+        public async Task<IActionResult> Open(Guid id, string? manageErrorMessage)
         {
             var currentUserId = User.Id();
 
             ViewBag.currentUserId = currentUserId;
+            ViewBag.errorMessage = manageErrorMessage;
 
             var model = await communityService.GetCommunityByIdAsync(id);
 
             if (model.Name == null)
             {
-                TempData[ErrorMessage] = "Incorrect product ID";
+                var errorMessage = "The community you are trying to open does not exist";
 
-                return RedirectToAction(nameof(All));
+                return RedirectToAction(nameof(Mine), new { errorMessage = errorMessage });
             }
 
             return View(model);
@@ -104,19 +118,9 @@ namespace CommunityManager.Controllers
                 return View(model);
             }
 
-            try
-            {
-                await communityService.AddMarketplaceToCommunityAsync(model, id);
+            await communityService.AddMarketplaceToCommunityAsync(model, id);
 
-                return RedirectToAction(nameof(Open), new { id });
-            }
-            catch (Exception)
-            {
-
-                ModelState.AddModelError("", "Something went wrong.");
-
-                return View(model);
-            }
+            return RedirectToAction(nameof(Open), new { id });
         }
 
         [HttpGet]
@@ -139,19 +143,9 @@ namespace CommunityManager.Controllers
 
             var creatorId = User.Id();
 
-            try
-            {
-                await communityService.AddChatroomToCommunityAsync(model, id, creatorId);
+            await communityService.AddChatroomToCommunityAsync(model, id, creatorId);
 
-                return RedirectToAction(nameof(Open), new { id });
-            }
-            catch (Exception)
-            {
-
-                ModelState.AddModelError("", "Something went wrong.");
-
-                return View(model);
-            }
+            return RedirectToAction(nameof(Open), new { id });
         }
 
         [HttpGet]
@@ -174,35 +168,26 @@ namespace CommunityManager.Controllers
                 return View(model);
             }
 
-            try
-            {
-                await communityService.CreateCommunityAsync(model);
+            await communityService.CreateCommunityAsync(model);
 
-                return RedirectToAction(nameof(All));
-            }
-            catch (Exception)
-            {
-
-                ModelState.AddModelError("", "Something went wrong.");
-
-                return View(model);
-            }
+            return RedirectToAction(nameof(Mine));
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(Guid id)
+        public async Task<IActionResult> Details(Guid id, string? manageErrorMessage)
         {
             var currentUserId = User.Id();
 
             ViewBag.currentUserId = currentUserId;
+            ViewBag.errorMessage = manageErrorMessage;
 
             var model = await communityService.GetCommunityByIdAsync(id);
 
             if (model.Name == null)
             {
-                TempData[ErrorMessage] = "Incorrect product ID";
+                var errorMessage = "The community you are trying to open does not exist";
 
-                return RedirectToAction(nameof(All));
+                return RedirectToAction(nameof(Mine), new {errorMessage = errorMessage});
             }
 
             return View(model);
@@ -215,9 +200,9 @@ namespace CommunityManager.Controllers
 
             if (community.Name == null)
             {
-                TempData[ErrorMessage] = "Incorrect product ID";
+                var errorMessage = "The community you are trying to open does not exist";
 
-                return RedirectToAction(nameof(All));
+                return RedirectToAction(nameof(Mine), new { errorMessage = errorMessage });
             }
 
             CreateCommunityViewModel model = new CreateCommunityViewModel()
@@ -251,30 +236,67 @@ namespace CommunityManager.Controllers
         {
             var userId = User.Id();
 
-            await communityService.LeaveCommunityAsync(id, userId);
+            try
+            {
+                await communityService.LeaveCommunityAsync(id, userId);
 
-            return RedirectToAction(nameof(Mine));
+                return RedirectToAction(nameof(Mine));
+            }
+            catch (Exception)
+            {
+                var errorMessage = "The community you are trying to leave does not exist";
+
+                return RedirectToAction(nameof(Mine), new { errorMessage = errorMessage });
+            }
         }
 
         public async Task<IActionResult> Delete(Guid id)
         {
-            await communityService.DeleteCommunityAsync(id);
+            try
+            {
+                await communityService.DeleteCommunityAsync(id);
 
-            return RedirectToAction(nameof(Mine));
+                return RedirectToAction(nameof(Mine));
+            }
+            catch (Exception)
+            {
+                var errorMessage = "The community you are trying to delete does not exist";
+
+                return RedirectToAction(nameof(Mine), new { errorMessage = errorMessage });
+            }
         }
 
         public async Task<IActionResult> DeleteMarketplace(Guid id, Guid communityId)
         {
-            await communityService.DeleteMarketplaceAsync(id);
+            try
+            {
+                await communityService.DeleteMarketplaceAsync(id);
 
-            return RedirectToAction(nameof(Open), new {id = communityId });
+                return RedirectToAction(nameof(Open), new { id = communityId});
+            }
+            catch (Exception)
+            {
+                var errorMessage = "The marketplace you are trying to delete does not exist";
+
+                return RedirectToAction(nameof(Open), new { id = communityId, manageErrorMessage = errorMessage });
+            }
         }
 
         public async Task<IActionResult> DeleteChatroom(Guid id, Guid communityId)
         {
-            await communityService.DeleteChatroomAsync(id);
+            try
+            {
+                await communityService.DeleteChatroomAsync(id);
 
-            return RedirectToAction(nameof(Open), new { id = communityId });
+                return RedirectToAction(nameof(Open), new { id = communityId});
+            }
+            catch (Exception)
+            {
+                var errorMessage = "The chatroom you are trying to delete does not exist";
+
+                return RedirectToAction(nameof(Open), new { id = communityId, manageErrorMessage = errorMessage });
+            }
+            
         }
     }
 }

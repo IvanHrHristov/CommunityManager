@@ -5,6 +5,13 @@
 </div>
 
 <div class="text-center row">
+    @if (ViewBag.errorMessage != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @ViewBag.errorMessage
+        </div>
+    }
+
     @foreach (var community in Model)
     {
         <div class="card col-4" style="width: 20rem; ">

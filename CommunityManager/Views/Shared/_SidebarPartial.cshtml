@@ -3,6 +3,12 @@
 <nav id="sidebarMenu"
      class="collapse d-lg-block sidebar collapse bg-white">
     <div class="position-sticky">
+        @if (ViewBag.errorMessage != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @ViewBag.errorMessage
+            </div>
+        }
         <div class="list-group list-group-flush mx-3 mt-4">
             <p class="list-group-item"><em><strong>CHATROOMS</strong></em></p>
 
