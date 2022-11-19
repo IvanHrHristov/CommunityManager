@@ -5,11 +5,12 @@ using CommunityManager.Core.Models.Marketplace;
 using CommunityManager.Extensions;
 using CommunityManager.Infrastructure.Data.Models;
 using HouseRentingSystem.Infrastructure.Data.Common;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static CommunityManager.Infrastructure.Data.Constants.MessageConstants;
 
 namespace CommunityManager.Controllers
 {
+    [Authorize]
     public class CommunityController : Controller
     {
         private readonly IRepository repository;
@@ -43,14 +44,25 @@ namespace CommunityManager.Controllers
             var community = await repository.GetByIdAsync<Community>(id);
             var user = await repository.GetByIdAsync<ApplicationUser>(currentUserId);
 
+            if (await communityService.CheckCommunityMemberId(id, currentUserId))
+            {
+                var errorMessage = "You are already part of that community";
+
+                return RedirectToAction(nameof(All), new { errorMessage = errorMessage });
+            }
+
             if (community == null)
             {
-                return NotFound();
+                var errorMessage = "The community you are trying to join does not exist";
+
+                return RedirectToAction(nameof(All), new { errorMessage = errorMessage });
             }
 
             if (user == null)
             {
-                return NotFound();
+                var errorMessage = "That user does not exist";
+
+                return RedirectToAction(nameof(All), new { errorMessage = errorMessage });
             }
 
             if (community.AgeRestricted)
@@ -90,6 +102,13 @@ namespace CommunityManager.Controllers
 
             var model = await communityService.GetCommunityByIdAsync(id);
 
+            if (!(await communityService.CheckCommunityMemberId(id, currentUserId)))
+            {
+                var errorMessage = "You are not part of that community";
+
+                return RedirectToAction(nameof(All), new { errorMessage = errorMessage });
+            }
+
             if (model.Name == null)
             {
                 var errorMessage = "The community you are trying to open does not exist";
@@ -101,11 +120,9 @@ namespace CommunityManager.Controllers
         }
 
         [HttpGet]
-        public IActionResult AddMarketplace(Guid communityId)
+        public IActionResult AddMarketplace()
         {
             var model = new AddMarketplaceViewModel();
-
-            ViewBag.CommunityId = communityId;
 
             return View(model);
         }
@@ -113,6 +130,11 @@ namespace CommunityManager.Controllers
         [HttpPost]
         public async Task<IActionResult> AddMarketplace(AddMarketplaceViewModel model, Guid id)
         {
+            if (!(await communityService.CheckCommunityCreatorId(id, User.Id())))
+            {
+                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -124,11 +146,9 @@ namespace CommunityManager.Controllers
         }
 
         [HttpGet]
-        public IActionResult AddChatroom(Guid communityId)
+        public IActionResult AddChatroom()
         {
             var model = new AddChatroomViewModel();
-
-            ViewBag.CommunityId = communityId;
 
             return View(model);
         }
@@ -136,6 +156,11 @@ namespace CommunityManager.Controllers
         [HttpPost]
         public async Task<IActionResult> AddChatroom(AddChatroomViewModel model, Guid id)
         {
+            if (!(await communityService.CheckCommunityCreatorId(id, User.Id())))
+            {
+                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -183,6 +208,13 @@ namespace CommunityManager.Controllers
 
             var model = await communityService.GetCommunityByIdAsync(id);
 
+            if (!(await communityService.CheckCommunityMemberId(id, currentUserId)))
+            {
+                var errorMessage = "You are not part of that community";
+
+                return RedirectToAction(nameof(All), new { errorMessage = errorMessage });
+            }
+
             if (model.Name == null)
             {
                 var errorMessage = "The community you are trying to open does not exist";
@@ -197,6 +229,11 @@ namespace CommunityManager.Controllers
         public async Task<IActionResult> Manage(Guid id)
         {
             var community = await communityService.GetCommunityByIdAsync(id);
+
+            if (!(await communityService.CheckCommunityCreatorId(id, User.Id())))
+            {
+                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+            }
 
             if (community.Name == null)
             {
@@ -236,6 +273,13 @@ namespace CommunityManager.Controllers
         {
             var userId = User.Id();
 
+            if (!(await communityService.CheckCommunityMemberId(id, userId)))
+            {
+                var errorMessage = "You are not part of that community";
+
+                return RedirectToAction(nameof(All), new { errorMessage = errorMessage });
+            }
+
             try
             {
                 await communityService.LeaveCommunityAsync(id, userId);
@@ -252,6 +296,11 @@ namespace CommunityManager.Controllers
 
         public async Task<IActionResult> Delete(Guid id)
         {
+            if (!(await communityService.CheckCommunityCreatorId(id, User.Id())))
+            {
+                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+            }
+
             try
             {
                 await communityService.DeleteCommunityAsync(id);
@@ -268,6 +317,11 @@ namespace CommunityManager.Controllers
 
         public async Task<IActionResult> DeleteMarketplace(Guid id, Guid communityId)
         {
+            if (!(await communityService.CheckCommunityCreatorId(communityId, User.Id())))
+            {
+                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+            }
+
             try
             {
                 await communityService.DeleteMarketplaceAsync(id);
@@ -284,6 +338,11 @@ namespace CommunityManager.Controllers
 
         public async Task<IActionResult> DeleteChatroom(Guid id, Guid communityId)
         {
+            if (!(await communityService.CheckCommunityCreatorId(communityId, User.Id())))
+            {
+                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+            }
+
             try
             {
                 await communityService.DeleteChatroomAsync(id);

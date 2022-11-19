@@ -29,5 +29,9 @@ namespace CommunityManager.Core.Contracts
         Task DeleteMarketplaceAsync(Guid marketplaceId);
 
         Task DeleteChatroomAsync(Guid chatroomId);
+
+        Task<bool> CheckCommunityCreatorId(Guid communityId, string creatorId);
+
+        Task<bool> CheckCommunityMemberId(Guid communityId, string memberId);
     }
 }

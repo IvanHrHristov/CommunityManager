@@ -63,19 +63,19 @@
             {
                 <span><b>@marketplace.Name</b></span>
 
-                <a asp-controller="Marketplace" asp-action="All" asp-route-id="@marketplace.Id"
+                <a asp-controller="Marketplace" asp-action="All" asp-route-id="@marketplace.Id" asp-route-communityId="@((Guid)(Model.Id))"
                class="list-group-item list-group-item-action py-2 ripple"
                aria-current="true">
                     <span>All products</span>
                 </a>
 
-                <a asp-controller="Marketplace" asp-action="Mine" asp-route-id="@marketplace.Id"
+                <a asp-controller="Marketplace" asp-action="Mine" asp-route-id="@marketplace.Id" asp-route-communityId="@((Guid)(Model.Id))"
                class="list-group-item list-group-item-action py-2 ripple"
                aria-current="true">
                     <span>My products</span>
                 </a>
 
-                <a asp-controller="Marketplace" asp-action="Sell" asp-route-id="@marketplace.Id"
+                <a asp-controller="Marketplace" asp-action="Sell" asp-route-id="@marketplace.Id" asp-route-communityId="@((Guid)(Model.Id))"
                class="list-group-item list-group-item-action py-2 ripple"
                aria-current="true">
                     <span>Sell a product</span>

@@ -13,6 +13,7 @@
         <form asp-action="Sell" method="post">
             <input type="hidden" asp-for="@Model.SellerId" value="@ViewBag.SellerId"/>
             <input type="hidden" asp-for="@Model.MarketplaceId" value="@ViewBag.MarketplaceId" />
+            <input type="hidden" asp-for="@Model.CommunityId" value="@ViewBag.CommunityId" />
             <div class="mb-3">
                 <label asp-for="@Model.Name" class="form-label">Name</label>
                 <input asp-for="@Model.Name" class="form-control" aria-required="true" />

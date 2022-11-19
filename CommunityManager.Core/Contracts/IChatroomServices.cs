@@ -9,5 +9,7 @@ namespace CommunityManager.Core.Contracts
         Task JoinChatroomAsync(Guid id, string userId);
 
         Task LeaveChatroomAsync(Guid id, string userId);
+
+        Task<bool> CheckChatroomMemberId(Guid chatroomId, string memberId);
     }
 }

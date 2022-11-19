@@ -1,18 +1,22 @@
 ﻿using CommunityManager.Core.Contracts;
 using CommunityManager.Extensions;
-using CommunityManager.Infrastructure.Data.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using static CommunityManager.Infrastructure.Data.Constants.MessageConstants;
 
 namespace CommunityManager.Controllers
 {
+    [Authorize]
     public class ChatroomController : Controller
     {
         private readonly IChatroomServices chatroomService;
+        private readonly ICommunityServices communityService;
 
-        public ChatroomController(IChatroomServices chatroomService)
+        public ChatroomController(
+            IChatroomServices chatroomService,
+            ICommunityServices communityService)
         {
             this.chatroomService = chatroomService;
+            this.communityService = communityService;
         }
 
         public async Task<IActionResult> Open(Guid id, Guid communityId)
@@ -20,6 +24,20 @@ namespace CommunityManager.Controllers
             var currentUserId = User.Id();
 
             ViewBag.currentUserId = currentUserId;
+
+            if (!(await communityService.CheckCommunityMemberId(communityId, currentUserId)))
+            {
+                var errorMessage = "An error occured while trying to open that chatroom";
+
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+            }
+
+            if (!(await chatroomService.CheckChatroomMemberId(id, currentUserId)))
+            {
+                var errorMessage = "An error occured while trying to open that chatroom";
+
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+            }
 
             var model = await chatroomService.GetChatroomByIdAsync(id);
 
@@ -36,6 +54,20 @@ namespace CommunityManager.Controllers
         public async Task<IActionResult> Join(Guid id, Guid communityId)
         {
             var userId = User.Id();
+
+            if (!(await communityService.CheckCommunityMemberId(communityId, userId)))
+            {
+                var errorMessage = "An error occured while trying to join that chatroom";
+
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+            }
+
+            if (await chatroomService.CheckChatroomMemberId(id, userId))
+            {
+                var errorMessage = "An error occured while trying to join that chatroom";
+
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+            }
 
             try
             {
@@ -54,6 +86,20 @@ namespace CommunityManager.Controllers
         public async Task<IActionResult> Leave(Guid id, Guid communityId)
         {
             var userId = User.Id();
+
+            if (!(await communityService.CheckCommunityMemberId(communityId, userId)))
+            {
+                var errorMessage = "An error occured while trying to leave that chatroom";
+
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+            }
+
+            if (!(await chatroomService.CheckChatroomMemberId(id, userId)))
+            {
+                var errorMessage = "An error occured while trying to leave that chatroom";
+
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+            }
 
             try
             {

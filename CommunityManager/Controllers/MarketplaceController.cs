@@ -1,5 +1,6 @@
 ﻿using CommunityManager.Core.Contracts;
 using CommunityManager.Core.Models.Marketplace;
+using CommunityManager.Core.Services;
 using CommunityManager.Extensions;
 using CommunityManager.Infrastructure.Data.Models;
 using HouseRentingSystem.Infrastructure.Data.Common;
@@ -15,47 +16,95 @@ namespace CommunityManager.Controllers
     {
         private readonly IRepository repository;
         private readonly IMarketplaceServices marketplaceService;
+        private readonly ICommunityServices communityService;
         private readonly UserManager<ApplicationUser> userManager;
 
         public MarketplaceController(
             IRepository repository,
             IMarketplaceServices service,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            ICommunityServices communityService)
         {
             this.marketplaceService = service;
             this.userManager = userManager;
             this.repository = repository;
+            this.communityService = communityService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> All(Guid id)
+        public async Task<IActionResult> All(Guid id, Guid communityId)
         {
-            var model = await marketplaceService.GetAllAsync(id);
+            if (!(await communityService.CheckCommunityMemberId(communityId, User.Id())))
+            {
+                var errorMessage = "An error occured while trying to open that chatroom";
+
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+            }
+
+            if (!(await marketplaceService.MarketplaceExists(id, communityId)))
+            {
+                var errorMessage = "An error occured while trying to open that chatroom";
+
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+            }
+
+            var model = await marketplaceService.GetAllAsync(id, communityId);
 
             ViewBag.Title = "All Products";
+            ViewBag.CommunityId = communityId;
 
             return View(model);
         }
 
         [HttpGet]
-        public async Task<IActionResult> Mine(Guid id)
+        public async Task<IActionResult> Mine(Guid id, Guid communityId)
         {
             var sellerId = User.Id();
+
+            if (!(await communityService.CheckCommunityMemberId(communityId, sellerId)))
+            {
+                var errorMessage = "An error occured while trying to open that chatroom";
+
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+            }
+
+            if (!(await marketplaceService.MarketplaceExists(id, communityId)))
+            {
+                var errorMessage = "An error occured while trying to open that chatroom";
+
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+            }
 
             var model = await marketplaceService.GetMineAsync(sellerId, id);
 
             ViewBag.Title = "My Products";
+            ViewBag.CommunityId = communityId;
 
             return View("All", model);
         }
 
         [HttpGet]
-        public IActionResult Sell(Guid id)
+        public async Task<IActionResult> Sell(Guid id, Guid communityId)
         {
             var sellerId = User.Id();
 
+            if (!(await communityService.CheckCommunityMemberId(communityId, sellerId)))
+            {
+                var errorMessage = "An error occured while trying to open that chatroom";
+
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+            }
+
+            if (!(await marketplaceService.MarketplaceExists(id, communityId)))
+            {
+                var errorMessage = "An error occured while trying to open that chatroom";
+
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+            }
+
             ViewBag.SellerId = sellerId;
             ViewBag.MarketplaceId = id;
+            ViewBag.CommunityId = communityId;
 
             var model = new ManageProductViewModel();
 
@@ -70,31 +119,42 @@ namespace CommunityManager.Controllers
                 return View(model);
             }
 
-            try
+            if (!(await communityService.CheckCommunityMemberId(model.CommunityId, User.Id())))
             {
-                await marketplaceService.SellProductAsync(model);
+                var errorMessage = "An error occured while trying to open that chatroom";
 
-                return RedirectToAction(nameof(All), new { id = model.MarketplaceId });
+                return RedirectToAction("Open", "Community", new { id = model.CommunityId, manageErrorMessage = errorMessage });
             }
-            catch (Exception)
+
+            if (!(await marketplaceService.MarketplaceExists(model.MarketplaceId, model.CommunityId)))
             {
+                var errorMessage = "An error occured while trying to open that chatroom";
 
-                ModelState.AddModelError("", "Something went wrong.");
-
-                return View(model);
+                return RedirectToAction("Open", "Community", new { id = model.CommunityId, manageErrorMessage = errorMessage });
             }
+
+            await marketplaceService.SellProductAsync(model);
+
+            return RedirectToAction(nameof(All), new { id = model.MarketplaceId, communityId = model.CommunityId });
         }
 
         [HttpGet]
-        public async Task<IActionResult> Edit(Guid id)
+        public async Task<IActionResult> Edit(Guid id, Guid communityId)
         {
             var product = await repository.GetByIdAsync<Product>(id);
 
+            if (!(await communityService.CheckCommunityMemberId(communityId, User.Id())))
+            {
+                var errorMessage = "An error occured while trying to edit that product";
+
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+            }
+
             if (product == null)
             {
-                TempData[ErrorMessage] = "Incorrect product ID";
+                var errorMessage = "An error occured while trying to edit that product";
 
-                return RedirectToAction("All", "Community");
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
             }
 
             ManageProductViewModel model = new ManageProductViewModel()
@@ -107,6 +167,7 @@ namespace CommunityManager.Controllers
 
             ViewBag.SellerId = product.SellerId;
             ViewBag.MarketplaceId = product.MarketplaceId;
+            ViewBag.CommunityId = communityId;
 
             return View(model);
         }
@@ -114,6 +175,13 @@ namespace CommunityManager.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(Guid id, ManageProductViewModel model)
         {
+            if (!(await communityService.CheckCommunityMemberId(model.CommunityId, User.Id())))
+            {
+                var errorMessage = "An error occured while trying to edit that product";
+
+                return RedirectToAction("Open", "Community", new { id = model.CommunityId, manageErrorMessage = errorMessage });
+            }
+
             if (!ModelState.IsValid)
             {
                 return View(model);
@@ -121,49 +189,70 @@ namespace CommunityManager.Controllers
 
             await marketplaceService.EditProducAsync(id, model);
 
-            return RedirectToAction(nameof(All), new { id = model.MarketplaceId });
+            return RedirectToAction(nameof(All), new { id = model.MarketplaceId, communityId = model.CommunityId });
         }
 
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IActionResult> Delete(Guid id, Guid communityId)
         {
+            if (!(await communityService.CheckCommunityMemberId(communityId, User.Id())))
+            {
+                var errorMessage = "An error occured while trying to edit that product";
+
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+            }
+
             var product = await repository.GetByIdAsync<Product>(id);
 
             if (product == null)
             {
-                TempData[ErrorMessage] = "Incorrect product ID";
+                var errorMessage = "An error occured while trying to delete that product";
 
-                return RedirectToAction(nameof(All));
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
             }
 
             await marketplaceService.DeleteProductAsync(id);
 
-            return RedirectToAction(nameof(All), new { id = product.MarketplaceId });
+            return RedirectToAction(nameof(Mine), new { id = product.MarketplaceId, communityId  = communityId });
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(Guid id)
+        public async Task<IActionResult> Details(Guid id, Guid communityId)
         {
+            if (!(await communityService.CheckCommunityMemberId(communityId, User.Id())))
+            {
+                var errorMessage = "An error occured while trying to view details about that product";
+
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+            }
+
             var product = await marketplaceService.GetProductByIdAsync(id);
 
             if (product.Name == null)
             {
-                TempData[ErrorMessage] = "Incorrect product ID";
+                var errorMessage = "An error occured while trying to view details about that product";
 
-                return RedirectToAction(nameof(All));
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
             }
 
             return View(product);
         }
 
-        public async Task<IActionResult> Buy(Guid id)
+        public async Task<IActionResult> Buy(Guid id, Guid communityId)
         {
+            if (!(await communityService.CheckCommunityMemberId(communityId, User.Id())))
+            {
+                var errorMessage = "An error occured while trying to buy that product";
+
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+            }
+
             var product = await repository.GetByIdAsync<Product>(id);
 
             if (product == null)
             {
-                TempData[ErrorMessage] = "Incorrect product ID";
+                var errorMessage = "An error occured while trying to buy that product";
 
-                return RedirectToAction(nameof(All));
+                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
             }
 
             var buyerId = User.Id();

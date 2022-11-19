@@ -20,6 +20,15 @@ namespace CommunityManager.Core.Services
             this.context = context;
             this.repository = repository;
         }
+
+        public async Task<bool> CheckChatroomMemberId(Guid chatroomId, string memberId)
+        {
+            var chatroomMembers = repository.AllReadonly<ChatroomMember>()
+                .Where(cm => cm.ChatroomId == chatroomId);
+
+            return await chatroomMembers.AnyAsync(cm => cm.ApplicationUserId == memberId);
+        }
+
         public async Task<ChatroomViewModel> GetChatroomByIdAsync(Guid id)
         {
             var entity = await context.Chatrooms

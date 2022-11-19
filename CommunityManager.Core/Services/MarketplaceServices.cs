@@ -10,13 +10,9 @@ namespace CommunityManager.Core.Services
     public class MarketplaceServices : IMarketplaceServices
     {
         private readonly IRepository repository;
-        private readonly ApplicationDbContext context;
 
-        public MarketplaceServices(
-            IRepository repository,
-            ApplicationDbContext context)
+        public MarketplaceServices(IRepository repository)
         {
-            this.context = context;
             this.repository = repository;
         }
 
@@ -32,15 +28,24 @@ namespace CommunityManager.Core.Services
                 MarketplaceId = model.MarketplaceId
             };
 
-            await context.Products.AddAsync(entity);
-            await context.SaveChangesAsync();
+            await repository.AddAsync(entity);
+            await repository.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<ProductsQueryModel>> GetAllAsync(Guid marketplaceId)
+        public async Task<bool> MarketplaceExists(Guid id, Guid communityId)
         {
-            var entities = await context.Products
+            var marketplace = repository.AllReadonly<Marketplace>()
+                .Where(m => m.CommunityId == communityId);
+
+            return await marketplace.AnyAsync(m => m.Id == id);
+        }
+
+        public async Task<IEnumerable<ProductsQueryModel>> GetAllAsync(Guid marketplaceId, Guid communityId)
+        {
+            var entities = await repository.All<Product>()
                 .Include(p => p.Seller)
-                .Where(p => p.BuyerId == null && p.MarketplaceId == marketplaceId)
+                .Include(p => p.Marketplace)
+                .Where(p => p.BuyerId == null && p.MarketplaceId == marketplaceId && p.Marketplace.CommunityId == communityId)
                 .ToListAsync();
 
             return entities.Select(p => new ProductsQueryModel()
@@ -55,7 +60,7 @@ namespace CommunityManager.Core.Services
 
         public async Task<IEnumerable<ProductsQueryModel>> GetMineAsync(string id, Guid marketplaceId)
         {
-            var entities = await context.Products
+            var entities = await repository.All<Product>()
                 .Include(p => p.Seller)
                 .Include(p => p.Buyer)
                 .Where(p => p.SellerId == id && p.MarketplaceId == marketplaceId)
@@ -75,15 +80,13 @@ namespace CommunityManager.Core.Services
 
         public async Task DeleteProductAsync(Guid id)
         {
-            var product = await repository.GetByIdAsync<Product>(id);
-
-            context.Products.Remove(product);
+            await repository.DeleteAsync<Product>(id);
             await repository.SaveChangesAsync();
         }
 
         public async Task<DetailsProductViewModel> GetProductByIdAsync(Guid id)
         {
-            var entity = await context.Products
+            var entity = await repository.All<Product>()
                 .Include(p => p.Seller)
                 .FirstOrDefaultAsync(p => p.Id == id);
 

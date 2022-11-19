@@ -11,7 +11,6 @@
 <div class="row">
     <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
         <form asp-action="AddMarketplace" method="post">
-            <input type="hidden" asp-for="@Model.CommunityId" value="@ViewBag.CommunityId" />
             <div class="mb-3">
                 <label asp-for="@Model.Name" class="form-label">Name</label>
                 <input asp-for="@Model.Name" class="form-control" aria-required="true" />

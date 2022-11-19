@@ -21,18 +21,18 @@
 
             @if (this.User?.Identity != null && this.User.Identity.Name != product.Seller && product.BuyerId == null)
             {
-                <a asp-controller="Marketplace" asp-action="Buy" asp-route-id="@product.Id" class="btn btn-success mb-2">Buy</a>
+                <a asp-controller="Marketplace" asp-action="Buy" asp-route-id="@product.Id" asp-route-communityId="@ViewBag.CommunityId" class="btn btn-success mb-2">Buy</a>
                 <span></span>
-                <a asp-controller="Marketplace" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary mb-2">Details</a>
+                <a asp-controller="Marketplace" asp-action="Details" asp-route-id="@product.Id" asp-route-communityId="@ViewBag.CommunityId" class="btn btn-primary mb-2">Details</a>
             }
 
             @if (this.User?.Identity != null && this.User.Identity.Name == product.Seller && product.BuyerId == null)
             {
-                <a asp-controller="Marketplace" asp-action="Details" asp-route-id="@product.Id" class="btn btn-primary mb-2">Details</a>
+                <a asp-controller="Marketplace" asp-action="Details" asp-route-id="@product.Id" asp-route-communityId="@ViewBag.CommunityId" class="btn btn-primary mb-2">Details</a>
                 <span></span>
-                <a asp-controller="Marketplace" asp-action="Edit" asp-route-id="@product.Id" class="btn btn-primary mb-2">Edit</a>
+                <a asp-controller="Marketplace" asp-action="Edit" asp-route-id="@product.Id" asp-route-communityId="@ViewBag.CommunityId" class="btn btn-primary mb-2">Edit</a>
                 <span></span>
-                <a asp-controller="Marketplace" asp-action="Delete" asp-route-id="@product.Id" class="btn btn-danger mb-2">Delete</a>
+                <a asp-controller="Marketplace" asp-action="Delete" asp-route-id="@product.Id" asp-route-communityId="@ViewBag.CommunityId" class="btn btn-danger mb-2">Delete</a>
             }
             @if (ViewBag.Title == "My Products" && product.BuyerId != null)
             {
