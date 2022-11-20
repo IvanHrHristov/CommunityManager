@@ -24,16 +24,25 @@ namespace CommunityManager.Controllers
             this.communityService = communityService;
         }
 
-        public async Task<IActionResult> All(string? errorMessage)
+        public async Task<IActionResult> All([FromQuery]AllCommunitiesQueryModel query, string? errorMessage)
         {
             var currentUserId = User.Id();
 
-            var model = await communityService.GetAllAsync();
+            var model = await communityService.GetAllAsync(
+                query.SearchTerm,
+                errorMessage,
+                query.Sorting,
+                query.CurrentPage,
+                AllCommunitiesQueryModel.CommunitiesPerPage,
+                currentUserId);
+
+            query.Communities = model;
+            query.TotalCommunitiesCount = repository.All<Community>().Count();
 
             ViewBag.currentUserId = currentUserId;
             ViewBag.errorMessage = errorMessage;
 
-            return View(model);
+            return View(query);
         }
 
         [HttpGet]

@@ -1,6 +1,9 @@
 ﻿using CommunityManager.Core.Contracts;
 using CommunityManager.Extensions;
+using CommunityManager.Infrastructure.Data.Models;
+using HouseRentingSystem.Infrastructure.Data.Common;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CommunityManager.Controllers
@@ -8,15 +11,21 @@ namespace CommunityManager.Controllers
     [Authorize]
     public class ChatroomController : Controller
     {
+        private readonly IRepository repository;
         private readonly IChatroomServices chatroomService;
         private readonly ICommunityServices communityService;
+        private readonly UserManager<ApplicationUser> userManager;
 
         public ChatroomController(
+            IRepository repository,
             IChatroomServices chatroomService,
-            ICommunityServices communityService)
+            ICommunityServices communityService,
+            UserManager<ApplicationUser> userManager)
         {
+            this.repository = repository;
             this.chatroomService = chatroomService;
             this.communityService = communityService;
+            this.userManager = userManager;
         }
 
         public async Task<IActionResult> Open(Guid id, Guid communityId)
@@ -48,8 +57,27 @@ namespace CommunityManager.Controllers
                 return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
             }
 
+            //var currentUser = await userManager.GetUserAsync(User);
+            //var messages = await repository.All<Message>().ToListAsync();
+
+            //ViewBag.CurrentUserName = currentUser.UserName;
+
             return View(model);
         }
+
+        //public async Task<IActionResult> Create(Message message)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        message.Sender.UserName = User?.Identity?.Name;
+        //        var sender = await userManager.GetUserAsync(User);
+        //        message.SenderId = sender.Id;
+        //        await repository.AddAsync(message);
+        //        await repository.SaveChangesAsync();
+        //        return Ok();
+        //    }
+        //    return BadRequest();
+        //}
 
         public async Task<IActionResult> Join(Guid id, Guid communityId)
         {

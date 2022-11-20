@@ -259,7 +259,7 @@ namespace CommunityManager.Controllers
 
             await marketplaceService.BuyProductAsync(id, buyerId);
 
-            return RedirectToAction(nameof(All), new { id = product.MarketplaceId });
+            return RedirectToAction(nameof(All), new { id = product.MarketplaceId, communityId = communityId });
         }
     }
 }

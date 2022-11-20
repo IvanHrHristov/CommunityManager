@@ -1,3 +1,4 @@
+using CommunityManager.Hubs;
 using CommunityManager.Infrastructure.Data;
 using CommunityManager.Infrastructure.Data.Models;
 using Microsoft.EntityFrameworkCore;
@@ -26,6 +27,8 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.LoginPath = "/User/Login";
 });
 
+builder.Services.AddSignalR();
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -50,5 +53,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+
+app.MapHub<ChatHub>("/Chatroom/Open");
 
 app.Run();
