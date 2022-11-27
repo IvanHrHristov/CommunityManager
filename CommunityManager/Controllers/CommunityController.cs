@@ -36,8 +36,8 @@ namespace CommunityManager.Controllers
                 AllCommunitiesQueryModel.CommunitiesPerPage,
                 currentUserId);
 
-            query.Communities = model;
-            query.TotalCommunitiesCount = repository.All<Community>().Count();
+            query.Communities = model.Communities;
+            query.TotalCommunitiesCount = model.TotalCommunities;
 
             ViewBag.currentUserId = currentUserId;
             ViewBag.errorMessage = errorMessage;

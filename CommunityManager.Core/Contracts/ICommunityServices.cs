@@ -6,7 +6,7 @@ namespace CommunityManager.Core.Contracts
 {
     public interface ICommunityServices
     {
-        Task<IEnumerable<CommunityViewModel>> GetAllAsync(string? searchTerm = null, string? errorMessage = null, CommunitySorting sorting = CommunitySorting.Newest, int currentPage = 1, int communityPerPage = 1, string currentUserId = "placeholder");
+        Task<CommunityQueryModel> GetAllAsync(string? searchTerm = null, string? errorMessage = null, CommunitySorting sorting = CommunitySorting.Newest, int currentPage = 1, int communityPerPage = 1, string currentUserId = "placeholder");
 
         Task<IEnumerable<CommunityViewModel>> GetMineAsync(string id);
 

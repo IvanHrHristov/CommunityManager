@@ -100,10 +100,13 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<CommunityViewModel>> GetAllAsync(string? searchTerm = null, string? errorMessage = null, CommunitySorting sorting = CommunitySorting.Newest, int currentPage = 1, int communityPerPage = 1, string currentUserId = "placeholder")
+        public async Task<CommunityQueryModel> GetAllAsync(string? searchTerm = null, string? errorMessage = null, CommunitySorting sorting = CommunitySorting.Newest, int currentPage = 1, int communityPerPage = 1, string currentUserId = "placeholder")
         {
-            var result = new List<CommunityViewModel>();
-            var communities = repository.AllReadonly<Community>();
+            var result = new CommunityQueryModel();
+            var communities = repository.AllReadonly<Community>()
+                .Include(c => c.CommunitiesMembers)
+                .ThenInclude(cm => cm.ApplicationUser)
+                .AsQueryable();
 
             if (string.IsNullOrEmpty(searchTerm) == false)
             {
@@ -122,12 +125,7 @@ namespace CommunityManager.Core.Services
                 _ => communities.OrderByDescending(c => c.CreatedOn)
             };
 
-            var entities = await repository.All<Community>()
-                .Include(c => c.CommunitiesMembers)
-                .ThenInclude(cm => cm.ApplicationUser)
-                .ToListAsync();
-
-            return result = await communities
+            result.Communities = await communities
                 .Skip((currentPage - 1) * communityPerPage)
                 .Take(communityPerPage)
                 .Select(c => new CommunityViewModel()
@@ -137,15 +135,19 @@ namespace CommunityManager.Core.Services
                     Description = c.Description,
                     AgeRestricted = c.AgeRestricted,
                     CreatorId = c.CreatorId,
-                    Members = entities.Select(m => new UserViewModel() 
+                    Members = c.CommunitiesMembers.Select(cm => new UserViewModel() 
                     { 
-                        Id = m.CommunitiesMembers.Select(cm => cm.ApplicationUser.Id).FirstOrDefault(),
-                        Name = m.CommunitiesMembers.Select(cm => cm.ApplicationUser.UserName).FirstOrDefault()
+                        Id = cm.ApplicationUserId,
+                        Name = cm.ApplicationUser.UserName
                     }).ToList(),
                     ErrorMessage = errorMessage,
                     CurrentUserId = currentUserId,
                 })
                 .ToListAsync();
+
+            result.TotalCommunities = await communities.CountAsync();
+
+            return result;
         }
 
         public async Task<IEnumerable<CommunityViewModel>> GetMineAsync(string id)

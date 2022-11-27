@@ -17,6 +17,8 @@ namespace CommunityManager.Core.Models.Community
 
         public List<UserViewModel> Members { get; set; } = new List<UserViewModel>();
 
+        public int TotalCommunityCount { get; set; }
+
         public string CurrentUserId { get; set; } = null!;
 
         public string? ErrorMessage { get; set; }
