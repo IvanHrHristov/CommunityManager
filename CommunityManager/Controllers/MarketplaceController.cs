@@ -234,6 +234,8 @@ namespace CommunityManager.Controllers
                 return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
             }
 
+            ViewBag.CommunityId = communityId;
+
             return View(product);
         }
 

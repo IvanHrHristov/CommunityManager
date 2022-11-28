@@ -1,9 +1,13 @@
 ﻿using CommunityManager.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Diagnostics;
+using static CommunityManager.Infrastructure.Data.Constants.RoleConstants;
 
-namespace CommunityManager.Controllers
+namespace CommunityManager.Areas.Administration.Controllers
 {
+    [Authorize(Roles = Administrator)]
+    [Area(AdminArea)]
     public class HomeController : Controller
     {
         public IActionResult Index()

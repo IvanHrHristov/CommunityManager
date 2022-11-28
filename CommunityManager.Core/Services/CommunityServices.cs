@@ -71,7 +71,7 @@ namespace CommunityManager.Core.Services
             {
                 Name = model.Name,
                 Description = model.Description,
-                CreatedOn = DateTime.UtcNow,
+                CreatedOn = DateTime.Now,
                 AgeRestricted = model.AgeRestricted,
                 CreatorId = model.CreatorId
             };
@@ -119,10 +119,12 @@ namespace CommunityManager.Core.Services
             communities = sorting switch
             {
                 CommunitySorting.Oldest => communities
-                    .OrderBy(c => c.CreatedOn),
+                    .OrderBy(c => c.CreatedOn)
+                    .ThenBy(c => c.Name),
                 CommunitySorting.AgeRestricted => communities
                     .OrderBy(c => c.Name).Where(c => c.AgeRestricted == true),
                 _ => communities.OrderByDescending(c => c.CreatedOn)
+                    .ThenBy(c => c.Name)
             };
 
             result.Communities = await communities

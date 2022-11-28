@@ -62,5 +62,12 @@
             public const string WarningMessage = "WarningMessage";
             public const string SuccessMessage = "SuccessMessage";
         }
+
+        public class RoleConstants
+        {
+            public const string Administrator = "Administrator";
+            public const string Supervisor = "Supervisor";
+            public const string AdminArea = "Administration";
+        }
     }
 }

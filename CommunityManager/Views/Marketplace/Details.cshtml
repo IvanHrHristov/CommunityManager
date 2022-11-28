@@ -23,14 +23,14 @@
             <div class="mb-3 d-flex justify-content-center">
                 @if (this.User?.Identity != null && this.User.Identity.Name != Model.Seller)
                 {
-                    <a asp-controller="Marketplace" asp-action="Buy" asp-route-id="@Model.Id" class="btn btn-success mb-2">Buy</a>
+                    <a asp-controller="Marketplace" asp-action="Buy" asp-route-id="@Model.Id" asp-route-communityId="@ViewBag.CommunityId" class="btn btn-success mb-2">Buy</a>
                 }
 
                 @if (this.User?.Identity != null && this.User.Identity.Name == Model.Seller)
                 {
-                    <a asp-controller="Marketplace" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary mb-2">Edit</a>
+                    <a asp-controller="Marketplace" asp-action="Edit" asp-route-id="@Model.Id" asp-route-communityId="@ViewBag.CommunityId" class="btn btn-primary mb-2">Edit</a>
                     <span></span>
-                    <a asp-controller="Marketplace" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger mb-2">Delete</a>
+                    <a asp-controller="Marketplace" asp-action="Delete" asp-route-id="@Model.Id" asp-route-communityId="@ViewBag.CommunityId" class="btn btn-danger mb-2">Delete</a>
                 }
             </div>
         </div>
