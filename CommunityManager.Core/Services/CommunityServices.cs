@@ -23,7 +23,7 @@ namespace CommunityManager.Core.Services
         {
             var community = await repository.GetByIdAsync<Community>(communityId);
 
-            return (community.CreatorId == creatorId && community.IsActive == true);
+            return (community.CreatorId == creatorId);
         }
 
         public async Task<bool> CheckCommunityMemberId(Guid communityId, string memberId)
@@ -88,6 +88,8 @@ namespace CommunityManager.Core.Services
                 ApplicationUserId = model.CreatorId,
                 Community = entity
             };
+
+
 
             await repository.AddAsync(entity);
             await repository.AddAsync(communitiesMembers);
@@ -183,6 +185,31 @@ namespace CommunityManager.Core.Services
             });
         }
 
+        public async Task<IEnumerable<CommunityViewModel>> GetMineForAdminAsync(string id)
+        {
+            var entities = await repository.All<Community>()
+                .Include(c => c.CommunitiesMembers)
+                .ThenInclude(cm => cm.ApplicationUser)
+                .Where(cm => cm.CommunitiesMembers.Any(m => m.ApplicationUserId == id) && 
+                    cm.CreatorId == id)
+                .ToListAsync();
+
+            return entities.Select(c => new CommunityViewModel()
+            {
+                Id = c.Id,
+                Name = c.Name,
+                Description = c.Description,
+                AgeRestricted = c.AgeRestricted,
+                CreatorId = c.CreatorId,
+                IsActive = c.IsActive,
+                Members = c.CommunitiesMembers.Select(cm => new UserViewModel()
+                {
+                    Id = cm.ApplicationUser.Id,
+                    Name = cm.ApplicationUser.UserName
+                }).ToList()
+            });
+        }
+
         public async Task<CommunityDetailsViewModel> GetCommunityByIdAsync(Guid id)
         {
             var entity = await repository.All<Community>()
@@ -208,11 +235,11 @@ namespace CommunityManager.Core.Services
                 CreatedOn = entity.CreatedOn,
                 CreatorId= entity.CreatorId,
                 AgeRestricted = entity.AgeRestricted,
-                Marketplaces = entity.Marketplaces.Select(m => new MarketplaceViewModel()
+                Marketplaces = entity.Marketplaces.Where(m => m.IsActive).Select(m => new MarketplaceViewModel()
                 {
                     Id = m.Id,
                     Name = m.Name,
-                    Products = m?.Products?.Select(p => new ProductsQueryModel()
+                    Products = m?.Products?.Where(p => p.IsActive).Select(p => new ProductsQueryModel()
                     {
                         Id = p.Id,
                         Name = p.Name,
@@ -223,7 +250,7 @@ namespace CommunityManager.Core.Services
                         Buyer = p?.Buyer?.UserName
                     }).ToList()
                 }).ToList(),
-                Chatrooms = entity.Chatrooms.Select(c => new ChatroomViewModel()
+                Chatrooms = entity.Chatrooms.Where(c => c.IsActive).Select(c => new ChatroomViewModel()
                 {
                     Id = c.Id,
                     Name= c.Name,
@@ -235,13 +262,13 @@ namespace CommunityManager.Core.Services
                         Sender = m.Sender.UserName,
                         CreatedOn = m.CreatedOn
                     }).ToList(),
-                    Members = c?.ChatroomsMembers.Select(chm => new UserViewModel()
+                    Members = c?.ChatroomsMembers.Where(chm => chm.ApplicationUser.IsActive).Select(chm => new UserViewModel()
                     {
                         Id = chm.ApplicationUser.Id,
                         Name = chm.ApplicationUser.UserName
                     }).ToList()
                 }).ToList(),
-                Members = entity.CommunitiesMembers.Select(cm => new UserViewModel()
+                Members = entity.CommunitiesMembers.Where(cm => cm.ApplicationUser.IsActive).Select(cm => new UserViewModel()
                 {
                     Id = cm.ApplicationUser.Id,
                     Name = cm.ApplicationUser.UserName
@@ -284,6 +311,41 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
+        public async Task RestoreCommunityAsync(Guid communityId)
+        {
+            var community = await repository.GetByIdAsync<Community>(communityId);
+
+            //var communityMembers = await repository.All<CommunityMember>()
+            //    .Where(cm => cm.CommunityId == communityId)
+            //    .ToListAsync();
+
+            var chatrooms = await repository.All<Chatroom>()
+                .Where(c => c.CommunityId == communityId)
+                .ToListAsync();
+
+            var marketplaces = await repository.All<Marketplace>()
+                .Where(m => m.CommunityId == communityId)
+                .ToListAsync();
+
+
+            foreach (var marketplace in marketplaces)
+            {
+                await RestoreMarketplaceAsync(marketplace.Id);
+            }
+
+            foreach (var chatroom in chatrooms)
+            {
+                await RestoreChatroomAsync(chatroom.Id);
+            }
+
+            //repository.DeleteRange(communityMembers);
+            //await repository.DeleteAsync<Community>(community.Id);
+
+            community.IsActive = true;
+
+            await repository.SaveChangesAsync();
+        }
+
         public async Task DeleteMarketplaceAsync(Guid marketplaceId)
         {
             var marketplace = await repository.GetByIdAsync<Marketplace>(marketplaceId);
@@ -305,6 +367,27 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
+        public async Task RestoreMarketplaceAsync(Guid marketplaceId)
+        {
+            var marketplace = await repository.GetByIdAsync<Marketplace>(marketplaceId);
+
+            var products = await repository.All<Product>()
+                .Where(p => p.MarketplaceId == marketplaceId)
+                .ToListAsync();
+
+            //repository.DeleteRange(products);
+            //await repository.DeleteAsync<Marketplace>(marketplace.Id);
+
+            foreach (var product in products)
+            {
+                product.IsActive = true;
+            }
+
+            marketplace.IsActive = true;
+
+            await repository.SaveChangesAsync();
+        }
+
         public async Task DeleteChatroomAsync(Guid chatroomId)
         {
             var chatroom = await repository.GetByIdAsync<Chatroom>(chatroomId);
@@ -317,6 +400,22 @@ namespace CommunityManager.Core.Services
             //await repository.DeleteAsync<Chatroom>(chatroom.Id);
 
             chatroom.IsActive = false;
+
+            await repository.SaveChangesAsync();
+        }
+
+        public async Task RestoreChatroomAsync(Guid chatroomId)
+        {
+            var chatroom = await repository.GetByIdAsync<Chatroom>(chatroomId);
+
+            //var chatroomMembers = await repository.All<ChatroomMember>()
+            //    .Where(chm => chm.ChatroomId == chatroomId)
+            //    .ToListAsync();
+
+            //repository.DeleteRange(chatroomMembers);
+            //await repository.DeleteAsync<Chatroom>(chatroom.Id);
+
+            chatroom.IsActive = true;
 
             await repository.SaveChangesAsync();
         }

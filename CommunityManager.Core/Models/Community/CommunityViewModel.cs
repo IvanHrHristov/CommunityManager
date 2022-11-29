@@ -22,5 +22,7 @@ namespace CommunityManager.Core.Models.Community
         public string CurrentUserId { get; set; } = null!;
 
         public string? ErrorMessage { get; set; }
+
+        public bool? IsActive { get; set; }
     }
 }

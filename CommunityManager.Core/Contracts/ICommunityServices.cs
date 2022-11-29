@@ -10,6 +10,8 @@ namespace CommunityManager.Core.Contracts
 
         Task<IEnumerable<CommunityViewModel>> GetMineAsync(string id);
 
+        Task<IEnumerable<CommunityViewModel>> GetMineForAdminAsync(string id);
+
         Task JoinCommunityAsync(Guid communityId, string userId);
 
         Task<CommunityDetailsViewModel> GetCommunityByIdAsync(Guid id);
@@ -24,11 +26,17 @@ namespace CommunityManager.Core.Contracts
 
         Task DeleteCommunityAsync(Guid communityId);
 
+        Task RestoreCommunityAsync(Guid communityId);
+
         Task LeaveCommunityAsync(Guid communityId, string userId);
 
         Task DeleteMarketplaceAsync(Guid marketplaceId);
 
+        Task RestoreMarketplaceAsync(Guid marketplaceId);
+
         Task DeleteChatroomAsync(Guid chatroomId);
+
+        Task RestoreChatroomAsync(Guid marketplaceId);
 
         Task<bool> CheckCommunityCreatorId(Guid communityId, string creatorId);
 
