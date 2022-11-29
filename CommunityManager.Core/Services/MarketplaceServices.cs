@@ -25,7 +25,8 @@ namespace CommunityManager.Core.Services
                 Price = model.Price,
                 ImageUrl = model.ImageUrl,
                 SellerId = model.SellerId,
-                MarketplaceId = model.MarketplaceId
+                MarketplaceId = model.MarketplaceId,
+                IsActive = true
             };
 
             await repository.AddAsync(entity);
@@ -35,7 +36,10 @@ namespace CommunityManager.Core.Services
         public async Task<bool> MarketplaceExists(Guid id, Guid communityId)
         {
             var marketplace = repository.AllReadonly<Marketplace>()
-                .Where(m => m.CommunityId == communityId);
+                .Include(m => m.Community)
+                .Where(m => m.CommunityId == communityId &&
+                    m.Community.IsActive == true &&
+                    m.IsActive == true);
 
             return await marketplace.AnyAsync(m => m.Id == id);
         }
@@ -45,7 +49,10 @@ namespace CommunityManager.Core.Services
             var entities = await repository.All<Product>()
                 .Include(p => p.Seller)
                 .Include(p => p.Marketplace)
-                .Where(p => p.BuyerId == null && p.MarketplaceId == marketplaceId && p.Marketplace.CommunityId == communityId)
+                .Where(p => p.BuyerId == null &&
+                    p.MarketplaceId == marketplaceId &&
+                    p.Marketplace.CommunityId == communityId &&
+                    p.IsActive == true)
                 .ToListAsync();
 
             return entities.Select(p => new ProductsQueryModel()
@@ -63,7 +70,9 @@ namespace CommunityManager.Core.Services
             var entities = await repository.All<Product>()
                 .Include(p => p.Seller)
                 .Include(p => p.Buyer)
-                .Where(p => p.SellerId == id && p.MarketplaceId == marketplaceId)
+                .Where(p => p.SellerId == id &&
+                    p.MarketplaceId == marketplaceId &&
+                    p.IsActive == true)
                 .ToListAsync();
 
             return entities.Select(p => new ProductsQueryModel()
@@ -80,7 +89,12 @@ namespace CommunityManager.Core.Services
 
         public async Task DeleteProductAsync(Guid id)
         {
-            await repository.DeleteAsync<Product>(id);
+            var product = await repository.GetByIdAsync<Product>(id);
+
+            product.IsActive = false;
+
+            //await repository.DeleteAsync<Product>(id);
+
             await repository.SaveChangesAsync();
         }
 

@@ -23,13 +23,17 @@ namespace CommunityManager.Core.Services
         {
             var community = await repository.GetByIdAsync<Community>(communityId);
 
-            return community.CreatorId == creatorId;
+            return (community.CreatorId == creatorId && community.IsActive == true);
         }
 
         public async Task<bool> CheckCommunityMemberId(Guid communityId, string memberId)
         {
             var communityMember = repository.AllReadonly<CommunityMember>()
-                .Where(cm => cm.CommunityId == communityId);
+                .Include(cm => cm.Community)
+                .Include(cm => cm.ApplicationUser)
+                .Where(cm => cm.CommunityId == communityId &&
+                    cm.Community.IsActive == true &&
+                    cm.ApplicationUser.IsActive == true);
 
             return await communityMember.AnyAsync(cm => cm.ApplicationUserId == memberId);
         }
@@ -40,6 +44,7 @@ namespace CommunityManager.Core.Services
             {
                 Name = model.Name,
                 CommunityId = id,
+                IsActive = true
             };
 
             await repository.AddAsync(entity);
@@ -51,7 +56,8 @@ namespace CommunityManager.Core.Services
             var entity = new Chatroom()
             {
                 Name = model.Name,
-                CommunityId = id
+                CommunityId = id,
+                IsActive = true
             };
 
             var chatroomMembers = new ChatroomMember()
@@ -73,7 +79,8 @@ namespace CommunityManager.Core.Services
                 Description = model.Description,
                 CreatedOn = DateTime.Now,
                 AgeRestricted = model.AgeRestricted,
-                CreatorId = model.CreatorId
+                CreatorId = model.CreatorId,
+                IsActive = true
             };
 
             var communitiesMembers = new CommunityMember()
@@ -106,6 +113,7 @@ namespace CommunityManager.Core.Services
             var communities = repository.AllReadonly<Community>()
                 .Include(c => c.CommunitiesMembers)
                 .ThenInclude(cm => cm.ApplicationUser)
+                .Where(c => c.IsActive == true)
                 .AsQueryable();
 
             if (string.IsNullOrEmpty(searchTerm) == false)
@@ -157,7 +165,7 @@ namespace CommunityManager.Core.Services
             var entities = await repository.All<Community>()
                 .Include(c => c.CommunitiesMembers)
                 .ThenInclude(cm => cm.ApplicationUser)
-                .Where(cm => cm.CommunitiesMembers.Any(m => m.ApplicationUserId == id))
+                .Where(cm => cm.CommunitiesMembers.Any(m => m.ApplicationUserId == id) && cm.IsActive == true)
                 .ToListAsync();
 
             return entities.Select(c => new CommunityViewModel()
@@ -245,9 +253,9 @@ namespace CommunityManager.Core.Services
         {
             var community = await repository.GetByIdAsync<Community>(communityId);
 
-            var communityMembers = await repository.All<CommunityMember>()
-                .Where(cm => cm.CommunityId == communityId)
-                .ToListAsync();
+            //var communityMembers = await repository.All<CommunityMember>()
+            //    .Where(cm => cm.CommunityId == communityId)
+            //    .ToListAsync();
 
             var chatrooms = await repository.All<Chatroom>()
                 .Where(c => c.CommunityId == communityId)
@@ -268,8 +276,11 @@ namespace CommunityManager.Core.Services
                 await DeleteChatroomAsync(chatroom.Id);
             }
             
-            repository.DeleteRange(communityMembers);
-            await repository.DeleteAsync<Community>(community.Id);
+            //repository.DeleteRange(communityMembers);
+            //await repository.DeleteAsync<Community>(community.Id);
+
+            community.IsActive = false;
+
             await repository.SaveChangesAsync();
         }
 
@@ -280,9 +291,17 @@ namespace CommunityManager.Core.Services
             var products = await repository.All<Product>()
                 .Where(p => p.MarketplaceId == marketplaceId)
                 .ToListAsync();
-            
-            repository.DeleteRange(products);
-            await repository.DeleteAsync<Marketplace>(marketplace.Id);
+
+            //repository.DeleteRange(products);
+            //await repository.DeleteAsync<Marketplace>(marketplace.Id);
+
+            foreach (var product in products)
+            {
+                product.IsActive = false;
+            }
+
+            marketplace.IsActive = false;
+
             await repository.SaveChangesAsync();
         }
 
@@ -290,12 +309,15 @@ namespace CommunityManager.Core.Services
         {
             var chatroom = await repository.GetByIdAsync<Chatroom>(chatroomId);
 
-            var chatroomMembers = await repository.All<ChatroomMember>()
-                .Where(chm => chm.ChatroomId == chatroomId)
-                .ToListAsync();
+            //var chatroomMembers = await repository.All<ChatroomMember>()
+            //    .Where(chm => chm.ChatroomId == chatroomId)
+            //    .ToListAsync();
 
-            repository.DeleteRange(chatroomMembers);
-            await repository.DeleteAsync<Chatroom>(chatroom.Id);
+            //repository.DeleteRange(chatroomMembers);
+            //await repository.DeleteAsync<Chatroom>(chatroom.Id);
+
+            chatroom.IsActive = false;
+
             await repository.SaveChangesAsync();
         }
 

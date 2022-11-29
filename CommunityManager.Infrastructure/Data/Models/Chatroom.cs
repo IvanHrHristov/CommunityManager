@@ -23,5 +23,8 @@ namespace CommunityManager.Infrastructure.Data.Models
         public Community Community { get; set; } = null!;
 
         public List<ChatroomMember> ChatroomsMembers { get; set; } = new List<ChatroomMember>();
+
+        [Required]
+        public bool IsActive { get; set; }
     }
 }

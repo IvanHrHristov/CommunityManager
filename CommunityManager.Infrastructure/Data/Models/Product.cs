@@ -44,5 +44,8 @@ namespace CommunityManager.Infrastructure.Data.Models
         [Required]
         [ForeignKey(nameof(MarketplaceId))]
         public Marketplace Marketplace { get; set; } = null!;
+
+        [Required]
+        public bool IsActive { get; set; }
     }
 }

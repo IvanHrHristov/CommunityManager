@@ -35,5 +35,8 @@ namespace CommunityManager.Infrastructure.Data.Models
         public List<Marketplace> Marketplaces { get; set; } = new List<Marketplace>();
 
         public List<Chatroom> Chatrooms { get; set; } = new List<Chatroom>();
+
+        [Required]
+        public bool IsActive { get; set; }
     }
 }

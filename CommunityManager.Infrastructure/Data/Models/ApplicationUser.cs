@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 namespace CommunityManager.Infrastructure.Data.Models
 {
@@ -17,5 +18,8 @@ namespace CommunityManager.Infrastructure.Data.Models
         public DateTime CreatedOn { get; set; }
 
         public int Age { get; set; }
+
+        [Required]
+        public bool IsActive { get; set; }
     }
 }

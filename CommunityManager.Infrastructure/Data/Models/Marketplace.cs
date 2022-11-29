@@ -21,5 +21,8 @@ namespace CommunityManager.Infrastructure.Data.Models
         [Required]
         [ForeignKey(nameof(CommunityId))]
         public Community Community { get; set; } = null!;
+
+        [Required]
+        public bool IsActive { get; set; }
     }
 }
