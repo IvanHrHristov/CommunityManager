@@ -16,6 +16,8 @@ namespace CommunityManager.Core.Contracts
 
         Task<CommunityDetailsViewModel> GetCommunityByIdAsync(Guid id);
 
+        Task<CommunityDetailsViewModel> GetCommunityByIdForAdminAsync(Guid id);
+
         Task AddMarketplaceToCommunityAsync(AddMarketplaceViewModel model, Guid id);
 
         Task AddChatroomToCommunityAsync(AddChatroomViewModel model, Guid id, string creatorId);

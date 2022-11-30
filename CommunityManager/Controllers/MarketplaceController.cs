@@ -1,13 +1,11 @@
 ﻿using CommunityManager.Core.Contracts;
 using CommunityManager.Core.Models.Marketplace;
-using CommunityManager.Core.Services;
 using CommunityManager.Extensions;
 using CommunityManager.Infrastructure.Data.Models;
 using HouseRentingSystem.Infrastructure.Data.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using static CommunityManager.Infrastructure.Data.Constants.MessageConstants;
 
 namespace CommunityManager.Controllers
 {

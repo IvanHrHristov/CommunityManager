@@ -46,7 +46,7 @@ namespace CommunityManager.Areas.Administration.Controllers
             ViewBag.currentUserId = currentUserId;
             ViewBag.errorMessage = manageErrorMessage;
 
-            var model = await communityService.GetCommunityByIdAsync(id);
+            var model = await communityService.GetCommunityByIdForAdminAsync(id);
 
             if (!await communityService.CheckCommunityMemberId(id, currentUserId))
             {
@@ -251,6 +251,27 @@ namespace CommunityManager.Areas.Administration.Controllers
             }
         }
 
+        public async Task<IActionResult> RestoreMarketplace(Guid id, Guid communityId)
+        {
+            if (!await communityService.CheckCommunityCreatorId(communityId, User.Id()))
+            {
+                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+            }
+
+            try
+            {
+                await communityService.RestoreMarketplaceAsync(id);
+
+                return RedirectToAction(nameof(Open), new { id = communityId });
+            }
+            catch (Exception)
+            {
+                var errorMessage = "The marketplace you are trying to restore does not exist";
+
+                return RedirectToAction(nameof(Open), new { id = communityId, manageErrorMessage = errorMessage });
+            }
+        }
+
         public async Task<IActionResult> DeleteChatroom(Guid id, Guid communityId)
         {
             if (!await communityService.CheckCommunityCreatorId(communityId, User.Id()))
@@ -267,6 +288,28 @@ namespace CommunityManager.Areas.Administration.Controllers
             catch (Exception)
             {
                 var errorMessage = "The chatroom you are trying to delete does not exist";
+
+                return RedirectToAction(nameof(Open), new { id = communityId, manageErrorMessage = errorMessage });
+            }
+
+        }
+
+        public async Task<IActionResult> RestoreChatroom(Guid id, Guid communityId)
+        {
+            if (!await communityService.CheckCommunityCreatorId(communityId, User.Id()))
+            {
+                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+            }
+
+            try
+            {
+                await communityService.RestoreChatroomAsync(id);
+
+                return RedirectToAction(nameof(Open), new { id = communityId });
+            }
+            catch (Exception)
+            {
+                var errorMessage = "The chatroom you are trying to restore does not exist";
 
                 return RedirectToAction(nameof(Open), new { id = communityId, manageErrorMessage = errorMessage });
             }

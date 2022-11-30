@@ -9,5 +9,7 @@ namespace CommunityManager.Core.Models.Marketplace
         public string Name { get; set; } = null!;
 
         public List<ProductsQueryModel>? Products { get; set; } = new List<ProductsQueryModel>();
+
+        public bool IsActive { get; set; }
     }
 }
