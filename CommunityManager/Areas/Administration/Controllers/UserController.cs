@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using static CommunityManager.Infrastructure.Data.Constants.RoleConstants;
+using CommunityManager.Core.Models.User;
+using System.Drawing;
 
 namespace CommunityManager.Areas.Administration.Controllers
 {
@@ -49,6 +51,18 @@ namespace CommunityManager.Areas.Administration.Controllers
             await userManager.AddToRoleAsync(user, Administrator);
 
             return RedirectToAction("Index", "Home");
+        }
+
+        public async Task<IActionResult> AddUserToRoll(string role, string id, Guid communityId)
+        {
+            var user = await userManager.FindByIdAsync(id);
+
+            if (role == "Supervisor")
+            {
+                await userManager.AddToRoleAsync(user, role);
+            }
+
+            return RedirectToAction("Open", "Community", new { id = communityId });
         }
     }
 }

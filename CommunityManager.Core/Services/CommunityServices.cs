@@ -341,7 +341,7 @@ namespace CommunityManager.Core.Services
                 Members = entity.CommunitiesMembers.Select(cm => new UserViewModel()
                 {
                     Id = cm.ApplicationUser.Id,
-                    Name = cm.ApplicationUser.UserName
+                    Name = cm.ApplicationUser.UserName,
                 }).ToList()
             };
         }
@@ -419,17 +419,17 @@ namespace CommunityManager.Core.Services
         {
             var marketplace = await repository.GetByIdAsync<Marketplace>(marketplaceId);
 
-            var products = await repository.All<Product>()
-                .Where(p => p.MarketplaceId == marketplaceId)
-                .ToListAsync();
+            //var products = await repository.All<Product>()
+            //    .Where(p => p.MarketplaceId == marketplaceId)
+            //    .ToListAsync();
 
             //repository.DeleteRange(products);
             //await repository.DeleteAsync<Marketplace>(marketplace.Id);
 
-            foreach (var product in products)
-            {
-                product.IsActive = false;
-            }
+            //foreach (var product in products)
+            //{
+            //    product.IsActive = false;
+            //}
 
             marketplace.IsActive = false;
 
