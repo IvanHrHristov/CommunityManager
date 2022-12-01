@@ -1,4 +1,9 @@
-﻿@model CommunityDetailsViewModel
+﻿@using CommunityManager.Infrastructure.Data.Models
+@using Microsoft.AspNetCore.Identity
+
+@model CommunityDetailsViewModel
+
+@inject UserManager<ApplicationUser> userManager
 
 <h2 class="text-center">Welcome to @Model.Name</h2>
 <hr />
@@ -48,6 +53,13 @@
                 <tr>
                     <th scope="row">1</th>
                     <td>@member.Name</td>
+                    @if ((await userManager.GetRolesAsync(await userManager.FindByIdAsync(member.Id))).FirstOrDefault() == "Supervisor")
+                    {
+                        <td>Supervisor</td>
+                    }else
+                    {
+                        <td>User</td>
+                    }
                     <td>
                         <form asp-area="Administration" asp-controller="User" asp-action="AddUserToRoll" asp-route-id="@member.Id" asp-route-communityId="@((Guid)(Model.Id))" method="post">
                             <span class="mb-3 d-flex justify-content-center">

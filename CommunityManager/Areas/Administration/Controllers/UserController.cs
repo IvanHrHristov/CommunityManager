@@ -62,6 +62,11 @@ namespace CommunityManager.Areas.Administration.Controllers
                 await userManager.AddToRoleAsync(user, role);
             }
 
+            if (role == "User" && await userManager.IsInRoleAsync(user, "Supervisor"))
+            {
+                await userManager.RemoveFromRoleAsync(user, "Supervisor");
+            }
+
             return RedirectToAction("Open", "Community", new { id = communityId });
         }
     }

@@ -6,6 +6,7 @@ using CommunityManager.Core.Models.User;
 using CommunityManager.Infrastructure.Data;
 using CommunityManager.Infrastructure.Data.Models;
 using HouseRentingSystem.Infrastructure.Data.Common;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace CommunityManager.Core.Services
@@ -13,10 +14,12 @@ namespace CommunityManager.Core.Services
     public class CommunityServices : ICommunityServices
     {
         private readonly IRepository repository;
+        private readonly RoleManager<IdentityRole> roleManager;
 
-        public CommunityServices(IRepository repository)
+        public CommunityServices(IRepository repository, RoleManager<IdentityRole> roleManager)
         {
             this.repository = repository;
+            this.roleManager = roleManager;
         }
 
         public async Task<bool> CheckCommunityCreatorId(Guid communityId, string creatorId)
@@ -341,7 +344,7 @@ namespace CommunityManager.Core.Services
                 Members = entity.CommunitiesMembers.Select(cm => new UserViewModel()
                 {
                     Id = cm.ApplicationUser.Id,
-                    Name = cm.ApplicationUser.UserName,
+                    Name = cm.ApplicationUser.UserName
                 }).ToList()
             };
         }
