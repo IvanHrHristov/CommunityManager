@@ -62,6 +62,7 @@ namespace CommunityManager.Controllers
 
             ViewBag.UserName = user.UserName;
             ViewBag.ChatroomId = id;
+            ViewBag.CommunityId = communityId;
 
             return View(model);
         }

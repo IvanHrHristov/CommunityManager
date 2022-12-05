@@ -7,6 +7,8 @@
 <h2 class="text-center">@ViewBag.Title</h2>
 <hr />
 
+<a asp-controller="Community" asp-action="Open" asp-route-id="@ViewBag.CommunityId" class="btn btn-info">Back</a>
+
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 <div class="row">
     <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
@@ -31,7 +33,7 @@
             </div>
             <div class="mb-3">
                 <label asp-for="@Model.Price" class="form-label">Price</label>
-                <input asp-for="@Model.Price" class="form-control" aria-required="true" type="number" value="@Model.Price.ToString("0.00")"/>
+                <input asp-for="@Model.Price" class="form-control" aria-required="true" type="text" value="@Model.Price.ToString("0.00")" />
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
             <div class="mb-3">

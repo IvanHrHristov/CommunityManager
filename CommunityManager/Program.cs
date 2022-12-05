@@ -1,6 +1,7 @@
 using CommunityManager.Hubs;
 using CommunityManager.Infrastructure.Data;
 using CommunityManager.Infrastructure.Data.Models;
+using CommunityManager.ModelBinders;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -23,7 +24,12 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddControllersWithViews()
+    .AddMvcOptions(options =>
+    {
+        options.ModelBinderProviders.Insert(0, new DecimalModelBinderProvider());
+    });
+
 builder.Services.AddApplicationServices();
 
 builder.Services.ConfigureApplicationCookie(options =>
