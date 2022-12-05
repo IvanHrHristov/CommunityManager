@@ -9,42 +9,47 @@
                 <div class="card-header d-flex justify-content-between align-items-center p-3">
                     <h5 class="mb-0">@Model.Name</h5>
                 </div>
-                <div class="card-body" data-mdb-perfect-scrollbar="true" style="position: relative; height: 600px">
-                    @foreach (var message in Model.Messages)
+                <div class="card-body" data-mdb-perfect-scrollbar="true overflow-auto" style="position: relative; height: 600px" id="messages">
+                    @if (Model.Messages != null && Model.Messages.Count() > 0)
                     {
-                        if (ViewBag.currentUserId == message.SenderId)
+                        @foreach (var message in Model.Messages)
                         {
-                            <div class="d-flex flex-row justify-content-end mb-4">
-                                <div class="p-3 me-3 border" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
-                                    <p class="small mb-0">Thank you, I really like your product.</p>
+                            if (ViewBag.currentUserId == message.SenderId)
+                            {
+                                <div class="d-flex flex-row justify-content-end mb-4">
+                                    <div class="p-3 me-3 border" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
+                                        <p class="small mb-0">
+                                        <p><strong>@message.SenderUserName</strong></p>
+                                            @message.Content
+                                         </p>
+                                    </div>
+                                    <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png"
+                                    alt="avatar 1" style="width: 45px; height: 100%;">
                                 </div>
-                                <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png"
-                             alt="avatar 1" style="width: 45px; height: 100%;">
-                            </div>
-                        }
+                            }
 
-                        if (ViewBag.currentUserId != message.SenderId)
-                        {
-                            <div class="d-flex flex-row justify-content-start mb-4">
-                                <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png"
-                             alt="avatar 1" style="width: 45px; height: 100%;">
-                                <div class="p-3 ms-3" style="border-radius: 15px; background-color: #fbfbfb;">
-                                    <p class="small mb-0">
-                                        Hello and thank you for visiting MDBootstrap. Please click the video
-                                        below.
-                                    </p>
+                            if (ViewBag.currentUserId != message.SenderId)
+                            {
+                                <div class="d-flex flex-row justify-content-start mb-4">
+                                    <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png"
+                                    alt="avatar 1" style="width: 45px; height: 100%;">
+                                    <div class="p-3 ms-3" style="border-radius: 15px; background-color: #fbfbfb;">
+                                        <p class="small mb-0">
+                                            <p><strong>@message.SenderUserName</strong></p>
+                                            @message.Content
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
+                            }
                         }
                     }
                 </div>
                 <div class="card-footer text-muted d-flex justify-content-start align-items-center p-3">
-                    <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png"
-                         alt="avatar 3" style="width: 40px; height: 100%;">
-                    <input type="text" class="form-control form-control-lg" id="exampleFormControlInput1"
-                           placeholder="Type message">
-                    <a asp-controller="Chatroom" asp-action="Send" asp-route-id="@Model.Id"
-                       class="ms-3"><i class="fa-solid fa-paper-plane"></i></a>
+                    <input type="text" class="form-control form-control-lg" id="message" placeholder="Type message">
+                    <input type="hidden" id="groupId" value="@ViewBag.ChatroomId" />
+                    <input type="hidden" id="sender" value="@ViewBag.UserName" />
+                    <input type="hidden" id="senderId" value="@ViewBag.currentUserId" />
+                    <a class="ms-3" id="sendButton"><i class="fa-solid fa-paper-plane"></i></a>
                 </div>
             </div>
 
@@ -52,3 +57,110 @@
     </div>
 
 </div>
+
+@section Scripts{
+    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/chat.js"></script>
+}
+
+@*<div class="container">
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="col-2">User</div>
+        <div class="col-4"><input type="text" id="userInput" /></div>
+    </div>
+    <div class="row">
+        <div class="col-2">Message</div>
+        <div class="col-4"><input type="text" id="messageInput" /></div>
+    </div>
+    <div class="row">&nbsp;</div>
+    <div class="row">
+        <div class="col-6">
+            <input type="button" id="sendButton" value="Send Message" />
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-12">
+        <hr />
+    </div>
+</div>
+<div class="row">
+    <div class="col-6">
+        <ul id="messagesList"></ul>
+    </div>
+</div>
+
+@section Scripts{
+    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/chat.js"></script>
+}*@
+
+@*
+<div class="jumbotron bg-light">
+    <h2 class="text-center text-primary">
+        <i class="fab fa-facebook-messanger"></i>&nbsp; Chatroom
+    </h2>
+
+    <div class="row">
+        <div class="col-md-12" id="chat">
+            @if (Model.Messages != null && Model.Messages.Count() > 0)
+            {
+                @foreach (var message in Model.Messages)
+                {
+                    string containerClass, timePosition, textAlign, contcolor, offset;
+
+                    if (ViewBag.currentUserId == message.SenderId)
+                    {
+                        containerClass = "container darker";
+                        timePosition = "time-right text-light";
+                        textAlign = "text-right text-white";
+                        contcolor = "bg-primary";
+                        offset = "col-md-6 offset-md-6";
+                    }
+                    else
+                    {
+                        containerClass = "container";
+                        timePosition = "time-left";
+                        textAlign = "text-left";
+                        contcolor = "bg-light";
+                        offset = "";
+                    }
+
+                    <div class="row">
+                        <div class="@offset">
+                            <div class="@containerClass @contcolor">
+                                <p class="sender @textAlign">@message.SenderUserName</p>
+                                <p class="@textAlign">@message.Content</p>
+                                <span class="@timePosition">@message.CreatedOn.ToString()</span>
+                            </div>
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+        <div class="col-md-12">
+            <form asp-action="Create" data-ajax-begin="clearInputField" data-ajax-complete="" data-ajax-failure="alert('Fail')" data-ajax-success="sendMessage" data-ajax="true" data-ajax-method="POST">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <div class="form-group">
+                    <input name="text" class="form-control" id="messageText"/>
+                </div>
+                <div class="form-group">
+                    <input name="submit" value="Send" id="submitButton" class="btn btn-outline-dark" />
+                </div>
+                <input type="hidden" value="@ViewBag.UserName" name="username"/>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const userName = "@ViewBag.UserName";
+</script>
+
+@section Scripts{
+    <script src="~/lib/signalr/dist/browser/signalr.min.js"></script>
+    <script src="~/lib/jquery/dist/jquery.unobtrusive-ajax.min.js"></script>
+    <script src="~/js/chat.js"></script>
+    <script src="~/js/signalrReqHandler.js"></script>
+}*@

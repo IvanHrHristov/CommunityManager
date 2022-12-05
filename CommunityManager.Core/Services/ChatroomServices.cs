@@ -29,10 +29,25 @@ namespace CommunityManager.Core.Services
             return await chatroomMembers.AnyAsync(cm => cm.ApplicationUserId == memberId);
         }
 
+        public async Task CreateMessageAsync(Guid chatroomId, string userId, string content)
+        {
+            var entity = new Message()
+            {
+                ChatroomId = chatroomId,
+                SenderId = userId,
+                Content = content,
+                CreatedOn = DateTime.Now
+            };
+
+            await repository.AddAsync(entity);
+            await repository.SaveChangesAsync();
+        }
+
         public async Task<ChatroomViewModel> GetChatroomByIdAsync(Guid id)
         {
             var entity = await context.Chatrooms
                 .Include(c => c.Messages)
+                .ThenInclude(m => m.Sender)
                 .Include(c => c.ChatroomsMembers)
                 .ThenInclude(chm => chm.ApplicationUser)
                 .FirstOrDefaultAsync(c => c.Id == id);
@@ -56,9 +71,12 @@ namespace CommunityManager.Core.Services
                     Id = m.Id,
                     Content = m.Content,
                     SenderId = m.SenderId,
-                    Sender = m.Sender.UserName,
+                    SenderUserName = m.Sender.UserName,
+                    ChatroomId = m.ChatroomId,
                     CreatedOn = m.CreatedOn
-                }).ToList()
+                })
+                .OrderBy(m => m.CreatedOn)
+                .ToList()
             };
         }
 

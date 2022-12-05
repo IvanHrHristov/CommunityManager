@@ -92,8 +92,6 @@ namespace CommunityManager.Core.Services
                 Community = entity
             };
 
-
-
             await repository.AddAsync(entity);
             await repository.AddAsync(communitiesMembers);
             await repository.SaveChangesAsync();
@@ -264,7 +262,7 @@ namespace CommunityManager.Core.Services
                         Id= m.Id,
                         Content = m.Content,
                         SenderId = m.SenderId,
-                        Sender = m.Sender.UserName,
+                        ChatroomId = m.ChatroomId,
                         CreatedOn = m.CreatedOn
                     }).ToList(),
                     Members = c?.ChatroomsMembers.Where(chm => chm.ApplicationUser.IsActive).Select(chm => new UserViewModel()
@@ -332,7 +330,7 @@ namespace CommunityManager.Core.Services
                         Id = m.Id,
                         Content = m.Content,
                         SenderId = m.SenderId,
-                        Sender = m.Sender.UserName,
+                        ChatroomId = m.ChatroomId,
                         CreatedOn = m.CreatedOn
                     }).ToList(),
                     Members = c?.ChatroomsMembers.Select(chm => new UserViewModel()

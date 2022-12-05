@@ -20,14 +20,16 @@
                 {
                     <a asp-controller="Chatroom" asp-action="Join" asp-route-id="@chatroom.Id" asp-route-communityId="@((Guid)(Model.Id))"
                     class="list-group-item list-group-item-action py-2 ripple"
-                    aria-current="true">
+                    aria-current="true" id="joinButton">
+                        <input type="hidden" id="groupJoinId" value="@chatroom.Id" />
                        <span>Join chatroom</span>
                     </a>
                 }
                 else {
                     <a asp-controller="Chatroom" asp-action="Open" asp-route-id="@chatroom.Id" asp-route-communityId="@((Guid)(Model.Id))"
                      class="list-group-item list-group-item-action py-2 ripple"
-                    aria-current="true">
+                    aria-current="true" id="joinButton">
+                        <input type="hidden" id="groupJoinId" value="@chatroom.Id" />
                         <span>Open</span>
                     </a>
                 }
@@ -36,7 +38,8 @@
                 {
                     <a asp-controller="Chatroom" asp-action="Leave" asp-route-id="@chatroom.Id" asp-route-communityId="@((Guid)(Model.Id))"
                     class="list-group-item list-group-item-action py-2 ripple"
-                    aria-current="true">
+                    aria-current="true" id="leaveButton">
+                        <input type="hidden" id="groupLeaveId" value="@chatroom.Id" />
                         <span>Leave</span>
                     </a>
                 }
@@ -46,7 +49,7 @@
             {
                 <a asp-controller="Community" asp-action="AddChatroom" asp-route-id="@((Guid)Model.Id)"
                class="list-group-item list-group-item-action py-2 ripple"
-               aria-current="true">
+               aria-current="true" >
                     <span>Create a new chatroom</span>
                 </a>
             }
@@ -87,3 +90,8 @@
         </div>
     </div>
 </nav>
+
+@section Scripts{
+    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
+    <script src="~/js/manageChat.js"></script>
+}

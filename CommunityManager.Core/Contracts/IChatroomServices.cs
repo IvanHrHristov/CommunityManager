@@ -11,5 +11,7 @@ namespace CommunityManager.Core.Contracts
         Task LeaveChatroomAsync(Guid id, string userId);
 
         Task<bool> CheckChatroomMemberId(Guid chatroomId, string memberId);
+
+        Task CreateMessageAsync(Guid chatroomId, string userId, string content);
     }
 }

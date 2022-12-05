@@ -140,5 +140,29 @@ namespace CommunityManager.Core.Services
 
             await repository.SaveChangesAsync();
         }
+
+        public async Task<IEnumerable<ShoppingCartViewModel>> GetProductsForShoppingCartAsync(string buyerId)
+        {
+            var product = await repository.All<Product>()
+                .Where(p => p.BuyerId == buyerId && p.IsActive == true)
+                .ToListAsync();
+
+            return product.Select(p => new ShoppingCartViewModel()
+            {
+                Id = p.Id,
+                ImageUrl = p.ImageUrl,
+                Name = p.Name,
+                Price = p.Price
+            });
+        }
+
+        public async Task RemoveFromShoppingCartAsync(Guid id)
+        {
+            var product = await repository.GetByIdAsync<Product>(id);
+
+            product.BuyerId = null;
+
+            await repository.SaveChangesAsync();
+        }
     }
 }

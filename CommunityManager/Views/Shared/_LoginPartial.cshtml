@@ -8,6 +8,10 @@
     @if (SignInManager.IsSignedIn(User))
     {
         <li class="nav-item">
+            <a class="nav-link text-dark" asp-controller="Marketplace" asp-action="ShoppingCart">Shopping Cart</a>
+        </li>
+
+        <li class="nav-item">
             <a class="nav-link text-dark">Hello @UserManager.GetUserName(User)</a>
         </li>
         

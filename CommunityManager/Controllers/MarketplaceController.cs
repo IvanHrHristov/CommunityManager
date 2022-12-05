@@ -261,5 +261,19 @@ namespace CommunityManager.Controllers
 
             return RedirectToAction(nameof(All), new { id = product.MarketplaceId, communityId = communityId });
         }
+
+        public async Task<IActionResult> ShoppingCart()
+        {
+            var model = await marketplaceService.GetProductsForShoppingCartAsync(User.Id());
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> RemoveFromShoppingCart(Guid id)
+        {
+            await marketplaceService.RemoveFromShoppingCartAsync(id);
+
+            return RedirectToAction(nameof(ShoppingCart));
+        }
     }
 }

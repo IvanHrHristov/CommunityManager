@@ -10,6 +10,8 @@
 
         public string SenderId { get; set; } = null!;
 
-        public string Sender { get; set; } = null!;
+        public string SenderUserName { get; set; } = null!;
+
+        public Guid ChatroomId { get; set; }
     }
 }

@@ -23,7 +23,7 @@
             <div class="mb-3 d-flex justify-content-center">
                 @if (this.User?.Identity != null && this.User.Identity.Name != Model.Seller)
                 {
-                    <a asp-controller="Marketplace" asp-action="Buy" asp-route-id="@Model.Id" asp-route-communityId="@ViewBag.CommunityId" class="btn btn-success mb-2">Buy</a>
+                    <a asp-controller="Marketplace" asp-action="Buy" asp-route-id="@Model.Id" asp-route-communityId="@ViewBag.CommunityId" class="btn btn-success mb-2">Add to Cart</a>
                 }
 
                 @if (this.User?.Identity != null && this.User.Identity.Name == Model.Seller)

@@ -1,10 +1,13 @@
 ﻿using CommunityManager.Core.Contracts;
 using CommunityManager.Extensions;
+using CommunityManager.Hubs;
 using CommunityManager.Infrastructure.Data.Models;
 using HouseRentingSystem.Infrastructure.Data.Common;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 namespace CommunityManager.Controllers
 {
@@ -30,18 +33,18 @@ namespace CommunityManager.Controllers
 
         public async Task<IActionResult> Open(Guid id, Guid communityId)
         {
-            var currentUserId = User.Id();
+            var user = await userManager.GetUserAsync(User);
 
-            ViewBag.currentUserId = currentUserId;
+            ViewBag.currentUserId = user.Id;
 
-            if (!(await communityService.CheckCommunityMemberId(communityId, currentUserId)))
+            if (!await communityService.CheckCommunityMemberId(communityId, user.Id))
             {
                 var errorMessage = "An error occured while trying to open that chatroom";
 
                 return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
             }
 
-            if (!(await chatroomService.CheckChatroomMemberId(id, currentUserId)))
+            if (!await chatroomService.CheckChatroomMemberId(id, user.Id))
             {
                 var errorMessage = "An error occured while trying to open that chatroom";
 
@@ -57,27 +60,11 @@ namespace CommunityManager.Controllers
                 return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
             }
 
-            //var currentUser = await userManager.GetUserAsync(User);
-            //var messages = await repository.All<Message>().ToListAsync();
-
-            //ViewBag.CurrentUserName = currentUser.UserName;
+            ViewBag.UserName = user.UserName;
+            ViewBag.ChatroomId = id;
 
             return View(model);
         }
-
-        //public async Task<IActionResult> Create(Message message)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        message.Sender.UserName = User?.Identity?.Name;
-        //        var sender = await userManager.GetUserAsync(User);
-        //        message.SenderId = sender.Id;
-        //        await repository.AddAsync(message);
-        //        await repository.SaveChangesAsync();
-        //        return Ok();
-        //    }
-        //    return BadRequest();
-        //}
 
         public async Task<IActionResult> Join(Guid id, Guid communityId)
         {
