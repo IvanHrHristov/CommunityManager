@@ -141,19 +141,30 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
-        public async Task<IEnumerable<ShoppingCartViewModel>> GetProductsForShoppingCartAsync(string buyerId)
+        public async Task<ShoppingCartViewModel> GetProductsForShoppingCartAsync(string buyerId)
         {
             var product = await repository.All<Product>()
                 .Where(p => p.BuyerId == buyerId && p.IsActive == true)
                 .ToListAsync();
 
-            return product.Select(p => new ShoppingCartViewModel()
+            decimal totalSum = 0M;
+
+            foreach (var item in product)
             {
-                Id = p.Id,
-                ImageUrl = p.ImageUrl,
-                Name = p.Name,
-                Price = p.Price
-            });
+                totalSum += item.Price;
+            }
+
+            return new ShoppingCartViewModel()
+            {
+                TotalPrice = totalSum,
+                Items = product.Select(p => new ShoppingCartItemViewModel
+                {
+                    Id = p.Id,
+                    ImageUrl = p.ImageUrl,
+                    Name = p.Name,
+                    Price = p.Price
+                }).ToList()
+            };
         }
 
         public async Task RemoveFromShoppingCartAsync(Guid id)
@@ -161,6 +172,20 @@ namespace CommunityManager.Core.Services
             var product = await repository.GetByIdAsync<Product>(id);
 
             product.BuyerId = null;
+
+            await repository.SaveChangesAsync();
+        }
+
+        public async Task PayForProductsInShoppingCartAsync(string buyerId)
+        {
+            var product = await repository.All<Product>()
+                .Where(p => p.BuyerId == buyerId && p.IsActive == true)
+                .ToListAsync();
+
+            foreach (var item in product)
+            {
+                item.IsActive = false;
+            }
 
             await repository.SaveChangesAsync();
         }

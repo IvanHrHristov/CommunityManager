@@ -20,8 +20,10 @@ namespace CommunityManager.Core.Contracts
 
         Task<bool> MarketplaceExists(Guid id, Guid communityId);
 
-        Task<IEnumerable<ShoppingCartViewModel>> GetProductsForShoppingCartAsync(string buyerId);
+        Task<ShoppingCartViewModel> GetProductsForShoppingCartAsync(string buyerId);
 
         Task RemoveFromShoppingCartAsync(Guid id);
+
+        Task PayForProductsInShoppingCartAsync(string buyerId);
     }
 }

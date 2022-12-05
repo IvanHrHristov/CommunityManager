@@ -275,5 +275,12 @@ namespace CommunityManager.Controllers
 
             return RedirectToAction(nameof(ShoppingCart));
         }
+
+        public async Task<IActionResult> Pay()
+        {
+            await marketplaceService.PayForProductsInShoppingCartAsync(User.Id());
+
+            return RedirectToAction("Index", "Home");
+        }
     }
 }

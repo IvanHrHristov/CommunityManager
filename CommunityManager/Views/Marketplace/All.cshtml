@@ -16,7 +16,7 @@
                 {
                     <p class="mb-0">Buyer: @product.Buyer</p>
                 }
-                <p class="mb-0">Price: @product.Price.ToString("0.00")</p>
+                <p class="mb-0">Price: $@product.Price.ToString("0.00")</p>
             </div>
 
             @if (this.User?.Identity != null && this.User.Identity.Name != product.Seller && product.BuyerId == null)
