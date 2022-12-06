@@ -7,29 +7,29 @@
 <h2 class="text-center">@ViewBag.Title</h2>
 <hr />
 
-<a asp-controller="Community" asp-action="Open" asp-route-id="@ViewBag.CommunityId" class="btn btn-info">Back</a>
+<a asp-controller="Community" asp-action="Open" asp-route-id="@(ViewBag.CommunityId ?? Model.CommunityId)" class="btn btn-info">Back</a>
 
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 <div class="row">
     <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
         <form asp-action="Sell" method="post">
-            <input type="hidden" asp-for="@Model.SellerId" value="@ViewBag.SellerId"/>
-            <input type="hidden" asp-for="@Model.MarketplaceId" value="@ViewBag.MarketplaceId" />
-            <input type="hidden" asp-for="@Model.CommunityId" value="@ViewBag.CommunityId" />
+            <input type="hidden" asp-for="@Model.SellerId" value="@(ViewBag.SellerId ?? Model.SellerId)"/>
+            <input type="hidden" asp-for="@Model.MarketplaceId" value="@(ViewBag.MarketplaceId ?? Model.MarketplaceId)" />
+            <input type="hidden" asp-for="@Model.CommunityId" value="@(ViewBag.CommunityId ?? Model.CommunityId)" />
             <div class="mb-3">
                 <label asp-for="@Model.Name" class="form-label">Name</label>
                 <input asp-for="@Model.Name" class="form-control" aria-required="true" />
                 <span asp-validation-for="Name" class="text-danger"></span>
             </div>
-            @*<div class="mb-3">
-                <label asp-for="@Model.Author" class="form-label">Author</label>
-                <input asp-for="@Model.Author" class="form-control" aria-required="true" />
-                <span asp-validation-for="Author" class="text-danger"></span>
-            </div>*@
             <div class="mb-3">
                 <label asp-for="@Model.Description" class="form-label">Description</label>
                 <textarea asp-for="@Model.Description" class="form-control" aria-required="true" rows="5"></textarea>
                 <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+            <div class="mb-3">
+                <label asp-for="@Model.Price" class="form-label">Price</label>
+                <input asp-for="@Model.Price" class="form-control" aria-required="true" type="text"/>
+                <span asp-validation-for="Price" class="text-danger"></span>
             </div>
             <div class="mb-3">
                 <label asp-for="@Model.ImageUrl" class="form-label">Image URL</label>
@@ -37,89 +37,12 @@
                 <span asp-validation-for="ImageUrl" class="text-danger"></span>
             </div>
             <div class="mb-3">
-                <label asp-for="@Model.Price" class="form-label">Price</label>
-                <input asp-for="@Model.Price" class="form-control" aria-required="true" type="text"/>
-                <span asp-validation-for="Price" class="text-danger"></span>
-            </div>
-            @*<div class="mb-3">
-                <label asp-for="@Model.Seller" class="form-label">Category</label>
-                <select asp-for="@Model.Seller" class="form-control">
-                    @foreach (var category in Model.Categories)
-                    {
-                        <option value="@category.Id">@category.Name</option>
-                    }
-                </select>
-                <span asp-validation-for="Seller" class="text-danger"></span>
-            </div>*@
-            <div class="mb-3">
                 <input class="btn btn-primary" type="submit" value="Sell" />
             </div>
         </form>
     </div>
 </div>
 
-@*<nav id="sidebarMenu"
-     class="collapse d-lg-block sidebar collapse bg-white">
-    <div class="position-sticky">
-        <div class="list-group list-group-flush mx-3 mt-4">
-            <a asp-controller="Marketplace" asp-action="All"
-               class="list-group-item list-group-item-action py-2 ripple"
-               aria-current="true">
-                <i class="fa-solid fa-sack-dollar"></i><span>All products</span>
-            </a>
-
-            <a asp-controller="Marketplace" asp-action="Mine"
-               class="list-group-item list-group-item-action py-2 ripple"
-               aria-current="true">
-                <i class="fa-solid fa-sack-dollar"></i><span>My products</span>
-            </a>
-
-            <a asp-controller="Marketplace" asp-action="Sell"
-               class="list-group-item list-group-item-action py-2 ripple"
-               aria-current="true">
-                <i class="fa-solid fa-sack-dollar"></i><span>Sell a product</span>
-            </a>
-
-            <a href="#"
-            class="list-group-item list-group-item-action py-2 ripple active">
-            <i class="fas fa-chart-area fa-fw me-3"></i><span>Webiste traffic</span>
-            </a>
-            <a href="#"
-            class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-lock fa-fw me-3"></i><span>Password</span></a>
-            <a href="#"
-            class="list-group-item list-group-item-action py-2 ripple">
-            <i class="fas fa-chart-line fa-fw me-3"></i><span>Analytics</span>
-            </a>
-            <a href="#"
-            class="list-group-item list-group-item-action py-2 ripple">
-            <i class="fas fa-chart-pie fa-fw me-3"></i><span>SEO</span>
-            </a>
-            <a href="#"
-            class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-chart-bar fa-fw me-3"></i><span>Orders</span></a>
-            <a href="#"
-            class="list-group-item list-group-item-action py-2 ripple">
-            <i class="fas fa-globe fa-fw me-3"></i><span>International</span>
-            </a>
-            <a href="#"
-            class="list-group-item list-group-item-action py-2 ripple">
-            <i class="fas fa-building fa-fw me-3"></i><span>Partners</span>
-            </a>
-            <a href="#"
-            class="list-group-item list-group-item-action py-2 ripple">
-            <i class="fas fa-calendar fa-fw me-3"></i><span>Calendar</span>
-            </a>
-            <a href="#"
-            class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-users fa-fw me-3"></i><span>Users</span></a>
-            <a href="#"
-            class="list-group-item list-group-item-action py-2 ripple"><i class="fas fa-money-bill fa-fw me-3"></i><span>Sales</span></a>
-        </div>
-    </div>
-</nav>
-
-@section css {
-    <link rel="stylesheet" href="~/css/sidebar.css" />
-}
-*@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
 }

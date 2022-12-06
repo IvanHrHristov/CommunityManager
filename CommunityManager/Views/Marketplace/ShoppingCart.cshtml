@@ -35,7 +35,7 @@
                 <div class="card mb-4">
                     <div class="card-body p-4 d-flex flex-row justify-content-center">
                         <div class="form-outline">
-                            @if (Model.TotalPrice == 0)
+                            @if (Model.Items.Count() == 0)
                             {
                                 <h2>YOUR CART IS EMPTY</h2>
                             }else{
@@ -45,12 +45,15 @@
                     </div>
                 </div>
                 
-                <div class="card">
-                    <div class="card-body row d-flex justify-content-between align-items-center">
-                        <a asp-controller="Marketplace" asp-action="Pay" class="btn btn-warning btn-block btn-lg">Proceed to Pay</a>
+                @if (Model.Items.Count() != 0)
+                {
+                    <div class="card">
+                        <div class="card-body row d-flex justify-content-between align-items-center">
+                            <a asp-controller="Marketplace" asp-action="Pay" class="btn btn-warning btn-block btn-lg">Proceed to Pay</a>
+                        </div>
                     </div>
-                </div>
-
+                }
+                
             </div>
         </div>
     </div>
