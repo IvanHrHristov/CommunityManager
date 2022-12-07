@@ -4,6 +4,7 @@ using CommunityManager.Extensions;
 using CommunityManager.Infrastructure.Data.Models;
 using HouseRentingSystem.Infrastructure.Data.Common;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -51,6 +52,17 @@ namespace CommunityManager.Controllers
             ViewBag.Title = "All Products";
             ViewBag.CommunityId = communityId;
 
+            var stringArray = new string[model.Count()];
+            int i = 0;
+
+            foreach (var product in model)
+            {
+                stringArray[i] = "data:image/png;base64," + Convert.ToBase64String(product.Photo, 0, product.PhotoLenght);
+                i++;
+            }
+
+            ViewBag.Base64StringCollection = stringArray;
+
             return View(model);
         }
 
@@ -77,6 +89,17 @@ namespace CommunityManager.Controllers
 
             ViewBag.Title = "My Products";
             ViewBag.CommunityId = communityId;
+
+            var stringArray = new string[model.Count()];
+            int i = 0;
+
+            foreach (var product in model)
+            {
+                stringArray[i] = "data:image/png;base64," + Convert.ToBase64String(product.Photo, 0, product.PhotoLenght);
+                i++;
+            }
+
+            ViewBag.Base64StringCollection = stringArray;
 
             return View("All", model);
         }
@@ -110,7 +133,7 @@ namespace CommunityManager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Sell(ManageProductViewModel model)
+        public async Task<IActionResult> Sell(IFormFile formFile, ManageProductViewModel model)
         {
             if (!ModelState.IsValid)
             {
@@ -131,7 +154,13 @@ namespace CommunityManager.Controllers
                 return RedirectToAction("Open", "Community", new { id = model.CommunityId, manageErrorMessage = errorMessage });
             }
 
-            await marketplaceService.SellProductAsync(model);
+            using var ms = new MemoryStream();
+
+            await formFile.CopyToAsync(ms);
+
+            var fileBytes = ms.ToArray();
+
+            await marketplaceService.SellProductAsync(model, fileBytes);
 
             return RedirectToAction(nameof(All), new { id = model.MarketplaceId, communityId = model.CommunityId });
         }
@@ -159,8 +188,7 @@ namespace CommunityManager.Controllers
             {
                 Name = product.Name,
                 Description = product.Description,
-                Price = product.Price,
-                ImageUrl = product.ImageUrl,
+                Price = product.Price
             };
 
             ViewBag.SellerId = product.SellerId;
@@ -171,7 +199,7 @@ namespace CommunityManager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(Guid id, ManageProductViewModel model)
+        public async Task<IActionResult> Edit(Guid id, ManageProductViewModel model, IFormFile formFile)
         {
             if (!(await communityService.CheckCommunityMemberId(model.CommunityId, User.Id())))
             {
@@ -185,7 +213,13 @@ namespace CommunityManager.Controllers
                 return View(model);
             }
 
-            await marketplaceService.EditProducAsync(id, model);
+            using var ms = new MemoryStream();
+
+            await formFile.CopyToAsync(ms);
+
+            var fileBytes = ms.ToArray();
+
+            await marketplaceService.EditProducAsync(id, model, fileBytes);
 
             return RedirectToAction(nameof(All), new { id = model.MarketplaceId, communityId = model.CommunityId });
         }
@@ -234,6 +268,8 @@ namespace CommunityManager.Controllers
 
             ViewBag.CommunityId = communityId;
 
+            ViewBag.Base64String = "data:image/png;base64," + Convert.ToBase64String(product.Photo, 0, product.PhotoLenght); ;
+
             return View(product);
         }
 
@@ -265,6 +301,17 @@ namespace CommunityManager.Controllers
         public async Task<IActionResult> ShoppingCart()
         {
             var model = await marketplaceService.GetProductsForShoppingCartAsync(User.Id());
+
+            var stringArray = new string[model.Items.Count()];
+            int i = 0;
+
+            foreach (var product in model.Items)
+            {
+                stringArray[i] = "data:image/png;base64," + Convert.ToBase64String(product.Photo, 0, product.PhotoLenght);
+                i++;
+            }
+
+            ViewBag.Base64StringCollection = stringArray;
 
             return View(model);
         }

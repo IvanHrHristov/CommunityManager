@@ -10,13 +10,13 @@ namespace CommunityManager.Core.Contracts
 
         Task<DetailsProductViewModel> GetProductByIdAsync(Guid id);
 
-        Task SellProductAsync(ManageProductViewModel model);
+        Task SellProductAsync(ManageProductViewModel model, byte[] fileBytes);
 
         Task DeleteProductAsync(Guid id);
 
         Task BuyProductAsync(Guid id, string buyerId);
 
-        Task EditProducAsync(Guid id, ManageProductViewModel model);
+        Task EditProducAsync(Guid id, ManageProductViewModel model, byte[] fileBytes);
 
         Task<bool> MarketplaceExists(Guid id, Guid communityId);
 

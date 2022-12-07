@@ -16,16 +16,17 @@ namespace CommunityManager.Core.Services
             this.repository = repository;
         }
 
-        public async Task SellProductAsync(ManageProductViewModel model)
+        public async Task SellProductAsync(ManageProductViewModel model, byte[] fileBytes)
         {
             var entity = new Product()
             {
                 Name = model.Name,
                 Description = model.Description,
                 Price = model.Price,
-                ImageUrl = model.ImageUrl,
                 SellerId = model.SellerId,
                 MarketplaceId = model.MarketplaceId,
+                Photo = fileBytes,
+                PhotoLenght = fileBytes.Length,
                 IsActive = true
             };
 
@@ -60,8 +61,9 @@ namespace CommunityManager.Core.Services
                 Id = p.Id,
                 Name = p.Name,
                 Price = p.Price,
-                ImageUrl = p.ImageUrl,
                 Seller = p?.Seller?.UserName,
+                Photo = p.Photo,
+                PhotoLenght = p.PhotoLenght
             });
         }
 
@@ -80,10 +82,11 @@ namespace CommunityManager.Core.Services
                 Id = p.Id,
                 Name = p.Name,
                 Price = p.Price,
-                ImageUrl = p.ImageUrl,
                 Seller = p?.Seller?.UserName,
                 Buyer = p?.Buyer?.UserName,
-                BuyerId = p?.Buyer?.Id
+                BuyerId = p?.Buyer?.Id,
+                Photo = p.Photo,
+                PhotoLenght = p.PhotoLenght
             });
         }
 
@@ -114,20 +117,22 @@ namespace CommunityManager.Core.Services
                 Id = entity.Id,
                 Name = entity.Name,
                 Price = entity.Price,
+                Photo = entity.Photo,
+                PhotoLenght = entity.PhotoLenght,
                 Description = entity.Description,
-                ImageUrl = entity.ImageUrl,
                 Seller = entity?.Seller?.UserName
             };
         }
 
-        public async Task EditProducAsync(Guid id, ManageProductViewModel model)
+        public async Task EditProducAsync(Guid id, ManageProductViewModel model, byte[] fileBytes)
         {
             var product = await repository.GetByIdAsync<Product>(id);
 
             product.Name = model.Name;
             product.Description = model.Description;
             product.Price = model.Price;
-            product.ImageUrl = model.ImageUrl;
+            product.Photo = fileBytes;
+            product.PhotoLenght = fileBytes.Length;
 
             await repository.SaveChangesAsync();
         }
@@ -160,9 +165,10 @@ namespace CommunityManager.Core.Services
                 Items = product.Select(p => new ShoppingCartItemViewModel
                 {
                     Id = p.Id,
-                    ImageUrl = p.ImageUrl,
                     Name = p.Name,
-                    Price = p.Price
+                    Price = p.Price,
+                    Photo = p.Photo,
+                    PhotoLenght = p.PhotoLenght
                 }).ToList()
             };
         }

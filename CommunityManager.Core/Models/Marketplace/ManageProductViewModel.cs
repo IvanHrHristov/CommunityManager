@@ -21,9 +21,6 @@ namespace CommunityManager.Core.Models.Marketplace
         [Range(typeof(decimal), PriceMinValue, PriceMaxValue)]
         public decimal Price { get; set; }
 
-        [Required]
-        public string ImageUrl { get; set; } = null!;
-
         public string SellerId { get; set; } = null!;
 
         public Guid MarketplaceId { get; set; }

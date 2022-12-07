@@ -1,5 +1,9 @@
 ﻿@model ShoppingCartViewModel
 
+@{
+    int i = 0;
+}
+
 <section class="h-100" style="background-color: #eee;">
     <div class="container h-100 py-5">
         <div class="row d-flex justify-content-center align-items-center h-100">
@@ -15,8 +19,8 @@
                         <div class="card-body p-4">
                             <div class="row d-flex justify-content-between align-items-center">
                                 <div class="col-md-2 col-lg-2 col-xl-2">
-                                    <img src="@item.ImageUrl"
-                                            class="img-fluid rounded-3" alt="Cotton T-shirt">
+                                    <img src="@ViewBag.Base64StringCollection[i++]"
+                                            class="img-fluid rounded-3" alt="Shopping Cart Item">
                                 </div>
                                 <div class="col-md-3 col-lg-3 col-xl-3">
                                     <p class="lead fw-normal mb-2">@item.Name</p>

@@ -24,7 +24,10 @@ namespace CommunityManager.Infrastructure.Data.Models
         public decimal Price { get; set; }
 
         [Required]
-        public string ImageUrl { get; set; } = null!;
+        public byte[] Photo { get; set; } = null!;
+
+        [Required]
+        public int PhotoLenght { get; set; }
 
         [Required]
         public string SellerId { get; set; } = null!;

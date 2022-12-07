@@ -215,7 +215,6 @@ namespace CommunityManager.Core.Services
         {
             var entity = await repository.All<Community>()
                 .Include(c => c.Marketplaces)
-                .ThenInclude(m => m.Products)
                 .Include(c => c.Chatrooms)
                 .ThenInclude(ch => ch.ChatroomsMembers)
                 .ThenInclude(chm => chm.ApplicationUser)
@@ -240,17 +239,7 @@ namespace CommunityManager.Core.Services
                 {
                     Id = m.Id,
                     Name = m.Name,
-                    IsActive = m.IsActive,
-                    Products = m?.Products?.Where(p => p.IsActive).Select(p => new ProductsQueryModel()
-                    {
-                        Id = p.Id,
-                        Name = p.Name,
-                        Price = p.Price,
-                        ImageUrl = p.ImageUrl,
-                        Seller = p.Seller.UserName,
-                        BuyerId = p?.BuyerId,
-                        Buyer = p?.Buyer?.UserName
-                    }).ToList()
+                    IsActive = m.IsActive
                 }).ToList(),
                 Chatrooms = entity.Chatrooms.Where(c => c.IsActive).Select(c => new ChatroomViewModel()
                 {
@@ -283,7 +272,6 @@ namespace CommunityManager.Core.Services
         {
             var entity = await repository.All<Community>()
                 .Include(c => c.Marketplaces)
-                .ThenInclude(m => m.Products)
                 .Include(c => c.Chatrooms)
                 .ThenInclude(ch => ch.ChatroomsMembers)
                 .ThenInclude(chm => chm.ApplicationUser)
@@ -308,17 +296,7 @@ namespace CommunityManager.Core.Services
                 {
                     Id = m.Id,
                     Name = m.Name,
-                    IsActive = m.IsActive,
-                    Products = m?.Products?.Select(p => new ProductsQueryModel()
-                    {
-                        Id = p.Id,
-                        Name = p.Name,
-                        Price = p.Price,
-                        ImageUrl = p.ImageUrl,
-                        Seller = p.Seller.UserName,
-                        BuyerId = p?.BuyerId,
-                        Buyer = p?.Buyer?.UserName
-                    }).ToList()
+                    IsActive = m.IsActive
                 }).ToList(),
                 Chatrooms = entity.Chatrooms.Select(c => new ChatroomViewModel()
                 {

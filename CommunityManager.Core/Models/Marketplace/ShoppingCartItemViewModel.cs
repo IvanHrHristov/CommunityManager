@@ -8,6 +8,8 @@
 
         public decimal Price { get; set; }
 
-        public string ImageUrl { get; set; } = null!;
+        public byte[] Photo { get; set; } = null!;
+
+        public int PhotoLenght { get; set; }
     }
 }

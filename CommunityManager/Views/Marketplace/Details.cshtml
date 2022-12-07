@@ -15,7 +15,7 @@
         <div class="card " style="width: 50rem;">
             <div class="card-body">
                 <img class="card-img-top" style="width: 100%;"
-                     src="@Model.ImageUrl" alt="Product Image">
+                     src="@ViewBag.Base64String" alt="Product Image">
                 <h3 class="card-title text-center">@Model.Name</h3>
                 <p class="card-text"><span class="fw-bold">Seller: </span>@Model.Seller</p>
                 <p class="card-text"><span class="fw-bold">Price: </span>$@Model.Price.ToString("0.00")</p>
