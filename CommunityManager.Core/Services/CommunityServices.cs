@@ -83,6 +83,8 @@ namespace CommunityManager.Core.Services
                 CreatedOn = DateTime.Now,
                 AgeRestricted = model.AgeRestricted,
                 CreatorId = model.CreatorId,
+                Photo = model.Photo,
+                PhotoLenght = model.PhotoLenght,
                 IsActive = true
             };
 
@@ -148,6 +150,8 @@ namespace CommunityManager.Core.Services
                     Description = c.Description,
                     AgeRestricted = c.AgeRestricted,
                     CreatorId = c.CreatorId,
+                    Photo = c.Photo,
+                    PhotoLenght = c.PhotoLenght,
                     Members = c.CommunitiesMembers.Select(cm => new UserViewModel() 
                     { 
                         Id = cm.ApplicationUserId,
@@ -178,6 +182,8 @@ namespace CommunityManager.Core.Services
                 Description = c.Description,
                 AgeRestricted = c.AgeRestricted,
                 CreatorId = c.CreatorId,
+                Photo = c.Photo,
+                PhotoLenght = c.PhotoLenght,
                 Members = c.CommunitiesMembers.Select(cm => new UserViewModel()
                 {
                     Id = cm.ApplicationUser.Id,
@@ -193,6 +199,7 @@ namespace CommunityManager.Core.Services
                 .ThenInclude(cm => cm.ApplicationUser)
                 .Where(cm => cm.CommunitiesMembers.Any(m => m.ApplicationUserId == id) && 
                     cm.CreatorId == id)
+                .OrderByDescending(c => c.IsActive)
                 .ToListAsync();
 
             return entities.Select(c => new CommunityViewModel()
@@ -203,6 +210,8 @@ namespace CommunityManager.Core.Services
                 AgeRestricted = c.AgeRestricted,
                 CreatorId = c.CreatorId,
                 IsActive = c.IsActive,
+                Photo = c.Photo,
+                PhotoLenght = c.PhotoLenght,
                 Members = c.CommunitiesMembers.Select(cm => new UserViewModel()
                 {
                     Id = cm.ApplicationUser.Id,
@@ -232,6 +241,8 @@ namespace CommunityManager.Core.Services
                 Id = entity.Id,
                 Name = entity.Name,
                 Description = entity.Description,
+                Photo = entity.Photo,
+                PhotoLenght = entity.PhotoLenght,
                 CreatedOn = entity.CreatedOn,
                 CreatorId= entity.CreatorId,
                 AgeRestricted = entity.AgeRestricted,
@@ -477,6 +488,8 @@ namespace CommunityManager.Core.Services
             community.CreatedOn = model.CreatedOn;
             community.CreatorId = model.CreatorId;
             community.AgeRestricted = model.AgeRestricted;
+            community.Photo = model.Photo;
+            community.PhotoLenght = model.PhotoLenght;
 
             await repository.SaveChangesAsync();
         }

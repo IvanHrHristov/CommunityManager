@@ -10,6 +10,8 @@
 <div class="d-flex justify-content-center">
     <div class="card " style="width: 50rem;">
         <div class="card-body">
+            <img class="card-img-top" style="width: 100%;"
+                 src="@ViewBag.Base64String" alt="Product Image">
             <h3 class="card-title text-center">@Model.Name</h3>
             <p class="card-text"><span class="fw-bold">Description: </span>@Model.Description</p>
             <p class="card-text"><span class="fw-bold">Created on: </span>@Model.CreatedOn.ToShortDateString()</p>
@@ -21,20 +23,6 @@
                 <a asp-controller="Community" asp-action="Manage" asp-route-id="@Model.Id" class="btn btn-primary mb-2">Manage</a>
             </div>
         }
-
-        @*<div class="mb-3 d-flex justify-content-center">
-            @if (this.User?.Identity != null && this.User.Identity.Name != Model.Seller)
-            {
-                <a asp-controller="Marketplace" asp-action="Buy" asp-route-id="@Model.Id" class="btn btn-success mb-2">Buy</a>
-            }
-
-            @if (this.User?.Identity != null && this.User.Identity.Name == Model.Seller)
-            {
-                <a asp-controller="Marketplace" asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary mb-2">Edit</a>
-                <span></span>
-                <a asp-controller="Marketplace" asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger mb-2">Delete</a>
-            }
-        </div>*@
     </div>
 </div>
 

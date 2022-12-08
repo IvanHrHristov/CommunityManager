@@ -47,6 +47,17 @@ namespace CommunityManager.Controllers
             ViewBag.currentUserId = currentUserId;
             ViewBag.errorMessage = errorMessage;
 
+            var stringArray = new string[model.Communities.Count()];
+            int i = 0;
+
+            foreach (var community in model.Communities)
+            {
+                stringArray[i] = "data:image/png;base64," + Convert.ToBase64String(community.Photo, 0, community.PhotoLenght);
+                i++;
+            }
+
+            ViewBag.Base64StringCollection = stringArray;
+
             return View(query);
         }
 
@@ -102,6 +113,17 @@ namespace CommunityManager.Controllers
 
             ViewBag.currentUserId = currentUserId;
             ViewBag.errorMessage = errorMessage;
+
+            var stringArray = new string[model.Count()];
+            int i = 0;
+
+            foreach (var community in model)
+            {
+                stringArray[i] = "data:image/png;base64," + Convert.ToBase64String(community.Photo, 0, community.PhotoLenght);
+                i++;
+            }
+
+            ViewBag.Base64StringCollection = stringArray;
 
             return View(model);
         }
@@ -200,12 +222,20 @@ namespace CommunityManager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateCommunityViewModel model)
+        public async Task<IActionResult> Create(CreateCommunityViewModel model, IFormFile formFile)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
+
+            using var ms = new MemoryStream();
+
+            await formFile.CopyToAsync(ms);
+
+            model.Photo = ms.ToArray();
+
+            model.PhotoLenght = model.Photo.Length;
 
             await communityService.CreateCommunityAsync(model);
 
@@ -240,13 +270,15 @@ namespace CommunityManager.Controllers
                 return RedirectToAction(nameof(Mine), new {errorMessage = errorMessage});
             }
 
+            ViewBag.Base64String = "data:image/png;base64," + Convert.ToBase64String(model.Photo, 0, model.PhotoLenght);
+            
             return View(model);
         }
 
         [HttpGet]
         public async Task<IActionResult> Manage(Guid id)
         {
-            var community = await communityService.GetCommunityByIdAsync(id);
+            var community = await repository.GetByIdAsync<Community>(id);
 
             if (!(await communityService.CheckCommunityCreatorId(id, User.Id())))
             {
@@ -275,12 +307,20 @@ namespace CommunityManager.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Manage(Guid id, CreateCommunityViewModel model)
+        public async Task<IActionResult> Manage(CreateCommunityViewModel model, IFormFile formFile, Guid id)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
+
+            using var ms = new MemoryStream();
+
+            await formFile.CopyToAsync(ms);
+
+            model.Photo = ms.ToArray();
+
+            model.PhotoLenght = model.Photo.Length;
 
             await communityService.ManageCommunityAsync(id, model);
 

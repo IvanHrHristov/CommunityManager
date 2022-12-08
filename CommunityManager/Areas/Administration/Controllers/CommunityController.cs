@@ -6,6 +6,7 @@ using CommunityManager.Extensions;
 using CommunityManager.Infrastructure.Data.Models;
 using HouseRentingSystem.Infrastructure.Data.Common;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using static CommunityManager.Infrastructure.Data.Constants.RoleConstants;
 
@@ -34,6 +35,17 @@ namespace CommunityManager.Areas.Administration.Controllers
 
             ViewBag.currentUserId = currentUserId;
             ViewBag.errorMessage = errorMessage;
+
+            var stringArray = new string[model.Count()];
+            int i = 0;
+
+            foreach (var community in model)
+            {
+                stringArray[i] = "data:image/png;base64," + Convert.ToBase64String(community.Photo, 0, community.PhotoLenght);
+                i++;
+            }
+
+            ViewBag.Base64StringCollection = stringArray;
 
             return View(model);
         }
@@ -132,12 +144,20 @@ namespace CommunityManager.Areas.Administration.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Create(CreateCommunityViewModel model)
+        public async Task<IActionResult> Create(CreateCommunityViewModel model, IFormFile formFile)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
+
+            using var ms = new MemoryStream();
+
+            await formFile.CopyToAsync(ms);
+
+            model.Photo = ms.ToArray();
+
+            model.PhotoLenght = model.Photo.Length;
 
             await communityService.CreateCommunityAsync(model);
 
@@ -176,12 +196,20 @@ namespace CommunityManager.Areas.Administration.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Manage(Guid id, CreateCommunityViewModel model)
+        public async Task<IActionResult> Manage(Guid id, IFormFile formFile, CreateCommunityViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
+
+            using var ms = new MemoryStream();
+
+            await formFile.CopyToAsync(ms);
+
+            model.Photo = ms.ToArray();
+
+            model.PhotoLenght = model.Photo.Length;
 
             await communityService.ManageCommunityAsync(id, model);
 

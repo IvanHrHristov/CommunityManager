@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using System.ComponentModel.DataAnnotations;
 using static CommunityManager.Infrastructure.Data.Constants.CommunityConstants;
 
 namespace CommunityManager.Core.Models.Community
@@ -20,6 +21,12 @@ namespace CommunityManager.Core.Models.Community
 
         [Required]
         public bool AgeRestricted { get; set; }
+
+        [ValidateNever]
+        public byte[] Photo { get; set; } = null!;
+
+        [ValidateNever]
+        public int PhotoLenght { get; set; }
 
         [Required]
         public string CreatorId { get; set; } = null!;

@@ -10,8 +10,8 @@
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 <div class="row">
     <div class="col-sm-12 offset-lg-2 col-lg-8 offset-xl-3 col-xl-6">
-        <form asp-action="Manage" method="post">
-            <input type="hidden" asp-for="@Model.CreatorId" value="@ViewBag.CreatorId" />
+        <form asp-action="Manage" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="@Model.CreatorId" value="@(ViewBag.CreatorId ?? Model.CreatorId)" />
             <div class="mb-3">
                 <label asp-for="@Model.Name" class="form-label">Name</label>
                 <input asp-for="@Model.Name" class="form-control" aria-required="true" />
@@ -28,6 +28,10 @@
                     <option value="true">Yes</option>
                     <option value="false">No</option>
                 </select>
+            </div>
+            <div class="mb-3">
+                <label for="formFile" class="form-label">Select an image:</label>
+                <input class="form-control" type="file" accept="image/png, image/jpeg" id="formFile" name="formFile">
             </div>
             <div class="mb-3 d-flex justify-content-center">
                 <input class="btn btn-primary" type="submit" value="Edit" />

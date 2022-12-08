@@ -1,5 +1,9 @@
 ﻿@model IEnumerable<CommunityViewModel>
 
+@{
+    int i = 0;
+}
+
 <div class="text-center">
     <h1 class="display-4">My Communities</h1>
 </div>
@@ -12,32 +16,38 @@
         </div>
     }
 
-    @foreach (var community in Model)
-    {
-        <div class="card col-4" style="width: 20rem; ">
-            <div class="card-body">
-                <h5 class="card-title mt-1">@community.Name</h5>
-                <p class="mb-0">Description: @community.Description</p>
-                @if (community.AgeRestricted)
-                {
-                    <p class="mb-0">This community is 18+ only!</p>
-                }
-            </div>
+    <div class="d-flex justify-content-lg-start flex-wrap">
+        @foreach (var community in Model)
+        {
+            <div class="card col-4" style="width: 20rem;">
+                <img class="card-img-top" style="width: 100%"
+                 src="@ViewBag.Base64StringCollection[i++]" alt="" />
+                <div class="card-body text-center">
+                    <h5 class="card-title mt-1">@community.Name</h5>
+                    <p class="mb-0">Description: @community.Description</p>
+                    @if (community.AgeRestricted)
+                    {
+                        <p class="mb-0">This community is 18+ only!</p>
+                    }
+                </div>
 
-            @if (community.IsActive ?? false)
-            {
-                <a asp-area="Administration" asp-controller="Community" asp-action="Open" asp-route-id="@community.Id" class="btn btn-success mb-2">Open</a>
-                <span></span>
-                <a asp-area="Administration" asp-controller="Community" asp-action="Manage" asp-route-id="@community.Id" class="btn btn-primary mb-2">Manage</a>
-                <span></span>
-                <a asp-area="Administration" asp-controller="Community" asp-action="Delete" asp-route-id="@community.Id" class="btn btn-danger mb-2">Delete</a>
-            }
+                @if (community.IsActive ?? false)
+                {
+                    <span>
+                        <a asp-area="Administration" asp-controller="Community" asp-action="Open" asp-route-id="@community.Id" class="btn btn-success mb-2">Open</a>
+                        <a asp-area="Administration" asp-controller="Community" asp-action="Manage" asp-route-id="@community.Id" class="btn btn-primary mb-2">Manage</a>
+                        <a asp-area="Administration" asp-controller="Community" asp-action="Delete" asp-route-id="@community.Id" class="btn btn-danger mb-2">Delete</a>
+                    </span>
+                }
             
-            @if (!community.IsActive ?? false)
-            {
-                <a asp-area="Administration" asp-controller="Community" asp-action="Restore" asp-route-id="@community.Id" class="btn btn-success mb-2">Restore</a>
-            }
+                @if (!community.IsActive ?? false)
+                {
+                    <span>
+                        <a asp-area="Administration" asp-controller="Community" asp-action="Restore" asp-route-id="@community.Id" class="btn btn-success mb-2">Restore</a>
+                    </span>
+                }
             
-        </div>
-    }
+            </div>
+        }
+    </div>
 </div>

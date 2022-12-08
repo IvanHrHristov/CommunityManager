@@ -14,27 +14,15 @@
     </div>
 }
 
+<div class="d-flex justify-content-md-evenly">
 <form method="get">
-    <div class="row">
-        @*<div class="form-group col-md-3 d-flex justify-content-between">
-            <div class="form-group">
-                <label asp-for="Category"></label>
-                <select asp-for="Category" class="form-control">
-                    <option value="">All</option>
-                    @foreach (var category in Model.Categories)
-                    {
-                        <option value="@category">@category</option>
-                    }
-                </select>
-            </div>
-        </div>*@
-
-        <div class="form-group col-md-3">
+        <div class="row">
+        <div class="form-group col-md-3" style="width: 15rem;">
             <label asp-for="SearchTerm"></label>
             <input asp-for="SearchTerm" class="form-control" placeholder="...">
         </div>
 
-        <div class="form-group col-md-3">
+        <div class="form-group col-md-3" style="width: 15rem;">
             <div class="form-group">
                 <label asp-for="Sorting"></label>
                 <select asp-for="Sorting" class="form-control">
@@ -45,13 +33,14 @@
             </div>
         </div>
 
-        <div class="col-md-3">
+        <div class="col-md-3" style="width: 15rem;">
             <div class="form-group mt-4">
                 <input type="submit" value="Search" class="btn btn-primary" />
             </div>
         </div>
     </div>
 </form>
+</div>
 
 
 @{
@@ -64,6 +53,8 @@
     var maxPage = Math.Ceiling((double)Model.TotalCommunitiesCount /
         AllCommunitiesQueryModel.CommunitiesPerPage);
 }
+
+<br />
 
 <div class="row mb-5">
     <div class="col-md-6 d-grid gap-2 d-md-flex justify-content-md-start">
@@ -96,9 +87,49 @@
     <h2 class="text-center">No communities found by the given criteria!</h2>
 }
 
-<div class="row">
+@{
+    int i = 0;
+}
+
+<div class="d-flex justify-content-around flex-wrap text-center">
     @foreach (var community in Model.Communities)
     {
-        <partial name="_CommunityPartial" model="@community" />
+        <div class="card col-4" style="width: 20rem; ">
+            <img class="card-img-center" style="width: 100%"
+                src="@ViewBag.Base64StringCollection[i++]" alt="" />
+            <div class="card-body text-center">
+                <h5 class="card-title mt-1">@community.Name</h5>
+                <p class="mb-0">Description: @community.Description</p>
+                @if (community.AgeRestricted)
+                {
+                    <p class="mb-0">This community is 18+ only!</p>
+                }
+            </div>
+
+            @if (community.Members.Any(m => m.Id == community.CurrentUserId) && community.CurrentUserId != community.CreatorId)
+            {
+                <span>
+                    <a asp-controller="Community" asp-action="Open" asp-route-id="@community.Id" class="btn btn-success mb-2">Open</a>
+                    <a asp-controller="Community" asp-action="Details" asp-route-id="@community.Id" class="btn btn-primary mb-2">Details</a>
+                    <a asp-controller="Community" asp-action="Leave" asp-route-id="@community.Id" class="btn btn-danger mb-2">Leave</a>
+                </span>
+            }
+
+            @if (community.Members.Any(m => m.Id == community.CurrentUserId) && community.CurrentUserId == community.CreatorId)
+            {
+                <span>
+                    <a asp-controller="Community" asp-action="Open" asp-route-id="@community.Id" class="btn btn-success mb-2">Open</a>
+                    <a asp-controller="Community" asp-action="Details" asp-route-id="@community.Id" class="btn btn-primary mb-2">Details</a>
+                    <a asp-controller="Community" asp-action="Manage" asp-route-id="@community.Id" class="btn btn-primary mb-2">Manage</a>
+                </span>
+            }
+
+            @if (community.Members.All(m => m.Id != community.CurrentUserId) && community.CurrentUserId != community.CreatorId)
+            {
+                <span>
+                    <a asp-controller="Community" asp-action="Join" asp-route-id="@community.Id" class="btn btn-success mb-2">Join</a>
+                </span>
+            }
+        </div>
     }
 </div>

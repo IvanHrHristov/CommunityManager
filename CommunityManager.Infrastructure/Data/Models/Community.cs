@@ -24,6 +24,12 @@ namespace CommunityManager.Infrastructure.Data.Models
         public bool AgeRestricted { get; set; }
 
         [Required]
+        public byte[] Photo { get; set; } = null!;
+
+        [Required]
+        public int PhotoLenght { get; set; }
+
+        [Required]
         public string CreatorId { get; set; } = null!;
 
         [Required]

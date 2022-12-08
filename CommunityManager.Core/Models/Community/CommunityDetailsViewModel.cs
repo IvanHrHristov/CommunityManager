@@ -12,6 +12,10 @@ namespace CommunityManager.Core.Models.Community
 
         public string Description { get; set; } = null!;
 
+        public byte[] Photo { get; set; } = null!;
+
+        public int PhotoLenght { get; set; }
+
         public DateTime CreatedOn { get; set; }
 
         public string CreatorId { get; set; } = null!;

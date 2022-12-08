@@ -7,9 +7,19 @@ var connection = new signalR.HubConnectionBuilder()
 connection.on('ReceiveMessage', function (user, message) {
     var msg = message.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
     var div = document.createElement("div");
-    div.innerHTML += `<div class="d-flex flex-row justify-content-start mb-4"> <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png" alt="avatar 1" style="width: 45px; height: 100%;"> <div class="p-3 ms-3" style="border-radius: 15px; background-color: #fbfbfb;"> <p class="small mb-0"> <p><strong>${user}</strong></p> ${msg} </p></div></div>`;
-    
-    document.getElementById("messages").appendChild(div);
+
+    var userName = document.getElementById("sender").value;
+
+    if (userName === user) {
+        div.innerHTML += `<div class="d-flex flex-row justify-content-end mb-4"> <div class="p-3 me-3 border" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);"> <p class="small mb-0"> <p><strong>${user}</strong></p> ${msg} </p> </div> <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png" alt="avatar 1" style="width: 45px; height: 100%;"> </div>`
+    }
+    else {
+        div.innerHTML += `<div class="d-flex flex-row justify-content-start mb-4"> <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png" alt="avatar 1" style="width: 45px; height: 100%;"> <div class="p-3 ms-3" style="border-radius: 15px; background-color: #fbfbfb;"> <p class="small mb-0"> <p><strong>${user}</strong></p> ${msg} </p></div></div>`;
+    }
+
+    var container = document.getElementById("messages");
+    container.appendChild(div);
+    container.scrollTop = container.scrollHeight;
 });
 
 connection.start().catch(function (err) {
@@ -21,9 +31,19 @@ document.getElementById("sendButton").addEventListener("click", function (e) {
     var message = document.getElementById("message").value;
     var group = document.getElementById("groupId").value;
     var userId = document.getElementById("senderId").value;
-    connection.invoke("SendMessageToGroup", group, user, message, userId).catch(function (err) {
-        return console.error(err.toString());
-    });
+
+    if (message != "") {
+        connection.invoke("SendMessageToGroup", group, user, message, userId).catch(function (err) {
+            return console.error(err.toString());
+        });
+    }
+
+    var clearMessage = document.getElementById("message");
+    clearMessage.value = "";
+
+    var container = document.getElementById("messages");
+    container.scrollTop = container.scrollHeight;
+
     e.preventDefault;
 });
 
