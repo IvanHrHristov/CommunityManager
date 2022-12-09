@@ -1,4 +1,4 @@
-﻿namespace CommunityManager.Core.Models.Marketplace
+﻿namespace CommunityManager.Core.Models.ShoppingCart
 {
     public class ShoppingCartItemViewModel
     {

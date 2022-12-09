@@ -12,6 +12,8 @@ namespace Microsoft.Extensions.DependencyInjection
             services.AddScoped<IMarketplaceServices, MarketplaceServices>();
             services.AddScoped<ICommunityServices, CommunityServices>();
             services.AddScoped<IChatroomServices, ChatroomServices>();
+            services.AddScoped<IShoppingCartServices, ShoppingCartServices>();
+            services.AddScoped< IUserServices, UserServices> ();
 
             return services;
         }

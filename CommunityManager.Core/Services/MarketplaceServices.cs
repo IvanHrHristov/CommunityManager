@@ -145,55 +145,5 @@ namespace CommunityManager.Core.Services
 
             await repository.SaveChangesAsync();
         }
-
-        public async Task<ShoppingCartViewModel> GetProductsForShoppingCartAsync(string buyerId)
-        {
-            var product = await repository.All<Product>()
-                .Where(p => p.BuyerId == buyerId && p.IsActive == true)
-                .ToListAsync();
-
-            decimal totalSum = 0M;
-
-            foreach (var item in product)
-            {
-                totalSum += item.Price;
-            }
-
-            return new ShoppingCartViewModel()
-            {
-                TotalPrice = totalSum,
-                Items = product.Select(p => new ShoppingCartItemViewModel
-                {
-                    Id = p.Id,
-                    Name = p.Name,
-                    Price = p.Price,
-                    Photo = p.Photo,
-                    PhotoLenght = p.PhotoLenght
-                }).ToList()
-            };
-        }
-
-        public async Task RemoveFromShoppingCartAsync(Guid id)
-        {
-            var product = await repository.GetByIdAsync<Product>(id);
-
-            product.BuyerId = null;
-
-            await repository.SaveChangesAsync();
-        }
-
-        public async Task PayForProductsInShoppingCartAsync(string buyerId)
-        {
-            var product = await repository.All<Product>()
-                .Where(p => p.BuyerId == buyerId && p.IsActive == true)
-                .ToListAsync();
-
-            foreach (var item in product)
-            {
-                item.IsActive = false;
-            }
-
-            await repository.SaveChangesAsync();
-        }
     }
 }

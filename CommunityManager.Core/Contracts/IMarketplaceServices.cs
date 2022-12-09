@@ -19,11 +19,5 @@ namespace CommunityManager.Core.Contracts
         Task EditProducAsync(Guid id, ManageProductViewModel model, byte[] fileBytes);
 
         Task<bool> MarketplaceExists(Guid id, Guid communityId);
-
-        Task<ShoppingCartViewModel> GetProductsForShoppingCartAsync(string buyerId);
-
-        Task RemoveFromShoppingCartAsync(Guid id);
-
-        Task PayForProductsInShoppingCartAsync(string buyerId);
     }
 }

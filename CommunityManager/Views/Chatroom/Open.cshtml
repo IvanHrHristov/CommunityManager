@@ -20,25 +20,25 @@
                             {
                                 <div class="d-flex flex-row justify-content-end mb-4">
                                     <div class="p-3 me-3 border" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);">
+                                        <p class="small mb-1 text-muted">@message.CreatedOn.ToString("dddd, d MMMM yy, HH:mm:ss tt")</p>
                                         <p class="small mb-0">
-                                        <p><strong>@message.SenderUserName</strong></p>
-                                            @message.Content
-                                            </p>
+                                            <p><strong>@message.SenderUserName</strong> <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png"
+                                            alt="avatar 1" style="width: 25px; height: 100%;"></p> @message.Content
+                                        </p>
                                     </div>
-                                    <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png"
-                                    alt="avatar 1" style="width: 45px; height: 100%;">
                                 </div>
                             }
 
                             if (ViewBag.currentUserId != message.SenderId)
                             {
                                 <div class="d-flex flex-row justify-content-start mb-4">
-                                    <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png"
-                                    alt="avatar 1" style="width: 45px; height: 100%;">
                                     <div class="p-3 ms-3" style="border-radius: 15px; background-color: #fbfbfb;">
+                                        <p class="small mb-1 text-muted">@message.CreatedOn.ToString("dddd, d MMMM yy, HH:mm:ss tt")</p>
                                         <p class="small mb-0">
-                                            <p><strong>@message.SenderUserName</strong></p>
-                                            @message.Content
+                                            <p>
+                                                <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png"
+                                                alt="avatar 1" style="width: 25px; height: 100%;"> <strong>@message.SenderUserName</strong>
+                                            </p> @message.Content
                                         </p>
                                     </div>
                                 </div>
