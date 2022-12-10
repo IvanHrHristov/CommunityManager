@@ -98,6 +98,7 @@ namespace CommunityManager.Controllers
             }
 
             var user = await userManager.FindByNameAsync(model.UserName);
+            user.IsActive = true;
 
             if (user != null)
             {

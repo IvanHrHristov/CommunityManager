@@ -5,35 +5,8 @@
 
 <partial name="_SidebarPartial" model="@Model" />
 
-@*<div class="list-group members">
-    @foreach (var member in Model.Members)
-    {
-        <a href="#" class="list-group-item list-group-item-action">@member.Name</a>
-    }
-</div>
-*@
-
-@*<nav id="sidebarMenu"
-    class="collapse d-lg-block members collapse bg-white">
-    <div class="position-sticky">
-        @if (ViewBag.errorMessage != null)
-        {
-            <div class="alert alert-danger" role="alert">
-                @ViewBag.errorMessage
-            </div>
-        }
-        <div class="list-group list-group-flush mx-3 mt-4">
-            @foreach (var member in Model.Members)
-            {
-                <a href="#" class="list-group-item list-group-item-action">@member.Name</a>
-            }
-        </div>
-    </div>
-</nav>*@
-
 @section css {
     <link rel="stylesheet" href="~/css/sidebar.css" />
-    @*<link rel="stylesheet" href="~/css/members.css" />*@
 }
 
 @section Scripts{

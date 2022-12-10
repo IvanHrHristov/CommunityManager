@@ -9,13 +9,6 @@
 </div>
 
 <div class="text-center row">
-    @if (ViewBag.errorMessage != null)
-    {
-        <div class="alert alert-danger" role="alert">
-            @ViewBag.errorMessage
-        </div>
-    }
-
     <div class="d-flex justify-content-between flex-wrap">
         @foreach (var community in Model)
         {
@@ -23,12 +16,12 @@
                 <img class="card-img-top" style="width: 100%"
                     src="@ViewBag.Base64StringCollection[i++]" alt="" />
                 <div class="card-body text-center">
-                    <h5 class="card-title mt-1">@community.Name</h5>
-                    <p class="mb-0">Description: @community.Description</p>
+                    <h4 class="card-title mt-1">@community.Name</h4>
                     @if (community.AgeRestricted)
                     {
-                        <p class="mb-0">This community is 18+ only!</p>
+                        <h5 class="mb-0 text-danger">This community is 18+ only!</h5>
                     }
+                    <p class="mb-0">Description: @community.Description</p>
                 </div>
 
                 @if (ViewBag.currentUserId != community.CreatorId)

@@ -29,13 +29,14 @@ namespace CommunityManager.Controllers
             this.userManager = userManager;
         }
 
-        public async Task<IActionResult> All([FromQuery]AllCommunitiesQueryModel query, string? errorMessage)
+        public async Task<IActionResult> All([FromQuery]AllCommunitiesQueryModel query)
         {
-            var currentUserId = User.Id();
+            var user = await repository.GetByIdAsync<ApplicationUser>(User.Id());
+
+            var currentUserId = user.Id;
 
             var model = await communityService.GetAllAsync(
                 query.SearchTerm,
-                errorMessage,
                 query.Sorting,
                 query.CurrentPage,
                 AllCommunitiesQueryModel.CommunitiesPerPage,
@@ -45,7 +46,6 @@ namespace CommunityManager.Controllers
             query.TotalCommunitiesCount = model.TotalCommunities;
 
             ViewBag.currentUserId = currentUserId;
-            ViewBag.errorMessage = errorMessage;
 
             var stringArray = new string[model.Communities.Count()];
             int i = 0;
@@ -56,6 +56,7 @@ namespace CommunityManager.Controllers
                 i++;
             }
 
+            ViewBag.CurrentUserAge = user.Age;
             ViewBag.Base64StringCollection = stringArray;
 
             return View(query);
@@ -71,32 +72,24 @@ namespace CommunityManager.Controllers
 
             if (await communityService.CheckCommunityMemberId(id, currentUserId))
             {
-                var errorMessage = "You are already part of that community";
-
-                return RedirectToAction(nameof(All), new { errorMessage = errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
             if (community == null)
             {
-                var errorMessage = "The community you are trying to join does not exist";
-
-                return RedirectToAction(nameof(All), new { errorMessage = errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
             if (user == null)
             {
-                var errorMessage = "That user does not exist";
-
-                return RedirectToAction(nameof(All), new { errorMessage = errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
             if (community.AgeRestricted)
             {
                 if (user.Age < 18)
                 {
-                    var errorMessage = "You are too young to join that community";
-
-                    return RedirectToAction(nameof(All), new { errorMessage = errorMessage });
+                    return RedirectToAction("Error404", "Home");
                 }
             }
 
@@ -105,14 +98,13 @@ namespace CommunityManager.Controllers
             return RedirectToAction(nameof(All));
         }
 
-        public async Task<IActionResult> Mine(string? errorMessage)
+        public async Task<IActionResult> Mine()
         {
             var currentUserId = User.Id();
 
             var model = await communityService.GetMineAsync(currentUserId);
 
             ViewBag.currentUserId = currentUserId;
-            ViewBag.errorMessage = errorMessage;
 
             var stringArray = new string[model.Count()];
             int i = 0;
@@ -129,27 +121,22 @@ namespace CommunityManager.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Open(Guid id, string? manageErrorMessage)
+        public async Task<IActionResult> Open(Guid id)
         {
             var currentUserId = User.Id();
 
             ViewBag.currentUserId = currentUserId;
-            ViewBag.errorMessage = manageErrorMessage;
 
             var model = await communityService.GetCommunityByIdAsync(id);
 
             if (!(await communityService.CheckCommunityMemberId(id, currentUserId)))
             {
-                var errorMessage = "You are not part of that community";
-
-                return RedirectToAction(nameof(All), new { errorMessage = errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
             if (model.Name == null)
             {
-                var errorMessage = "The community you are trying to open does not exist";
-
-                return RedirectToAction(nameof(Mine), new { errorMessage = errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
             return View(model);
@@ -168,7 +155,7 @@ namespace CommunityManager.Controllers
         {
             if (!(await communityService.CheckCommunityCreatorId(id, User.Id())))
             {
-                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+                return RedirectToAction("Error404", "Home");
             }
 
             if (!ModelState.IsValid)
@@ -194,7 +181,7 @@ namespace CommunityManager.Controllers
         {
             if (!(await communityService.CheckCommunityCreatorId(id, User.Id())))
             {
-                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+                return RedirectToAction("Error404", "Home");
             }
 
             if (!ModelState.IsValid)
@@ -247,27 +234,22 @@ namespace CommunityManager.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Details(Guid id, string? manageErrorMessage)
+        public async Task<IActionResult> Details(Guid id)
         {
             var currentUserId = User.Id();
 
             ViewBag.currentUserId = currentUserId;
-            ViewBag.errorMessage = manageErrorMessage;
 
             var model = await communityService.GetCommunityByIdAsync(id);
 
             if (!(await communityService.CheckCommunityMemberId(id, currentUserId)))
             {
-                var errorMessage = "You are not part of that community";
-
-                return RedirectToAction(nameof(All), new { errorMessage = errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
             if (model.Name == null)
             {
-                var errorMessage = "The community you are trying to open does not exist";
-
-                return RedirectToAction(nameof(Mine), new {errorMessage = errorMessage});
+                return RedirectToAction("Error404", "Home");
             }
 
             ViewBag.Base64String = "data:image/png;base64," + Convert.ToBase64String(model.Photo, 0, model.PhotoLenght);
@@ -282,14 +264,12 @@ namespace CommunityManager.Controllers
 
             if (!(await communityService.CheckCommunityCreatorId(id, User.Id())))
             {
-                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+                return RedirectToAction("Error404", "Home");
             }
 
             if (community.Name == null)
             {
-                var errorMessage = "The community you are trying to open does not exist";
-
-                return RedirectToAction(nameof(Mine), new { errorMessage = errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
             CreateCommunityViewModel model = new CreateCommunityViewModel()
@@ -333,23 +313,12 @@ namespace CommunityManager.Controllers
 
             if (!(await communityService.CheckCommunityMemberId(id, userId)))
             {
-                var errorMessage = "You are not part of that community";
-
-                return RedirectToAction(nameof(All), new { errorMessage = errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
-            try
-            {
-                await communityService.LeaveCommunityAsync(id, userId);
+            await communityService.LeaveCommunityAsync(id, userId);
 
-                return RedirectToAction(nameof(Mine));
-            }
-            catch (Exception)
-            {
-                var errorMessage = "The community you are trying to leave does not exist";
-
-                return RedirectToAction(nameof(Mine), new { errorMessage = errorMessage });
-            }
+            return RedirectToAction(nameof(Mine));
         }
     }
 }

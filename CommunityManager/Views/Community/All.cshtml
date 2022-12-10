@@ -7,13 +7,6 @@
 <h2 class="text-center">@ViewBag.Title</h2>
 <hr />
 
-@if (ViewBag.errorMessage != null)
-{
-    <div class="alert alert-danger" role="alert">
-        @ViewBag.errorMessage
-    </div>
-}
-
 <div class="d-flex justify-content-md-evenly">
 <form method="get">
         <div class="row">
@@ -41,7 +34,6 @@
     </div>
 </form>
 </div>
-
 
 @{
     var previousPage = Model.CurrentPage - 1;
@@ -98,12 +90,12 @@
             <img class="card-img-center" style="width: 100%"
                 src="@ViewBag.Base64StringCollection[i++]" alt="" />
             <div class="card-body text-center">
-                <h5 class="card-title mt-1">@community.Name</h5>
-                <p class="mb-0">Description: @community.Description</p>
+                <h4 class="card-title mt-1">@community.Name</h4>
                 @if (community.AgeRestricted)
                 {
-                    <p class="mb-0">This community is 18+ only!</p>
+                    <h5 class="mb-0 text-danger">This community is 18+ only!</h5>
                 }
+                <p class="mb-0">Description: @community.Description</p>
             </div>
 
             @if (community.Members.Any(m => m.Id == community.CurrentUserId) && community.CurrentUserId != community.CreatorId)
@@ -126,9 +118,18 @@
 
             @if (community.Members.All(m => m.Id != community.CurrentUserId) && community.CurrentUserId != community.CreatorId)
             {
-                <span>
-                    <a asp-controller="Community" asp-action="Join" asp-route-id="@community.Id" class="btn btn-success mb-2">Join</a>
-                </span>
+                @if (!community.AgeRestricted)
+                {
+                    <span>
+                        <a asp-controller="Community" asp-action="Join" asp-route-id="@community.Id" class="btn btn-success mb-2">Join</a>
+                    </span>
+                }
+                @if (community.AgeRestricted && ViewBag.CurrentUserAge >= 18)
+                {
+                    <span>
+                        <a asp-controller="Community" asp-action="Join" asp-route-id="@community.Id" class="btn btn-success mb-2">Join</a>
+                    </span>
+                }
             }
         </div>
     }

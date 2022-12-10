@@ -27,14 +27,13 @@ namespace CommunityManager.Areas.Administration.Controllers
             this.communityService = communityService;
         }
                 
-        public async Task<IActionResult> Mine(string? errorMessage)
+        public async Task<IActionResult> Mine()
         {
             var currentUserId = User.Id();
 
             var model = await communityService.GetMineForAdminAsync(currentUserId);
 
             ViewBag.currentUserId = currentUserId;
-            ViewBag.errorMessage = errorMessage;
 
             var stringArray = new string[model.Count()];
             int i = 0;
@@ -51,27 +50,22 @@ namespace CommunityManager.Areas.Administration.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Open(Guid id, string? manageErrorMessage)
+        public async Task<IActionResult> Open(Guid id)
         {
             var currentUserId = User.Id();
 
             ViewBag.currentUserId = currentUserId;
-            ViewBag.errorMessage = manageErrorMessage;
 
             var model = await communityService.GetCommunityByIdForAdminAsync(id);
 
             if (!await communityService.CheckCommunityMemberId(id, currentUserId))
             {
-                var errorMessage = "You are not part of that community";
-
-                return RedirectToAction(nameof(Mine), new { errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
             if (model.Name == null)
             {
-                var errorMessage = "The community you are trying to open does not exist";
-
-                return RedirectToAction(nameof(Mine), new { errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
             return View(model);
@@ -90,7 +84,7 @@ namespace CommunityManager.Areas.Administration.Controllers
         {
             if (!await communityService.CheckCommunityCreatorId(id, User.Id()))
             {
-                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+                return RedirectToAction("Error404", "Home");
             }
 
             if (!ModelState.IsValid)
@@ -116,7 +110,7 @@ namespace CommunityManager.Areas.Administration.Controllers
         {
             if (!await communityService.CheckCommunityCreatorId(id, User.Id()))
             {
-                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+                return RedirectToAction("Error404", "Home");
             }
 
             if (!ModelState.IsValid)
@@ -171,14 +165,12 @@ namespace CommunityManager.Areas.Administration.Controllers
 
             if (!await communityService.CheckCommunityCreatorId(id, User.Id()))
             {
-                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+                return RedirectToAction("Error404", "Home");
             }
 
             if (community.Name == null)
             {
-                var errorMessage = "The community you are trying to open does not exist";
-
-                return RedirectToAction(nameof(Mine), new { errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
             CreateCommunityViewModel model = new CreateCommunityViewModel()
@@ -220,128 +212,72 @@ namespace CommunityManager.Areas.Administration.Controllers
         {
             if (!await communityService.CheckCommunityCreatorId(id, User.Id()))
             {
-                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+                return RedirectToAction("Error404", "Home");
             }
 
-            try
-            {
-                await communityService.DeleteCommunityAsync(id);
+            await communityService.DeleteCommunityAsync(id);
 
-                return RedirectToAction(nameof(Mine));
-            }
-            catch (Exception)
-            {
-                var errorMessage = "The community you are trying to delete does not exist";
-
-                return RedirectToAction(nameof(Mine), new { errorMessage });
-            }
+            return RedirectToAction(nameof(Mine));
         }
 
         public async Task<IActionResult> Restore(Guid id)
         {
             if (!await communityService.CheckCommunityCreatorId(id, User.Id()))
             {
-                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+                return RedirectToAction("Error404", "Home");
             }
 
-            try
-            {
-                await communityService.RestoreCommunityAsync(id);
+            await communityService.RestoreCommunityAsync(id);
 
-                return RedirectToAction(nameof(Mine));
-            }
-            catch (Exception)
-            {
-                var errorMessage = "The community you are trying to delete does not exist";
-
-                return RedirectToAction(nameof(Mine), new { errorMessage });
-            }
+            return RedirectToAction(nameof(Mine));
         }
 
         public async Task<IActionResult> DeleteMarketplace(Guid id, Guid communityId)
         {
             if (!await communityService.CheckCommunityCreatorId(communityId, User.Id()))
             {
-                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+                return RedirectToAction("Error404", "Home");
             }
 
-            try
-            {
-                await communityService.DeleteMarketplaceAsync(id);
+            await communityService.DeleteMarketplaceAsync(id);
 
-                return RedirectToAction(nameof(Open), new { id = communityId });
-            }
-            catch (Exception)
-            {
-                var errorMessage = "The marketplace you are trying to delete does not exist";
-
-                return RedirectToAction(nameof(Open), new { id = communityId, manageErrorMessage = errorMessage });
-            }
+            return RedirectToAction(nameof(Open), new { id = communityId });
         }
 
         public async Task<IActionResult> RestoreMarketplace(Guid id, Guid communityId)
         {
             if (!await communityService.CheckCommunityCreatorId(communityId, User.Id()))
             {
-                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+                return RedirectToAction("Error404", "Home");
             }
 
-            try
-            {
-                await communityService.RestoreMarketplaceAsync(id);
+            await communityService.RestoreMarketplaceAsync(id);
 
-                return RedirectToAction(nameof(Open), new { id = communityId });
-            }
-            catch (Exception)
-            {
-                var errorMessage = "The marketplace you are trying to restore does not exist";
-
-                return RedirectToAction(nameof(Open), new { id = communityId, manageErrorMessage = errorMessage });
-            }
+            return RedirectToAction(nameof(Open), new { id = communityId });
         }
 
         public async Task<IActionResult> DeleteChatroom(Guid id, Guid communityId)
         {
             if (!await communityService.CheckCommunityCreatorId(communityId, User.Id()))
             {
-                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+                return RedirectToAction("Error404", "Home");
             }
 
-            try
-            {
-                await communityService.DeleteChatroomAsync(id);
+            await communityService.DeleteChatroomAsync(id);
 
-                return RedirectToAction(nameof(Open), new { id = communityId });
-            }
-            catch (Exception)
-            {
-                var errorMessage = "The chatroom you are trying to delete does not exist";
-
-                return RedirectToAction(nameof(Open), new { id = communityId, manageErrorMessage = errorMessage });
-            }
-
+            return RedirectToAction(nameof(Open), new { id = communityId });
         }
 
         public async Task<IActionResult> RestoreChatroom(Guid id, Guid communityId)
         {
             if (!await communityService.CheckCommunityCreatorId(communityId, User.Id()))
             {
-                return RedirectToPage("/Account/AccessDenied", new { area = "Identity" });
+                return RedirectToAction("Error404", "Home");
             }
 
-            try
-            {
-                await communityService.RestoreChatroomAsync(id);
+            await communityService.RestoreChatroomAsync(id);
 
-                return RedirectToAction(nameof(Open), new { id = communityId });
-            }
-            catch (Exception)
-            {
-                var errorMessage = "The chatroom you are trying to restore does not exist";
-
-                return RedirectToAction(nameof(Open), new { id = communityId, manageErrorMessage = errorMessage });
-            }
-
+            return RedirectToAction(nameof(Open), new { id = communityId });
         }
     }
 }

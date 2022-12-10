@@ -10,10 +10,14 @@ namespace CommunityManager.Core.Services
     public class UserServices : IUserServices
     {
         private readonly IRepository repository;
+        private readonly UserManager<ApplicationUser> userManager;
 
-        public UserServices(IRepository repository)
+        public UserServices(
+            IRepository repository,
+            UserManager<ApplicationUser> userManager)
         {
             this.repository = repository;
+            this.userManager = userManager;
         }
 
         public async Task EditUserAsync(EditViewModel model)
@@ -24,7 +28,7 @@ namespace CommunityManager.Core.Services
             user.Email = model.Email;
             user.Age = model.Age;
 
-            await repository.SaveChangesAsync();
+            await userManager.UpdateAsync(user);
         }
     }
 }
