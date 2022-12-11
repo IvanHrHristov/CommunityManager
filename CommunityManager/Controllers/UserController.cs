@@ -9,12 +9,27 @@ using CommunityManager.Core.Models.User;
 
 namespace CommunityManager.Controllers
 {
+    /// <summary>
+    /// Controller to manage users
+    /// </summary>
     [Authorize]
     public class UserController : Controller
     {
+        /// <summary>
+        /// Providing access to the UserManager 
+        /// </summary>
         private readonly UserManager<ApplicationUser> userManager;
+        /// <summary>
+        /// Providing access to the SignInManager 
+        /// </summary>
         private readonly SignInManager<ApplicationUser> signInManager;
+        /// <summary>
+        /// Providing access to the RoleManager 
+        /// </summary>
         private readonly RoleManager<IdentityRole> roleManager;
+        /// <summary>
+        /// Service providing methods to manage users
+        /// </summary>
         private readonly IUserServices userServices;
 
         public UserController(
@@ -28,6 +43,10 @@ namespace CommunityManager.Controllers
             this.roleManager = roleManager;
             this.userServices = userServices;
         }
+
+        /// <summary>
+        /// Redirects the user to the register view 
+        /// </summary>
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Register()
@@ -42,6 +61,11 @@ namespace CommunityManager.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Creates a new user
+        /// </summary>
+        /// <param name="model">Register view model</param>
+        /// <returns>Redirects the user to the login view</returns>
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Register(RegisterViewModel model)
@@ -74,6 +98,10 @@ namespace CommunityManager.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Redirects the user to the login view
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
         [AllowAnonymous]
         public IActionResult Login()
@@ -88,6 +116,11 @@ namespace CommunityManager.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Logs in the user
+        /// </summary>
+        /// <param name="model">Login view model</param>
+        /// <returns>Redirects the user to the home view</returns>
         [HttpPost]
         [AllowAnonymous]
         public async Task<IActionResult> Login(LoginViewModel model)
@@ -115,6 +148,10 @@ namespace CommunityManager.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Logs out the user 
+        /// </summary>
+        /// <returns>Redirects the user to the home view</returns>
         [HttpPost]
         public async Task<IActionResult> Logout()
         {
@@ -123,6 +160,9 @@ namespace CommunityManager.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        /// <summary>
+        /// Redirects the user to the edit view
+        /// </summary>
         [HttpGet]
         public async Task<IActionResult> Edit()
         {
@@ -140,6 +180,11 @@ namespace CommunityManager.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Edits the details of a users account
+        /// </summary>
+        /// <param name="model">Edit view model</param>
+        /// <returns>Redirects the user to the home view</returns>
         [HttpPost]
         public async Task<IActionResult> Edit(EditViewModel model)
         {
@@ -153,6 +198,9 @@ namespace CommunityManager.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        /// <summary>
+        /// Redirects the user to the change passowrd view
+        /// </summary>
         [HttpGet]
         public IActionResult ChangePassword()
         {
@@ -161,6 +209,11 @@ namespace CommunityManager.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Changes the password of the current user
+        /// </summary>
+        /// <param name="model">Change password view model</param>
+        /// <returns>Redirects the user to the home view</returns>
         [HttpPost]
         public async Task<IActionResult> ChangePassword(ChangePasswordViewModel model)
         {
@@ -185,6 +238,10 @@ namespace CommunityManager.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Creates the Administrator and Supervisor roles
+        /// </summary>
+        /// <returns>Redirects the user to the home view</returns>
         public async Task<IActionResult> CreateRoles()
         {
             await roleManager.CreateAsync(new IdentityRole(Supervisor));
@@ -193,6 +250,10 @@ namespace CommunityManager.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        /// <summary>
+        /// Development only method to add an Administrator role to test account
+        /// </summary>
+        /// <returns></returns>
         public async Task<IActionResult> AddAdminToRole()
         {
             var user = await userManager.FindByNameAsync("Admin");

@@ -7,9 +7,18 @@ using Microsoft.AspNetCore.Identity;
 
 namespace CommunityManager.Core.Services
 {
+    /// <summary>
+    /// Implementation of user service methods
+    /// </summary>
     public class UserServices : IUserServices
     {
+        /// <summary>
+        /// Repository providing access to the database 
+        /// </summary>
         private readonly IRepository repository;
+        /// <summary>
+        /// Providing access to the UserManager 
+        /// </summary>
         private readonly UserManager<ApplicationUser> userManager;
 
         public UserServices(
@@ -20,6 +29,10 @@ namespace CommunityManager.Core.Services
             this.userManager = userManager;
         }
 
+        /// <summary>
+        /// Edits the details of the current user
+        /// </summary>
+        /// <param name="model">Edit view model</param>
         public async Task EditUserAsync(EditViewModel model)
         {
             var user = await repository.GetByIdAsync<ApplicationUser>(model.Id);
