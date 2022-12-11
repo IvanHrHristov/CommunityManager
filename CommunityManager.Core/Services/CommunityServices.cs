@@ -3,25 +3,32 @@ using CommunityManager.Core.Models.Chatroom;
 using CommunityManager.Core.Models.Community;
 using CommunityManager.Core.Models.Marketplace;
 using CommunityManager.Core.Models.User;
-using CommunityManager.Infrastructure.Data;
 using CommunityManager.Infrastructure.Data.Models;
 using HouseRentingSystem.Infrastructure.Data.Common;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 namespace CommunityManager.Core.Services
 {
+    /// <summary>
+    /// Implementation of community service methods
+    /// </summary>
     public class CommunityServices : ICommunityServices
     {
+        /// <summary>
+        /// Repository providing access to the database 
+        /// </summary>
         private readonly IRepository repository;
-        private readonly RoleManager<IdentityRole> roleManager;
 
-        public CommunityServices(IRepository repository, RoleManager<IdentityRole> roleManager)
+        public CommunityServices(IRepository repository)
         {
             this.repository = repository;
-            this.roleManager = roleManager;
         }
 
+        /// <summary>
+        /// Checks if the current user is the creator of the community
+        /// </summary>
+        /// <param name="communityId">ID of the community</param>
+        /// <param name="creatorId">ID of the current user</param>
         public async Task<bool> CheckCommunityCreatorId(Guid communityId, string creatorId)
         {
             var community = await repository.GetByIdAsync<Community>(communityId);
@@ -29,6 +36,12 @@ namespace CommunityManager.Core.Services
             return (community.CreatorId == creatorId);
         }
 
+        /// <summary>
+        /// Checks if the current user is a member of a community
+        /// </summary>
+        /// <param name="communityId">ID of the community</param>
+        /// <param name="memberId">ID of the current user</param>
+        /// <returns>Boolean</returns>
         public async Task<bool> CheckCommunityMemberId(Guid communityId, string memberId)
         {
             var communityMember = repository.AllReadonly<CommunityMember>()
@@ -41,6 +54,11 @@ namespace CommunityManager.Core.Services
             return await communityMember.AnyAsync(cm => cm.ApplicationUserId == memberId);
         }
 
+        /// <summary>
+        /// Adds a marketplace to a community
+        /// </summary>
+        /// <param name="model">Marketplace view model</param>
+        /// <param name="id">ID of the community</param>
         public async Task AddMarketplaceToCommunityAsync(AddMarketplaceViewModel model, Guid id)
         {
             var entity = new Marketplace()
@@ -54,6 +72,12 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Adds a chatroom to a community
+        /// </summary>
+        /// <param name="model">Chatroom view model</param>
+        /// <param name="id">ID of the community</param>
+        /// <param name="creatorId">ID of the current user</param>
         public async Task AddChatroomToCommunityAsync(AddChatroomViewModel model, Guid id, string creatorId)
         {
             var entity = new Chatroom()
@@ -74,6 +98,10 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Creates a community
+        /// </summary>
+        /// <param name="model">Community view model</param>
         public async Task CreateCommunityAsync(CreateCommunityViewModel model)
         {
             var entity = new Community()
@@ -99,7 +127,11 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
-
+        /// <summary>
+        /// Adds a user to a community
+        /// </summary>
+        /// <param name="communityId">ID of the community</param>
+        /// <param name="userId">ID of the current user</param>
         public async Task JoinCommunityAsync(Guid communityId, string userId)
         {
             var communitiesMembers = new CommunityMember()
@@ -112,6 +144,15 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// All communities matching a criteria
+        /// </summary>
+        /// <param name="searchTerm">String to be contained in the community name or description </param>
+        /// <param name="sorting">Enum that determines how the communities are ordered</param>
+        /// <param name="currentPage">Number of the current page</param>
+        /// <param name="communityPerPage">Numbers of communities per page</param>
+        /// <param name="currentUserId">ID of the current user</param>
+        /// <returns>Community query view model</returns>
         public async Task<CommunityQueryModel> GetAllAsync(string? searchTerm = null, CommunitySorting sorting = CommunitySorting.Newest, int currentPage = 1, int communityPerPage = 1, string currentUserId = "")
         {
             var result = new CommunityQueryModel();
@@ -166,6 +207,11 @@ namespace CommunityManager.Core.Services
             return result;
         }
 
+        /// <summary>
+        /// All communities the current user is a member in
+        /// </summary>
+        /// <param name="id">ID of the current user</param>
+        /// <returns>List of community view models</returns>
         public async Task<IEnumerable<CommunityViewModel>> GetMineAsync(string id)
         {
             var entities = await repository.All<Community>()
@@ -191,6 +237,11 @@ namespace CommunityManager.Core.Services
             });
         }
 
+        /// <summary>
+        /// All communities the current user owns
+        /// </summary>
+        /// <param name="id">ID of the current user</param>
+        /// <returns>List of community view models</returns>
         public async Task<IEnumerable<CommunityViewModel>> GetMineForAdminAsync(string id)
         {
             var entities = await repository.All<Community>()
@@ -219,6 +270,11 @@ namespace CommunityManager.Core.Services
             });
         }
 
+        /// <summary>
+        /// Gets a community with a specific ID
+        /// </summary>
+        /// <param name="id">ID of the community</param>
+        /// <returns>Community view model</returns>
         public async Task<CommunityDetailsViewModel> GetCommunityByIdAsync(Guid id)
         {
             var entity = await repository.All<Community>()
@@ -263,6 +319,11 @@ namespace CommunityManager.Core.Services
             };
         }
 
+        /// <summary>
+        /// Gets a community with a specific ID for admin area
+        /// </summary>
+        /// <param name="id">ID of the community</param>
+        /// <returns>Community view model</returns>
         public async Task<CommunityDetailsViewModel> GetCommunityByIdForAdminAsync(Guid id)
         {
             var entity = await repository.All<Community>()
@@ -305,6 +366,10 @@ namespace CommunityManager.Core.Services
             };
         }
 
+        /// <summary>
+        /// Sets IsActive to false for a community
+        /// </summary>
+        /// <param name="communityId">ID of the community</param>
         public async Task DeleteCommunityAsync(Guid communityId)
         {
             var community = await repository.GetByIdAsync<Community>(communityId);
@@ -333,6 +398,10 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Sets IsActive to true for a community
+        /// </summary>
+        /// <param name="communityId">ID of the community</param>
         public async Task RestoreCommunityAsync(Guid communityId)
         {
             var community = await repository.GetByIdAsync<Community>(communityId);
@@ -360,6 +429,10 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Sets IsActive to false for a marketplace 
+        /// </summary>
+        /// <param name="marketplaceId">ID of the marketplace</param>
         public async Task DeleteMarketplaceAsync(Guid marketplaceId)
         {
             var marketplace = await repository.GetByIdAsync<Marketplace>(marketplaceId);
@@ -369,6 +442,10 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Sets IsActive to true for a marketplace 
+        /// </summary>
+        /// <param name="marketplaceId">ID of the marketplace</param>
         public async Task RestoreMarketplaceAsync(Guid marketplaceId)
         {
             var marketplace = await repository.GetByIdAsync<Marketplace>(marketplaceId);
@@ -378,6 +455,10 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Sets IsActive to false for a chatroom
+        /// </summary>
+        /// <param name="chatroomId">ID of the chatroom</param>
         public async Task DeleteChatroomAsync(Guid chatroomId)
         {
             var chatroom = await repository.GetByIdAsync<Chatroom>(chatroomId);
@@ -387,6 +468,10 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Sets IsActive to true for a chatroom
+        /// </summary>
+        /// <param name="marketplaceId">ID of the chatroom</param>
         public async Task RestoreChatroomAsync(Guid chatroomId)
         {
             var chatroom = await repository.GetByIdAsync<Chatroom>(chatroomId);
@@ -396,6 +481,11 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Edits details of a community
+        /// </summary>
+        /// <param name="id">ID of the community</param>
+        /// <param name="model">Community view model</param>
         public async Task ManageCommunityAsync(Guid id, CreateCommunityViewModel model)
         {
             var community = await repository.GetByIdAsync<Community>(id);
@@ -411,12 +501,17 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Removes current user from a community
+        /// </summary>
+        /// <param name="communityId">ID of the community</param>
+        /// <param name="userId">ID of the current user</param>
         public async Task LeaveCommunityAsync(Guid communityId, string userId)
         {
             var communityMember = await repository.All<CommunityMember>()
                 .FirstAsync(cm => cm.CommunityId == communityId && cm.ApplicationUserId == userId);
 
-            await repository.DeleteAsync<CommunityMember>(communityMember);
+            repository.Delete(communityMember);
             await repository.SaveChangesAsync();
         }
     }

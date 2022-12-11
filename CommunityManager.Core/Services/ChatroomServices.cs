@@ -8,19 +8,27 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CommunityManager.Core.Services
 {
+    /// <summary>
+    /// Implementation of community service methods
+    /// </summary>
     public class ChatroomServices : IChatroomServices
     {
+        /// <summary>
+        /// Repository providing access to the database 
+        /// </summary>
         private readonly IRepository repository;
-        private readonly ApplicationDbContext context;
 
-        public ChatroomServices(
-            IRepository repository,
-            ApplicationDbContext context)
+        public ChatroomServices(IRepository repository)
         {
-            this.context = context;
             this.repository = repository;
         }
 
+        /// <summary>
+        /// Checks if the current user is a member of a chatroom
+        /// </summary>
+        /// <param name="chatroomId">ID of the chatroom</param>
+        /// <param name="memberId">ID of the current user</param>
+        /// <returns>Boolean</returns>
         public async Task<bool> CheckChatroomMemberId(Guid chatroomId, string memberId)
         {
             var chatroomMembers = repository.AllReadonly<ChatroomMember>()
@@ -29,6 +37,12 @@ namespace CommunityManager.Core.Services
             return await chatroomMembers.AnyAsync(cm => cm.ApplicationUserId == memberId);
         }
 
+        /// <summary>
+        /// Creates a message
+        /// </summary>
+        /// <param name="chatroomId">ID of the chatroom</param>
+        /// <param name="userId">ID of the current user</param>
+        /// <param name="content">Content of the message</param>
         public async Task CreateMessageAsync(Guid chatroomId, string userId, string content)
         {
             var entity = new Message()
@@ -43,9 +57,14 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Gets a chatroom with a specific ID
+        /// </summary>
+        /// <param name="id">ID of the chatroom</param>
+        /// <returns>Chatroom view model</returns>
         public async Task<ChatroomViewModel> GetChatroomByIdAsync(Guid id)
         {
-            var entity = await context.Chatrooms
+            var entity = await repository.All<Chatroom>()
                 .Include(c => c.Messages)
                 .ThenInclude(m => m.Sender)
                 .Include(c => c.ChatroomsMembers)
@@ -80,6 +99,11 @@ namespace CommunityManager.Core.Services
             };
         }
 
+        /// <summary>
+        /// Adds a user to a chatroom
+        /// </summary>
+        /// <param name="id">ID of the chatroom</param>
+        /// <param name="userId">ID of the current user</param>
         public async Task JoinChatroomAsync(Guid id, string userId)
         {
             var chatroomMember = new ChatroomMember()
@@ -88,16 +112,21 @@ namespace CommunityManager.Core.Services
                 ChatroomId = id
             };
 
-            await context.ChatroomsMembers.AddAsync(chatroomMember);
+            await repository.AddAsync(chatroomMember);
             await repository.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Removes a user from a chatroom
+        /// </summary>
+        /// <param name="id">ID of the chatroom</param>
+        /// <param name="userId">ID of the current user</param>
         public async Task LeaveChatroomAsync(Guid id, string userId)
         {
-            var chatroomMember = await context.ChatroomsMembers
+            var chatroomMember = await repository.All<ChatroomMember>()
                 .FirstAsync(chm => chm.ChatroomId == id && chm.ApplicationUserId == userId);
 
-            context.ChatroomsMembers.Remove(chatroomMember);
+            repository.Delete(chatroomMember);
             await repository.SaveChangesAsync();
         }
     }

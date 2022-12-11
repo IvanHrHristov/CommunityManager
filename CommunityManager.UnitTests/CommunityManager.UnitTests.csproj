@@ -16,4 +16,9 @@
     <PackageReference Include="coverlet.collector" Version="3.1.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\CommunityManager.Core\CommunityManager.Core.csproj" />
+    <ProjectReference Include="..\CommunityManager.Infrastructure\CommunityManager.Infrastructure.csproj" />
+  </ItemGroup>
+
 </Project>

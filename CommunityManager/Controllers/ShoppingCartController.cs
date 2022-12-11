@@ -4,8 +4,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace CommunityManager.Controllers
 {
+    /// <summary>
+    /// Controller to manage shopping carts
+    /// </summary>
     public class ShoppingCartController : Controller
     {
+        /// <summary>
+        /// Service providing methods to manage shopping carts
+        /// </summary>
         private readonly IShoppingCartServices shoppingCartService;
 
         public ShoppingCartController(IShoppingCartServices shoppingCartService)
@@ -13,6 +19,10 @@ namespace CommunityManager.Controllers
             this.shoppingCartService = shoppingCartService;
         }
 
+        /// <summary>
+        /// Shows all items in a shopping cart
+        /// </summary>
+        /// <returns>Shopping cart view model</returns>
         public async Task<IActionResult> Index()
         {
             var model = await shoppingCartService.GetProductsAsync(User.Id());
@@ -31,6 +41,10 @@ namespace CommunityManager.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Remove product from a shopping cart
+        /// </summary>
+        /// <param name="id">ID of the product</param>
         public async Task<IActionResult> Remove(Guid id)
         {
             await shoppingCartService.RemoveAsync(id);
@@ -38,6 +52,9 @@ namespace CommunityManager.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        /// <summary>
+        /// Removes all products from the shopping cart
+        /// </summary>
         public async Task<IActionResult> Pay()
         {
             await shoppingCartService.PayAsync(User.Id());

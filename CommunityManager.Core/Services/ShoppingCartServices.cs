@@ -7,8 +7,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CommunityManager.Core.Services
 {
+    /// <summary>
+    /// Implementation of community service methods
+    /// </summary>
     public class ShoppingCartServices : IShoppingCartServices
     {
+        /// <summary>
+        /// Repository providing access to the database 
+        /// </summary>
         private readonly IRepository repository;
 
         public ShoppingCartServices(IRepository repository)
@@ -16,6 +22,11 @@ namespace CommunityManager.Core.Services
             this.repository = repository;
         }
 
+        /// <summary>
+        /// Gets all products in a shopping cart
+        /// </summary>
+        /// <param name="buyerId">ID of the current user</param>
+        /// <returns>Shopping cart view model</returns>
         public async Task<ShoppingCartViewModel> GetProductsAsync(string buyerId)
         {
             var product = await repository.All<Product>()
@@ -43,6 +54,10 @@ namespace CommunityManager.Core.Services
             };
         }
 
+        /// <summary>
+        /// Removes a product from a shopping cart
+        /// </summary>
+        /// <param name="id">ID of the product</param>
         public async Task RemoveAsync(Guid id)
         {
             var product = await repository.GetByIdAsync<Product>(id);
@@ -52,6 +67,10 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Removes all products in a shopping cart
+        /// </summary>
+        /// <param name="buyerId">ID of the current user</param>
         public async Task PayAsync(string buyerId)
         {
             var product = await repository.All<Product>()

@@ -11,11 +11,23 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CommunityManager.Controllers
 {
+    /// <summary>
+    /// Controller to manage communities
+    /// </summary>
     [Authorize]
     public class ChatroomController : Controller
     {
+        /// <summary>
+        /// Repository providing access to the database 
+        /// </summary>
         private readonly IRepository repository;
+        /// <summary>
+        /// Service providing methods to manage chatrooms
+        /// </summary>
         private readonly IChatroomServices chatroomService;
+        /// <summary>
+        /// Service providing methods to manage communities
+        /// </summary>
         private readonly ICommunityServices communityService;
         private readonly UserManager<ApplicationUser> userManager;
 
@@ -31,6 +43,12 @@ namespace CommunityManager.Controllers
             this.userManager = userManager;
         }
 
+        /// <summary>
+        /// Opens a chatroom
+        /// </summary>
+        /// <param name="id">ID of the chatroom</param>
+        /// <param name="communityId">ID of the community</param>
+        /// <returns>Chatroom view model</returns>
         public async Task<IActionResult> Open(Guid id, Guid communityId)
         {
             var user = await userManager.GetUserAsync(User);
@@ -39,25 +57,19 @@ namespace CommunityManager.Controllers
 
             if (!await communityService.CheckCommunityMemberId(communityId, user.Id))
             {
-                var errorMessage = "An error occured while trying to open that chatroom";
-
-                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
             if (!await chatroomService.CheckChatroomMemberId(id, user.Id))
             {
-                var errorMessage = "An error occured while trying to open that chatroom";
-
-                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
             var model = await chatroomService.GetChatroomByIdAsync(id);
 
             if (model.Name == null)
             {
-                var errorMessage = "The chatroom you are trying to open does not exist";
-
-                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
             ViewBag.UserName = user.UserName;
@@ -67,68 +79,54 @@ namespace CommunityManager.Controllers
             return View(model);
         }
 
+        /// <summary>
+        /// Adds a user to a chatroom
+        /// </summary>
+        /// <param name="id">ID of the chatroom</param>
+        /// <param name="communityId">ID of the community</param>
+        /// <returns>Redirects the user to a view showing the community</returns>
         public async Task<IActionResult> Join(Guid id, Guid communityId)
         {
             var userId = User.Id();
 
             if (!(await communityService.CheckCommunityMemberId(communityId, userId)))
             {
-                var errorMessage = "An error occured while trying to join that chatroom";
-
-                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
             if (await chatroomService.CheckChatroomMemberId(id, userId))
             {
-                var errorMessage = "An error occured while trying to join that chatroom";
-
-                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
-            try
-            {
-                await chatroomService.JoinChatroomAsync(id, userId);
+            await chatroomService.JoinChatroomAsync(id, userId);
 
-                return RedirectToAction("Open", "Community", new { id = communityId });
-            }
-            catch (Exception)
-            {
-                var errorMessage = "The chatroom you are trying to join does not exist";
-
-                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
-            }
+            return RedirectToAction("Open", "Community", new { id = communityId });
         }
 
+        /// <summary>
+        /// Removes a user from a chatroom
+        /// </summary>
+        /// <param name="id">ID of the chatroom</param>
+        /// <param name="communityId">ID of the community</param>
+        /// <returns>Redirects the user to a view showing the community</returns>
         public async Task<IActionResult> Leave(Guid id, Guid communityId)
         {
             var userId = User.Id();
 
             if (!(await communityService.CheckCommunityMemberId(communityId, userId)))
             {
-                var errorMessage = "An error occured while trying to leave that chatroom";
-
-                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
             if (!(await chatroomService.CheckChatroomMemberId(id, userId)))
             {
-                var errorMessage = "An error occured while trying to leave that chatroom";
-
-                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
+                return RedirectToAction("Error404", "Home");
             }
 
-            try
-            {
-                await chatroomService.LeaveChatroomAsync(id, userId);
+            await chatroomService.LeaveChatroomAsync(id, userId);
 
-                return RedirectToAction("Open", "Community", new { id = communityId });
-            }
-            catch (Exception)
-            {
-                var errorMessage = "The chatroom you are trying to leave does not exist";
-
-                return RedirectToAction("Open", "Community", new { id = communityId, manageErrorMessage = errorMessage });
-            }
+            return RedirectToAction("Open", "Community", new { id = communityId });
         }
     }
 }
