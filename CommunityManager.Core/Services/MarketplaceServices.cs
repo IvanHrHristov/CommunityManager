@@ -1,14 +1,19 @@
 ﻿using CommunityManager.Core.Contracts;
 using CommunityManager.Core.Models.Marketplace;
-using CommunityManager.Infrastructure.Data;
 using CommunityManager.Infrastructure.Data.Models;
 using HouseRentingSystem.Infrastructure.Data.Common;
 using Microsoft.EntityFrameworkCore;
 
 namespace CommunityManager.Core.Services
 {
+    /// <summary>
+    /// Implementation of marketplace service methods
+    /// </summary>
     public class MarketplaceServices : IMarketplaceServices
     {
+        /// <summary>
+        /// Repository providing access to the database 
+        /// </summary>
         private readonly IRepository repository;
 
         public MarketplaceServices(IRepository repository)
@@ -16,6 +21,11 @@ namespace CommunityManager.Core.Services
             this.repository = repository;
         }
 
+        /// <summary>
+        /// Creates a new product 
+        /// </summary>
+        /// <param name="model">Mange product view model</param>
+        /// <param name="fileBytes">Photo for the product</param>
         public async Task SellProductAsync(ManageProductViewModel model, byte[] fileBytes)
         {
             var entity = new Product()
@@ -34,6 +44,11 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Checks if a marketplace exists
+        /// </summary>
+        /// <param name="id">ID of the marketplace</param>
+        /// <param name="communityId">ID of the community</param>
         public async Task<bool> MarketplaceExists(Guid id, Guid communityId)
         {
             var marketplace = repository.AllReadonly<Marketplace>()
@@ -45,6 +60,12 @@ namespace CommunityManager.Core.Services
             return await marketplace.AnyAsync(m => m.Id == id);
         }
 
+        /// <summary>
+        /// Gets all products in a marketplace
+        /// </summary>
+        /// <param name="marketplaceId">ID of the marketplace</param>
+        /// <param name="communityId">ID of the community</param>
+        /// <returns>IEnumerable of products query view models</returns>
         public async Task<IEnumerable<ProductsQueryModel>> GetAllAsync(Guid marketplaceId, Guid communityId)
         {
             var entities = await repository.All<Product>()
@@ -67,6 +88,12 @@ namespace CommunityManager.Core.Services
             });
         }
 
+        /// <summary>
+        /// Gets all products in a marketplace sold by a user
+        /// </summary>
+        /// <param name="id">ID of the user</param>
+        /// <param name="marketplaceId">ID of the marketplace</param>
+        /// <returns>IEnumerable of products query view models</returns>
         public async Task<IEnumerable<ProductsQueryModel>> GetMineAsync(string id, Guid marketplaceId)
         {
             var entities = await repository.All<Product>()
@@ -90,17 +117,24 @@ namespace CommunityManager.Core.Services
             });
         }
 
+        /// <summary>
+        /// Sets a product's IsActive to false
+        /// </summary>
+        /// <param name="id">ID of the product</param>
         public async Task DeleteProductAsync(Guid id)
         {
             var product = await repository.GetByIdAsync<Product>(id);
 
             product.IsActive = false;
 
-            //await repository.DeleteAsync<Product>(id);
-
             await repository.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Gets a product with a specific ID
+        /// </summary>
+        /// <param name="id">ID of the product</param>
+        /// <returns>Details product view model</returns>
         public async Task<DetailsProductViewModel> GetProductByIdAsync(Guid id)
         {
             var entity = await repository.All<Product>()
@@ -124,6 +158,12 @@ namespace CommunityManager.Core.Services
             };
         }
 
+        /// <summary>
+        /// Edits the details of a product
+        /// </summary>
+        /// <param name="id">ID of the product</param>
+        /// <param name="model">Manage product view model</param>
+        /// <param name="fileBytes">Photo of the product</param>
         public async Task EditProducAsync(Guid id, ManageProductViewModel model, byte[] fileBytes)
         {
             var product = await repository.GetByIdAsync<Product>(id);
@@ -137,6 +177,11 @@ namespace CommunityManager.Core.Services
             await repository.SaveChangesAsync();
         }
 
+        /// <summary>
+        /// Sets product's BuyerId to the current user ID
+        /// </summary>
+        /// <param name="id">ID of the product</param>
+        /// <param name="buyerId">ID of the user</param>
         public async Task BuyProductAsync(Guid id, string buyerId)
         {
             var product = await repository.GetByIdAsync<Product>(id);

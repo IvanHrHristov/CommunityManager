@@ -75,15 +75,7 @@ namespace CommunityManager.Controllers
                 return View(model);
             }
 
-            var user = new ApplicationUser()
-            {
-                Email = model.Email,
-                UserName = model.UserName,
-                CreatedOn = DateTime.UtcNow,
-                Age = model.Age
-            };
-
-            var result = await userManager.CreateAsync(user, model.Password);
+            var result = await userManager.CreateAsync(userServices.CreateUserAsync(model), model.Password);
 
             if (result.Succeeded)
             {
@@ -130,8 +122,7 @@ namespace CommunityManager.Controllers
                 return View(model);
             }
 
-            var user = await userManager.FindByNameAsync(model.UserName);
-            user.IsActive = true;
+            var user = await userServices.GetUserAsync(model.UserName);
 
             if (user != null)
             {
@@ -193,7 +184,9 @@ namespace CommunityManager.Controllers
                 return View(model);
             }
 
-            await userServices.EditUserAsync(model);
+            var user = await userServices.EditUserAsync(model);
+
+            await userManager.UpdateAsync(user);
 
             return RedirectToAction("Index", "Home");
         }

@@ -4,6 +4,7 @@ using CommunityManager.Core.Models.User;
 using CommunityManager.Infrastructure.Data.Models;
 using HouseRentingSystem.Infrastructure.Data.Common;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace CommunityManager.Core.Services
 {
@@ -16,24 +17,48 @@ namespace CommunityManager.Core.Services
         /// Repository providing access to the database 
         /// </summary>
         private readonly IRepository repository;
-        /// <summary>
-        /// Providing access to the UserManager 
-        /// </summary>
-        private readonly UserManager<ApplicationUser> userManager;
 
-        public UserServices(
-            IRepository repository,
-            UserManager<ApplicationUser> userManager)
+        public UserServices(IRepository repository)
         {
             this.repository = repository;
-            this.userManager = userManager;
+        }
+
+        /// <summary>
+        /// Creates a new user
+        /// </summary>
+        /// <param name="model">Register view model</param>
+        /// <returns>ApplicationUser</returns>
+        public ApplicationUser CreateUserAsync(RegisterViewModel model)
+        {
+            var user = new ApplicationUser()
+            {
+                Email = model.Email,
+                UserName = model.UserName,
+                CreatedOn = DateTime.UtcNow,
+                Age = model.Age,
+                IsActive = true
+            };
+
+            return user;
+        }
+
+        /// <summary>
+        /// Gets a user 
+        /// </summary>
+        /// <param name="name">Username of the user</param>
+        /// <returns>ApplicationUser</returns>
+        public async Task<ApplicationUser> GetUserAsync(string name)
+        {
+            var user = await repository.All<ApplicationUser>().Where(u => u.UserName == name).FirstOrDefaultAsync();
+
+            return user;
         }
 
         /// <summary>
         /// Edits the details of the current user
         /// </summary>
         /// <param name="model">Edit view model</param>
-        public async Task EditUserAsync(EditViewModel model)
+        public async Task<ApplicationUser> EditUserAsync(EditViewModel model)
         {
             var user = await repository.GetByIdAsync<ApplicationUser>(model.Id);
 
@@ -41,7 +66,7 @@ namespace CommunityManager.Core.Services
             user.Email = model.Email;
             user.Age = model.Age;
 
-            await userManager.UpdateAsync(user);
+            return user;
         }
     }
 }
