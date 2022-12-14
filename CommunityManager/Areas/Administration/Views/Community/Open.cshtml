@@ -5,6 +5,10 @@
 
 @inject UserManager<ApplicationUser> userManager
 
+@{
+    int i = 1;
+}
+
 <h2 class="text-center">Welcome to @Model.Name</h2>
 <hr />
 
@@ -26,7 +30,7 @@
             @if (member.Id != Model.CreatorId)
             {
                 <tr>
-                    <th scope="row">1</th>
+                    <th scope="row">@(i++)</th>
                     <td>@member.Name</td>
                     @if ((await userManager.GetRolesAsync(await userManager.FindByIdAsync(member.Id))).FirstOrDefault() == "Supervisor")
                     {

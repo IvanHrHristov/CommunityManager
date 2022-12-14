@@ -1,15 +1,23 @@
 ﻿using CommunityManager.Core.Contracts;
 using CommunityManager.Infrastructure.Data.Models;
 using HouseRentingSystem.Infrastructure.Data.Common;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.EntityFrameworkCore;
 
 namespace CommunityManager.Hubs
 {
+    /// <summary>
+    /// Hub to manage connections/send messages with SignalR
+    /// </summary>
     public class ChatHub : Hub
     {
+        /// <summary>
+        /// Repository providing access to the database 
+        /// </summary>
         private readonly IRepository repository;
+        /// <summary>
+        /// Service providing methods to manage chatrooms
+        /// </summary>
         private readonly IChatroomServices chatroomService;
 
         public ChatHub(

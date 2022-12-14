@@ -1,97 +1,29 @@
 ﻿@model CommunityDetailsViewModel
 
 <nav id="sidebarMenu"
-     class="collapse d-lg-block sidebar collapse bg-white">
-    <div class="position-sticky">
+     class="collapse d-lg-block sidebar collapse bg-white" data-mdb-perfect-scrollbar="true" style="overflow: auto">
+    <div class="position-sticky" style="overflow: auto">
         @if (ViewBag.errorMessage != null)
         {
             <div class="alert alert-danger" role="alert">
                 @ViewBag.errorMessage
             </div>
         }
-        <div class="list-group list-group-flush mx-3 mt-4">
-            <p class="list-group-item"><em><strong>CHATROOMS</strong></em></p>
+        <div class="list-group list-group-flush mx-3 mt-4" >
+            <p class="list-group-item"><em><strong>MEMBERS</strong></em></p>
 
-            @foreach (var chatroom in Model.Chatrooms)
-            {
-                <span><b>@chatroom.Name</b></span>
-
-                if (chatroom.Members.All(m => m.Id != ViewBag.currentUserId))
-                {
-                    <a asp-controller="Chatroom" asp-action="Join" asp-route-id="@chatroom.Id" asp-route-communityId="@((Guid)(Model.Id))"
-                    class="list-group-item list-group-item-action py-2 ripple"
-                    aria-current="true" id="joinButton">
-                        <input type="hidden" id="groupJoinId" value="@chatroom.Id" />
-                       <span>Join chatroom</span>
-                    </a>
-                }
-                else {
-                    <a asp-controller="Chatroom" asp-action="Open" asp-route-id="@chatroom.Id" asp-route-communityId="@((Guid)(Model.Id))"
-                     class="list-group-item list-group-item-action py-2 ripple"
-                    aria-current="true" id="joinButton">
-                        <input type="hidden" id="groupJoinId" value="@chatroom.Id" />
-                        <span>Open</span>
-                    </a>
-                }
-
-                if (chatroom.Members.Any(m => m.Id == ViewBag.currentUserId) && Model.CreatorId != ViewBag.currentUserId)
-                {
-                    <a asp-controller="Chatroom" asp-action="Leave" asp-route-id="@chatroom.Id" asp-route-communityId="@((Guid)(Model.Id))"
-                    class="list-group-item list-group-item-action py-2 ripple"
-                    aria-current="true" id="leaveButton">
-                        <input type="hidden" id="groupLeaveId" value="@chatroom.Id" />
-                        <span>Leave</span>
-                    </a>
-                }
-            }
-
-            @if (Model.CreatorId == ViewBag.currentUserId)
-            {
-                <a asp-controller="Community" asp-action="AddChatroom" asp-route-id="@((Guid)Model.Id)"
-               class="list-group-item list-group-item-action py-2 ripple"
-               aria-current="true" >
-                    <span>Create a new chatroom</span>
-                </a>
-            }
-            
-            <p class="list-group-item"><em><strong>MARKETPLACES</strong></em></p>
-
-            @foreach (var marketplace in Model.Marketplaces)
-            {
-                <span><b>@marketplace.Name</b></span>
-
-                <a asp-controller="Marketplace" asp-action="All" asp-route-id="@marketplace.Id" asp-route-communityId="@((Guid)(Model.Id))"
-               class="list-group-item list-group-item-action py-2 ripple"
-               aria-current="true">
-                    <span>All products</span>
-                </a>
-
-                <a asp-controller="Marketplace" asp-action="Mine" asp-route-id="@marketplace.Id" asp-route-communityId="@((Guid)(Model.Id))"
-               class="list-group-item list-group-item-action py-2 ripple"
-               aria-current="true">
-                    <span>My products</span>
-                </a>
-
-                <a asp-controller="Marketplace" asp-action="Sell" asp-route-id="@marketplace.Id" asp-route-communityId="@((Guid)(Model.Id))"
-               class="list-group-item list-group-item-action py-2 ripple"
-               aria-current="true">
-                    <span>Sell a product</span>
-                </a>
-            }
-
-            @if (Model.CreatorId == ViewBag.currentUserId)
-            {
-                <a asp-controller="Community" asp-action="AddMarketplace" asp-route-id="@((Guid)Model.Id)"
-               class="list-group-item list-group-item-action py-2 ripple"
-               aria-current="true">
-                    <span>Create a new marketplace</span>
-                </a>
-            }
+            <div class="table-responsive">
+                <table class="table" style="width: 165px">
+                    <tbody>
+                        @foreach (var member in Model.Members)
+                        {
+                            <tr>
+                                <td>@member.Name</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </nav>
-
-@section Scripts{
-    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
-    <script src="~/js/manageChat.js"></script>
-}

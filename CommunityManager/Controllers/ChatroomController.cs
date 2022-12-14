@@ -29,6 +29,9 @@ namespace CommunityManager.Controllers
         /// Service providing methods to manage communities
         /// </summary>
         private readonly ICommunityServices communityService;
+        /// <summary>
+        /// Providing access to the UserManager 
+        /// </summary>
         private readonly UserManager<ApplicationUser> userManager;
 
         public ChatroomController(

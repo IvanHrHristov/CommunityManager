@@ -4,10 +4,10 @@
     ViewBag.Title = "Sell a product";
 }
 
+<a asp-controller="Community" asp-action="Open" asp-route-id="@ViewBag.CommunityId" class="btn btn-primary">Back</a>
+
 <h2 class="text-center">@ViewBag.Title</h2>
 <hr />
-
-<a asp-controller="Community" asp-action="Open" asp-route-id="@(ViewBag.CommunityId ?? Model.CommunityId)" class="btn btn-info">Back</a>
 
 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
 <div class="row">

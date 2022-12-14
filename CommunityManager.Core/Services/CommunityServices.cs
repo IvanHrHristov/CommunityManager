@@ -277,9 +277,11 @@ namespace CommunityManager.Core.Services
         /// <returns>Community view model</returns>
         public async Task<CommunityDetailsViewModel> GetCommunityByIdAsync(Guid id)
         {
-            var entity = await repository.All<Community>()
+            var entity = await repository.AllReadonly<Community>()
                 .Include(c => c.Marketplaces)
                 .Include(c => c.Chatrooms)
+                .ThenInclude(c => c.ChatroomsMembers)
+                .ThenInclude(cm => cm.ApplicationUser)
                 .Include(c => c.CommunitiesMembers)
                 .ThenInclude(cm => cm.ApplicationUser)
                 .FirstOrDefaultAsync(c => c.Id == id);
@@ -294,8 +296,6 @@ namespace CommunityManager.Core.Services
                 Id = entity.Id,
                 Name = entity.Name,
                 Description = entity.Description,
-                Photo = entity.Photo,
-                PhotoLenght = entity.PhotoLenght,
                 CreatedOn = entity.CreatedOn,
                 CreatorId= entity.CreatorId,
                 AgeRestricted = entity.AgeRestricted,
@@ -309,7 +309,12 @@ namespace CommunityManager.Core.Services
                 {
                     Id = c.Id,
                     Name= c.Name,
-                    IsActive= c.IsActive
+                    IsActive= c.IsActive,
+                    Members = c.ChatroomsMembers.Where(cm => cm.ApplicationUser.IsActive).Select(m => new UserViewModel()
+                    {
+                        Id = m.ApplicationUserId,
+                        Name = m.ApplicationUser.UserName
+                    }).ToList()
                 }).ToList(),
                 Members = entity.CommunitiesMembers.Where(cm => cm.ApplicationUser.IsActive).Select(cm => new UserViewModel()
                 {
@@ -326,7 +331,7 @@ namespace CommunityManager.Core.Services
         /// <returns>Community view model</returns>
         public async Task<CommunityDetailsViewModel> GetCommunityByIdForAdminAsync(Guid id)
         {
-            var entity = await repository.All<Community>()
+            var entity = await repository.AllReadonly<Community>()
                 .Include(c => c.Marketplaces)
                 .Include(c => c.Chatrooms)
                 .Include(c => c.CommunitiesMembers)

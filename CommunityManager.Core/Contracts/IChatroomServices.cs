@@ -1,4 +1,5 @@
 ﻿using CommunityManager.Core.Models.Chatroom;
+using CommunityManager.Infrastructure.Data.Models;
 
 namespace CommunityManager.Core.Contracts
 {
