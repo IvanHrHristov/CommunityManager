@@ -296,6 +296,8 @@ namespace CommunityManager.Core.Services
                 Id = entity.Id,
                 Name = entity.Name,
                 Description = entity.Description,
+                Photo = entity.Photo,
+                PhotoLenght = entity.PhotoLenght,
                 CreatedOn = entity.CreatedOn,
                 CreatorId= entity.CreatorId,
                 AgeRestricted = entity.AgeRestricted,

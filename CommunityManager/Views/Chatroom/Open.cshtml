@@ -1,14 +1,29 @@
 ﻿@model ChatroomViewModel
 
 <div class="container py-5">
-
     <div class="row d-flex justify-content-center">
         <div class="col-md-14 col-lg-12 col-xl-10">
             <div class="card" id="chat2">
                 <div class="card-header d-flex justify-content-between align-items-center p-3">
                     <a asp-controller="Community" asp-action="Open" asp-route-id="@ViewBag.CommunityId" class="btn btn-primary">Back</a>
                     <h5 class="mb-0">@Model.Name</h5>
-                    <div></div>
+                    <div>
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown">Members: @(Model.Members?.Count() ?? 1)</button>
+                            <ul class="dropdown-menu">
+                                @foreach (var members in Model.Members)
+                                {
+                                    <li>
+                                        <p>
+                                            <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png" 
+                                            alt="avatar 1" style="width: 25px; height: 100%;">
+                                            @members.Name
+                                        </p>
+                                    </li>
+                                }
+                            </ul>
+                        </div>
+                    </div>
                 </div>
                 <div class="card-body" data-mdb-perfect-scrollbar="true" style="position: relative; height: 600px; overflow: auto;" id="messages">
                     @if (Model.Messages != null && Model.Messages.Count() > 0)
@@ -22,8 +37,8 @@
                                         <p class="small mb-1 text-muted">@message.CreatedOn.ToString("dddd, d MMMM yyyy h:mm:ss tt")</p>
                                         <p class="small mb-0">
                                             <p><strong>@message.SenderUserName</strong> <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png"
-                                            alt="avatar 1" style="width: 25px; height: 100%;"></p> @message.Content
-                                        </p>
+                                            alt="avatar 1" style="width: 25px; height: 100%;"></p>
+                                        <p style="width: 350px">@message.Content</p>
                                     </div>
                                 </div>
                             }
@@ -37,8 +52,8 @@
                                             <p>
                                                 <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png"
                                                 alt="avatar 1" style="width: 25px; height: 100%;"> <strong>@message.SenderUserName</strong>
-                                            </p> @message.Content
-                                        </p>
+                                            </p>
+                                        <p style="width: 350px">@message.Content</p>
                                     </div>
                                 </div>
                             }
@@ -55,7 +70,6 @@
             </div>
         </div>
     </div>
-
 </div>
 
 @section Scripts{

@@ -1,6 +1,7 @@
 ﻿using CommunityManager.Core.Models.Chatroom;
 using CommunityManager.Core.Models.Community;
 using CommunityManager.Core.Models.Marketplace;
+using CommunityManager.Core.Models.User;
 
 namespace CommunityManager.Core.Contracts
 {

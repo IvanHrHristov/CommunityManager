@@ -158,13 +158,13 @@ namespace CommunityManager.Controllers
 
             ViewBag.currentUserId = currentUserId;
 
-            var model = await communityService.GetCommunityByIdAsync(id);
-
             if (!(await communityService.CheckCommunityMemberId(id, currentUserId)))
             {
                 return RedirectToAction("Error404", "Home");
             }
 
+            var model = await communityService.GetCommunityByIdAsync(id);
+            
             if (model.Name == null)
             {
                 return RedirectToAction("Error404", "Home");

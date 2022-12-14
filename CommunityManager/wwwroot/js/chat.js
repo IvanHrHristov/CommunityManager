@@ -21,10 +21,10 @@ connection.on('ReceiveMessage', function (user, message) {
     //    + currentdate.getHours() + ":" + currentdate.getMinutes();
 
     if (userName === user) {
-        div.innerHTML += `<div class="d-flex flex-row justify-content-end mb-4"> <div class="p-3 me-3 border" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);"> <p class="small mb-1 text-muted">${datetime}</p> <p class="small mb-0"> <p><strong>${user}</strong> <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png" alt="avatar 1" style="width: 25px; height: 100%;"></p> ${msg} </p> </div> </div>`;
+        div.innerHTML += `<div class="d-flex flex-row justify-content-end mb-4"> <div class="p-3 me-3 border" style="border-radius: 15px; background-color: rgba(57, 192, 237,.2);"> <p class="small mb-1 text-muted">${datetime}</p> <p class="small mb-0"> <p><strong>${user}</strong> <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png" alt="avatar 1" style="width: 25px; height: 100%;"></p> <p style="width: 350px">${msg}</p> </div> </div>`;
     }
     else {
-        div.innerHTML += `<div class="d-flex flex-row justify-content-start mb-4"> <div class="p-3 ms-3" style="border-radius: 15px; background-color: #fbfbfb;"> <p class="small mb-1 text-muted">${datetime}</p> <p class="small mb-0"> <p> <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png" alt="avatar 1" style="width: 25px; height: 100%;"> <strong>${user}</strong> </p> ${msg} </p> </div> </div>`;
+        div.innerHTML += `<div class="d-flex flex-row justify-content-start mb-4"> <div class="p-3 ms-3" style="border-radius: 15px; background-color: #fbfbfb;"> <p class="small mb-1 text-muted">${datetime}</p> <p class="small mb-0"> <p> <img src="https://i.pinimg.com/originals/ff/a0/9a/ffa09aec412db3f54deadf1b3781de2a.png" alt="avatar 1" style="width: 25px; height: 100%;"> <strong>${user}</strong> </p> <p style="width: 350px">${msg}</p> </div> </div>`;
     }
 
     var container = document.getElementById("messages");
