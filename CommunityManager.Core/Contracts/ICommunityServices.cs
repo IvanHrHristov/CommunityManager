@@ -43,6 +43,20 @@ namespace CommunityManager.Core.Contracts
         Task JoinCommunityAsync(Guid communityId, string userId);
 
         /// <summary>
+        /// Gets all marketplaces in a community
+        /// </summary>
+        /// <param name="id">ID of the community</param>
+        /// <returns>IEnumerable of marketplace view model</returns>
+        Task<IEnumerable<MarketplaceViewModel>> GetMarketplacesForCommunityAsync(Guid id);
+
+        /// <summary>
+        /// Gets all chatrooms in a community
+        /// </summary>
+        /// <param name="id">ID of the community</param>
+        /// <returns>IEnumerable of chatroom view model</returns>
+        Task<IEnumerable<ChatroomViewModel>> GetChatroomsForCommunityAsync(Guid id);
+
+        /// <summary>
         /// Gets a community with a specific ID
         /// </summary>
         /// <param name="id">ID of the community</param>

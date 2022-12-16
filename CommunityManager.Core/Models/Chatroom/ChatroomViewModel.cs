@@ -12,6 +12,8 @@ namespace CommunityManager.Core.Models.Chatroom
 
         public List<UserViewModel>? Members { get; set; } = new List<UserViewModel>();
 
+        public string CreatorId { get; set; } = null!;
+
         public bool IsActive { get; set; }
     }
 }

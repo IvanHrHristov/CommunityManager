@@ -1,105 +1,18 @@
 ﻿@model CommunityDetailsViewModel
 
-<h2 class="text-center">Welcome to @Model.Name</h2>
+<h1 class="text-center">Welcome to @Model.Name</h1>
 <hr />
 
-<h3 class="text-center">Chatrooms 
-    @if (Model.CreatorId == ViewBag.currentUserId)
-    {
-        <span>
-            <a asp-controller="Community" asp-action="AddChatroom" asp-route-id="@((Guid)Model.Id)" >
-                <i class="fa-solid fa-plus"></i>
-            </a>
-        </span>
-    }
-</h3>
-
-<div class="d-flex justify-content-start flex-wrap text-center">
-    @foreach (var chatroom in Model.Chatrooms)
-    {
-        <div class="card col-4" style="width: 20rem; ">
-            <div class="card-body text-center">
-                <h4 class="card-title mt-1">@chatroom.Name</h4>
-            </div>
-            @if (chatroom.Members.All(m => m.Id != ViewBag.currentUserId))
-            {
-                <a asp-controller="Chatroom" asp-action="Join" asp-route-id="@chatroom.Id" asp-route-communityId="@((Guid)(Model.Id))"
-               class="list-group-item list-group-item-action py-2 ripple"
-               aria-current="true" id="joinButton">
-                    <input type="hidden" id="groupJoinId" value="@chatroom.Id" />
-                    <span>Join chatroom</span>
-                </a>
-            }
-            else {
-                <a asp-controller="Chatroom" asp-action="Open" asp-route-id="@chatroom.Id" asp-route-communityId="@((Guid)(Model.Id))"
-               class="list-group-item list-group-item-action py-2 ripple"
-               aria-current="true" id="joinButton">
-                    <input type="hidden" id="groupJoinId" value="@chatroom.Id" />
-                    <span>Open</span>
-                </a>
-            }
-
-            @if (chatroom.Members.Any(m => m.Id == ViewBag.currentUserId) && Model.CreatorId != ViewBag.currentUserId)
-            {
-                <a asp-controller="Chatroom" asp-action="Leave" asp-route-id="@chatroom.Id" asp-route-communityId="@((Guid)(Model.Id))"
-               class="list-group-item list-group-item-action py-2 ripple"
-               aria-current="true" id="leaveButton">
-                    <input type="hidden" id="groupLeaveId" value="@chatroom.Id" />
-                    <span>Leave</span>
-                </a>
-            }
-        </div>
-    }
+<div class="text-center">
+    <h2><a asp-controller="Community" asp-action="AllChatrooms" asp-route-id="@Model.Id" class="text-decoration-none">Chatrooms</a></h2>
 </div>
 
-<br />
-
-<h3 class="text-center">Marketplaces 
-    @if (Model.CreatorId == ViewBag.currentUserId)
-    {
-        <span>
-            <a asp-controller="Community" asp-action="AddMarketplace" asp-route-id="@((Guid)Model.Id)">
-                <i class="fa-solid fa-plus"></i>
-            </a>
-        </span>
-    }
-</h3>
-
-<div class="d-flex justify-content-start flex-wrap text-center">
-    @foreach (var marketplace in Model.Marketplaces)
-    {
-        <div class="card col-4" style="width: 20rem; ">
-            <div class="card-body text-center">
-                <h4 class="card-title mt-1">@marketplace.Name</h4>
-            </div>
-            <a asp-controller="Marketplace" asp-action="All" asp-route-id="@marketplace.Id" asp-route-communityId="@((Guid)(Model.Id))"
-           class="list-group-item list-group-item-action py-2 ripple"
-           aria-current="true">
-                <span>All products</span>
-            </a>
-
-            <a asp-controller="Marketplace" asp-action="Mine" asp-route-id="@marketplace.Id" asp-route-communityId="@((Guid)(Model.Id))"
-           class="list-group-item list-group-item-action py-2 ripple"
-           aria-current="true">
-                <span>My products</span>
-            </a>
-
-            <a asp-controller="Marketplace" asp-action="Sell" asp-route-id="@marketplace.Id" asp-route-communityId="@((Guid)(Model.Id))"
-           class="list-group-item list-group-item-action py-2 ripple"
-           aria-current="true">
-                <span>Sell a product</span>
-            </a>
-        </div>
-    }
+<div class="text-center">
+    <h2><a asp-controller="Community" asp-action="AllMarketplaces" asp-route-id="@Model.Id" class="text-decoration-none">Marketplaces</a></h2>
 </div>
 
 <partial name="_SidebarPartial" model="@Model" />
 
 @section css {
     <link rel="stylesheet" href="~/css/sidebar.css" />
-}
-
-@section Scripts{
-    <script src="~/lib/signalr/dist/browser/signalr.js"></script>
-    <script src="~/js/manageChat.js"></script>
 }

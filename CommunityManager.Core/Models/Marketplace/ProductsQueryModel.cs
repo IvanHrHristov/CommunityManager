@@ -17,5 +17,7 @@
         public string BuyerId { get; set; } = null!;
 
         public string Buyer { get; set; } = null!;
+
+        public bool IsActive { get; set; }
     }
 }

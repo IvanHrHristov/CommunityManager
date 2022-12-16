@@ -100,8 +100,7 @@ namespace CommunityManager.Core.Services
                 .Include(p => p.Seller)
                 .Include(p => p.Buyer)
                 .Where(p => p.SellerId == id &&
-                    p.MarketplaceId == marketplaceId &&
-                    p.IsActive == true)
+                    p.MarketplaceId == marketplaceId)
                 .ToListAsync();
 
             return entities.Select(p => new ProductsQueryModel()
@@ -113,7 +112,8 @@ namespace CommunityManager.Core.Services
                 Buyer = p?.Buyer?.UserName,
                 BuyerId = p?.Buyer?.Id,
                 Photo = p.Photo,
-                PhotoLenght = p.PhotoLenght
+                PhotoLenght = p.PhotoLenght,
+                IsActive = p.IsActive
             });
         }
 

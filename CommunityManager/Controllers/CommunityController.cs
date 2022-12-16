@@ -174,6 +174,35 @@ namespace CommunityManager.Controllers
         }
 
         /// <summary>
+        /// Shows all marketplaces in a community
+        /// </summary>
+        /// <param name="id">ID of the community</param>
+        /// <returns>IEnumerable marketplace view model</returns>
+        public async Task<IActionResult> AllMarketplaces(Guid id)
+        {
+            ViewBag.communityId = id;
+
+            var model = await communityService.GetMarketplacesForCommunityAsync(id);
+
+            return View(model);
+        }
+
+        /// <summary>
+        /// Shows all chatrooms in a community
+        /// </summary>
+        /// <param name="id">ID of the community</param>
+        /// <returns>IEnumerable chatroom view model</returns>
+        public async Task<IActionResult> AllChatrooms(Guid id)
+        {
+            ViewBag.currentUserId = User.Id();
+            ViewBag.communityId = id;
+
+            var model = await communityService.GetChatroomsForCommunityAsync(id);
+
+            return View(model);
+        }
+
+        /// <summary>
         /// Redirects user to the view to add a marketplace to a community
         /// </summary>
         /// <returns>The view to add a marketplace</returns>

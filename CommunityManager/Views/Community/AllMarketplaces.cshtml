@@ -1,0 +1,46 @@
+﻿@model IEnumerable<MarketplaceViewModel>
+
+<a asp-controller="Community" asp-action="Open" asp-route-id="@ViewBag.CommunityId" class="btn btn-primary">Back</a>
+
+<div class="text-center">
+    <h1 class="display-4">All marketplaces</h1>
+</div>
+
+<br />
+
+<div class="text-center row">
+    @if (Model.Count() == 0)
+    {
+        <h2>No marketplaces available</h2>
+    }
+</div>
+
+<div class="text-center row">
+    <div class="d-flex justify-content-between flex-wrap">
+        @foreach (var marketplace in Model)
+        {
+            <div class="card col-4" style="width: 20rem; ">
+                <div class="card-body text-center">
+                    <h4 class="card-title mt-1">@marketplace.Name</h4>
+                </div>
+                <a asp-controller="Marketplace" asp-action="All" asp-route-id="@marketplace.Id" asp-route-communityId="@((Guid)(ViewBag.communityId))"
+               class="list-group-item list-group-item-action py-2 ripple"
+               aria-current="true">
+                    <span>All products</span>
+                </a>
+
+                <a asp-controller="Marketplace" asp-action="Mine" asp-route-id="@marketplace.Id" asp-route-communityId="@((Guid)(ViewBag.communityId))"
+               class="list-group-item list-group-item-action py-2 ripple"
+               aria-current="true">
+                    <span>My products</span>
+                </a>
+
+                <a asp-controller="Marketplace" asp-action="Sell" asp-route-id="@marketplace.Id" asp-route-communityId="@((Guid)(ViewBag.communityId))"
+               class="list-group-item list-group-item-action py-2 ripple"
+               aria-current="true">
+                    <span>Sell a product</span>
+                </a>
+            </div>
+        }
+    </div>
+</div>

@@ -4,7 +4,7 @@
     int i = 0;
 }
 
-<a asp-controller="Community" asp-action="Open" asp-route-id="@ViewBag.CommunityId" class="btn btn-primary">Back</a>
+<a asp-controller="Community" asp-action="AllMarketplaces" asp-route-id="@ViewBag.CommunityId" class="btn btn-primary">Back</a>
 
 <h2 class="text-center">@ViewBag.Title</h2>
 <hr />
@@ -40,7 +40,11 @@
                 <span></span>
                 <a asp-controller="Marketplace" asp-action="Delete" asp-route-id="@product.Id" asp-route-communityId="@ViewBag.CommunityId" class="btn btn-danger mb-2">Delete</a>
             }
-            @if (ViewBag.Title == "My Products" && product.BuyerId != null)
+            @if (ViewBag.Title == "My Products" && product.BuyerId != null && product.IsActive == true)
+            {
+                <button class="btn btn-success mb-2" disabled>In cart</button>
+            }
+            @if (ViewBag.Title == "My Products" && product.BuyerId != null && product.IsActive == false)
             {
                 <button class="btn btn-success mb-2" disabled>Purchased</button>
             }
