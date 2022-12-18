@@ -74,7 +74,7 @@ namespace CommunityManager.Areas.Administration.Controllers
 
             ViewBag.currentUserId = currentUserId;
 
-            var model = await communityService.GetCommunityByIdForAdminAsync(id);
+            var model = await communityService.GetCommunityByIdAsync(id);
 
             if (!await communityService.CheckCommunityMemberId(id, currentUserId))
             {
@@ -85,6 +85,34 @@ namespace CommunityManager.Areas.Administration.Controllers
             {
                 return RedirectToAction("Error404", "Home");
             }
+
+            return View(model);
+        }
+
+        /// <summary>
+        /// Shows all marketplaces in a community
+        /// </summary>
+        /// <param name="id">ID of the community</param>
+        /// <returns>IEnumerable marketplace view model</returns>
+        public async Task<IActionResult> AllMarketplaces(Guid id)
+        {
+            ViewBag.communityId = id;
+
+            var model = await communityService.GetMarketplacesForCommunityForAdminAsync(id);
+
+            return View(model);
+        }
+
+        /// <summary>
+        /// Shows all chatrooms in a community
+        /// </summary>
+        /// <param name="id">ID of the community</param>
+        /// <returns>IEnumerable chatroom view model</returns>
+        public async Task<IActionResult> AllChatrooms(Guid id)
+        {
+            ViewBag.communityId = id;
+
+            var model = await communityService.GetChatroomsForCommunityForAdminAsync(id);
 
             return View(model);
         }
@@ -317,7 +345,7 @@ namespace CommunityManager.Areas.Administration.Controllers
 
             await communityService.DeleteMarketplaceAsync(id);
 
-            return RedirectToAction(nameof(Open), new { id = communityId });
+            return RedirectToAction(nameof(AllMarketplaces), new { id = communityId });
         }
 
         /// <summary>
@@ -335,7 +363,7 @@ namespace CommunityManager.Areas.Administration.Controllers
 
             await communityService.RestoreMarketplaceAsync(id);
 
-            return RedirectToAction(nameof(Open), new { id = communityId });
+            return RedirectToAction(nameof(AllMarketplaces), new { id = communityId });
         }
 
         /// <summary>
@@ -353,7 +381,7 @@ namespace CommunityManager.Areas.Administration.Controllers
 
             await communityService.DeleteChatroomAsync(id);
 
-            return RedirectToAction(nameof(Open), new { id = communityId });
+            return RedirectToAction(nameof(AllChatrooms), new { id = communityId });
         }
 
         /// <summary>
@@ -371,7 +399,7 @@ namespace CommunityManager.Areas.Administration.Controllers
 
             await communityService.RestoreChatroomAsync(id);
 
-            return RedirectToAction(nameof(Open), new { id = communityId });
+            return RedirectToAction(nameof(AllChatrooms), new { id = communityId });
         }
     }
 }

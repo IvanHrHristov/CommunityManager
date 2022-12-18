@@ -57,18 +57,25 @@ namespace CommunityManager.Core.Contracts
         Task<IEnumerable<ChatroomViewModel>> GetChatroomsForCommunityAsync(Guid id);
 
         /// <summary>
+        /// Gets all marketplaces in a community
+        /// </summary>
+        /// <param name="id">ID of the community</param>
+        /// <returns>IEnumerable of marketplace view model</returns>
+        Task<IEnumerable<MarketplaceViewModel>> GetMarketplacesForCommunityForAdminAsync(Guid id);
+
+        /// <summary>
+        /// Gets all chatrooms in a community
+        /// </summary>
+        /// <param name="id">ID of the community</param>
+        /// <returns>IEnumerable of chatroom view model</returns>
+        Task<IEnumerable<ChatroomViewModel>> GetChatroomsForCommunityForAdminAsync(Guid id);
+
+        /// <summary>
         /// Gets a community with a specific ID
         /// </summary>
         /// <param name="id">ID of the community</param>
         /// <returns>Community view model</returns>
         Task<CommunityDetailsViewModel> GetCommunityByIdAsync(Guid id);
-
-        /// <summary>
-        /// Gets a community with a specific ID for admin area
-        /// </summary>
-        /// <param name="id">ID of the community</param>
-        /// <returns>Community view model</returns>
-        Task<CommunityDetailsViewModel> GetCommunityByIdForAdminAsync(Guid id);
 
         /// <summary>
         /// Adds a marketplace to a community

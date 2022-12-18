@@ -104,7 +104,7 @@ namespace CommunityManager.Controllers
 
             await chatroomService.JoinChatroomAsync(id, userId);
 
-            return RedirectToAction("Open", "Community", new { id = communityId });
+            return RedirectToAction("AllChatrooms", "Community", new { id = communityId });
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace CommunityManager.Controllers
 
             await chatroomService.LeaveChatroomAsync(id, userId);
 
-            return RedirectToAction("Open", "Community", new { id = communityId });
+            return RedirectToAction("AllChatrooms", "Community", new { id = communityId });
         }
     }
 }

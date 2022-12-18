@@ -318,6 +318,54 @@ namespace CommunityManager.Core.Services
         }
 
         /// <summary>
+        /// Gets all marketplaces in a community
+        /// </summary>
+        /// <param name="id">ID of the community</param>
+        /// <returns>IEnumerable of marketplace view model</returns>
+        public async Task<IEnumerable<MarketplaceViewModel>> GetMarketplacesForCommunityForAdminAsync(Guid id)
+        {
+            var entity = await repository.AllReadonly<Marketplace>()
+                .Where(m => m.CommunityId == id)
+                .ToListAsync();
+
+            return entity.Select(m => new MarketplaceViewModel()
+            {
+                Id = m.Id,
+                Name = m.Name,
+                IsActive = m.IsActive,
+            }).ToList();
+        }
+
+        /// <summary>
+        /// Gets all chatrooms in a community
+        /// </summary>
+        /// <param name="id">ID of the community</param>
+        /// <returns>IEnumerable of chatroom view model</returns>
+        public async Task<IEnumerable<ChatroomViewModel>> GetChatroomsForCommunityForAdminAsync(Guid id)
+        {
+            var entity = await repository.AllReadonly<Chatroom>()
+                .Include(c => c.ChatroomsMembers)
+                .ThenInclude(cm => cm.ApplicationUser)
+                .Where(c => c.CommunityId == id)
+                .ToListAsync();
+
+            var creatorId = (await repository.GetByIdAsync<Community>(id)).CreatorId;
+
+            return entity.Select(c => new ChatroomViewModel()
+            {
+                Id = c.Id,
+                Name = c.Name,
+                IsActive = c.IsActive,
+                CreatorId = creatorId,
+                Members = c.ChatroomsMembers.Where(cm => cm.ApplicationUser.IsActive).Select(m => new UserViewModel()
+                {
+                    Id = m.ApplicationUserId,
+                    Name = m.ApplicationUser.UserName
+                }).ToList()
+            }).ToList();
+        }
+
+        /// <summary>
         /// Gets a community with a specific ID
         /// </summary>
         /// <param name="id">ID of the community</param>
@@ -347,53 +395,6 @@ namespace CommunityManager.Core.Services
                 CreatorId= entity.CreatorId,
                 AgeRestricted = entity.AgeRestricted,
                 Members = entity.CommunitiesMembers.Where(cm => cm.ApplicationUser.IsActive).Select(cm => new UserViewModel()
-                {
-                    Id = cm.ApplicationUser.Id,
-                    Name = cm.ApplicationUser.UserName
-                }).ToList()
-            };
-        }
-
-        /// <summary>
-        /// Gets a community with a specific ID for admin area
-        /// </summary>
-        /// <param name="id">ID of the community</param>
-        /// <returns>Community view model</returns>
-        public async Task<CommunityDetailsViewModel> GetCommunityByIdForAdminAsync(Guid id)
-        {
-            var entity = await repository.AllReadonly<Community>()
-                .Include(c => c.Marketplaces)
-                .Include(c => c.Chatrooms)
-                .Include(c => c.CommunitiesMembers)
-                .ThenInclude(cm => cm.ApplicationUser)
-                .FirstOrDefaultAsync(c => c.Id == id);
-
-            if (entity == null)
-            {
-                return new CommunityDetailsViewModel();
-            }
-
-            return new CommunityDetailsViewModel()
-            {
-                Id = entity.Id,
-                Name = entity.Name,
-                Description = entity.Description,
-                CreatedOn = entity.CreatedOn,
-                CreatorId = entity.CreatorId,
-                AgeRestricted = entity.AgeRestricted,
-                Marketplaces = entity.Marketplaces.Select(m => new MarketplaceViewModel()
-                {
-                    Id = m.Id,
-                    Name = m.Name,
-                    IsActive = m.IsActive
-                }).ToList(),
-                Chatrooms = entity.Chatrooms.Select(c => new ChatroomViewModel()
-                {
-                    Id = c.Id,
-                    Name = c.Name,
-                    IsActive = c.IsActive
-                }).ToList(),
-                Members = entity.CommunitiesMembers.Select(cm => new UserViewModel()
                 {
                     Id = cm.ApplicationUser.Id,
                     Name = cm.ApplicationUser.UserName

@@ -4,11 +4,17 @@
 <hr />
 
 <div class="text-center">
-    <h2><a asp-controller="Community" asp-action="AllChatrooms" asp-route-id="@Model.Id" class="text-decoration-none">Chatrooms</a></h2>
+    <h2>
+        <a asp-controller="Community" asp-action="AllChatrooms" asp-route-id="@Model.Id" class="text-decoration-none">Chatrooms</a>
+        <a asp-controller="Community" asp-action="AddChatroom" asp-route-id="@Model.Id" class="text-decoration-none"><i class="fa-solid fa-plus"></i></a>
+    </h2>
 </div>
 
 <div class="text-center">
-    <h2><a asp-controller="Community" asp-action="AllMarketplaces" asp-route-id="@Model.Id" class="text-decoration-none">Marketplaces</a></h2>
+    <h2>
+        <a asp-controller="Community" asp-action="AllMarketplaces" asp-route-id="@Model.Id" class="text-decoration-none">Marketplaces</a>
+        <a asp-controller="Community" asp-action="AddMarketplace" asp-route-id="@Model.Id" class="text-decoration-none"><i class="fa-solid fa-plus"></i></a>
+    </h2>
 </div>
 
 <partial name="_SidebarPartial" model="@Model" />

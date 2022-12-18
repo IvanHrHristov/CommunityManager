@@ -359,34 +359,6 @@ namespace CommunityManager.UnitTests
         }
 
         [Test]
-        public async Task TestGetCommunityByIdForAdmin()
-        {
-            var repository = new Repository(context);
-            communityServices = new CommunityServices(repository);
-
-            Guid communityId = Guid.Parse("cb23536b-dfeb-47de-8a21-2e48ed26f9cd");
-            string creatorId = "b3945c4f-9ae0-48f8-9e4e-d199a2205bf4";
-
-            await repository.AddAsync(new Community()
-            {
-                Id = communityId,
-                CreatorId = creatorId,
-                Description = "",
-                Name = "",
-                Photo = new Byte[32],
-                AgeRestricted = false,
-                PhotoLenght = 1,
-                IsActive = true
-            });
-
-            await repository.SaveChangesAsync();
-
-            var community = await communityServices.GetCommunityByIdForAdminAsync(communityId);
-
-            Assert.That(community, Is.Not.Null);
-        }
-
-        [Test]
         public async Task TestDeleteCommunity()
         {
             var repository = new Repository(context);

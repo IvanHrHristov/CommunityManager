@@ -177,7 +177,7 @@ namespace CommunityManager.Controllers
 
             await marketplaceService.SellProductAsync(model, fileBytes);
 
-            return RedirectToAction(nameof(All), new { id = model.MarketplaceId, communityId = model.CommunityId });
+            return RedirectToAction(nameof(Mine), new { id = model.MarketplaceId, communityId = model.CommunityId });
         }
 
         /// <summary>
@@ -243,7 +243,7 @@ namespace CommunityManager.Controllers
 
             await marketplaceService.EditProducAsync(id, model, fileBytes);
 
-            return RedirectToAction(nameof(All), new { id = model.MarketplaceId, communityId = model.CommunityId });
+            return RedirectToAction(nameof(Mine), new { id = model.MarketplaceId, communityId = model.CommunityId });
         }
 
         /// <summary>
