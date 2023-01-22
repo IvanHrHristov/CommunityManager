@@ -1,0 +1,40 @@
+﻿@model EditViewModel
+
+@{
+    ViewData["Title"] = "Edit profile";
+}
+
+<h1 class="text-center">@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-4 offset-md-4">
+        <form id="editForm" method="post">
+            <hr />
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="@Model.Id" value="@(ViewBag.Id ?? Model.Id)" />
+            <div class="text-center mb-3">
+                <label asp-for="@Model.UserName">Username</label>
+                <input class="form-control " autocomplete="username" aria-required="true" asp-for="@Model.UserName" />
+                <span asp-validation-for="@Model.UserName" class="text-danger"></span>
+            </div>
+            <div class="text-center mb-3">
+                <label asp-for="@Model.Email">Email</label>
+                <input class="form-control " autocomplete="username" aria-required="true" asp-for="@Model.Email" />
+                <span asp-validation-for="@Model.Email" class="text-danger"></span>
+            </div>
+            <div class="text-center mb-3">
+                <label asp-for="@Model.Age">Age</label>
+                <input class="form-control" type="number" autocomplete="age" aria-required="true" asp-for="@Model.Age" />
+                <span asp-validation-for="@Model.Age" class="text-danger"></span>
+            </div>
+            <div class="text-center">
+                <button id="editSubmit" type="submit" class="btn btn-primary">Edit</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+

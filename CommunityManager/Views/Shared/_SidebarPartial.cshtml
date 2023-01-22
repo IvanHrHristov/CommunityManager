@@ -1,0 +1,29 @@
+﻿@model CommunityDetailsViewModel
+
+<nav id="sidebarMenu"
+     class="collapse d-lg-block sidebar collapse bg-white" data-mdb-perfect-scrollbar="true" style="overflow: auto">
+    <div class="position-sticky" style="overflow: auto">
+        @if (ViewBag.errorMessage != null)
+        {
+            <div class="alert alert-danger" role="alert">
+                @ViewBag.errorMessage
+            </div>
+        }
+        <div class="list-group list-group-flush mx-3 mt-4" >
+            <p class="list-group-item"><em><strong>MEMBERS</strong></em></p>
+
+            <div class="table-responsive">
+                <table class="table" style="width: 165px">
+                    <tbody>
+                        @foreach (var member in Model.Members)
+                        {
+                            <tr>
+                                <td>@member.Name</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</nav>

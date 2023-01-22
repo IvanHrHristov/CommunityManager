@@ -1,0 +1,53 @@
+﻿@model IEnumerable<ProductsQueryModel>
+
+@{
+    int i = 0;
+}
+
+<a asp-controller="Community" asp-action="AllMarketplaces" asp-route-id="@ViewBag.CommunityId" class="btn btn-primary">Back</a>
+
+<h2 class="text-center">@ViewBag.Title</h2>
+<hr />
+
+<div class="text-center row">
+    @foreach (var product in Model)
+    {
+        <div class="card col-4" style="width: 20rem; ">
+            <img class="card-img-top" style="width: 18rem;"
+             src="@ViewBag.Base64StringCollection[i++]" alt="">
+            <div class="card-body">
+                <h5 class="card-title mt-1">@product.Name</h5>
+                <p class="mb-0">Seller: @product.Seller</p>
+                @if (product.BuyerId != null)
+                {
+                    <p class="mb-0">Buyer: @product.Buyer</p>
+                }
+                <p class="mb-0">Price: $@product.Price.ToString("0.00")</p>
+            </div>
+
+            @if (this.User?.Identity != null && this.User.Identity.Name != product.Seller && product.BuyerId == null)
+            {
+                <a asp-controller="Marketplace" asp-action="Buy" asp-route-id="@product.Id" asp-route-communityId="@ViewBag.CommunityId" class="btn btn-success mb-2">Add to Cart</a>
+                <span></span>
+                <a asp-controller="Marketplace" asp-action="Details" asp-route-id="@product.Id" asp-route-communityId="@ViewBag.CommunityId" class="btn btn-primary mb-2">Details</a>
+            }
+
+            @if (this.User?.Identity != null && this.User.Identity.Name == product.Seller && product.BuyerId == null)
+            {
+                <a asp-controller="Marketplace" asp-action="Details" asp-route-id="@product.Id" asp-route-communityId="@ViewBag.CommunityId" class="btn btn-primary mb-2">Details</a>
+                <span></span>
+                <a asp-controller="Marketplace" asp-action="Edit" asp-route-id="@product.Id" asp-route-communityId="@ViewBag.CommunityId" class="btn btn-primary mb-2">Edit</a>
+                <span></span>
+                <a asp-controller="Marketplace" asp-action="Delete" asp-route-id="@product.Id" asp-route-communityId="@ViewBag.CommunityId" class="btn btn-danger mb-2">Delete</a>
+            }
+            @if (ViewBag.Title == "My Products" && product.BuyerId != null && product.IsActive == true)
+            {
+                <button class="btn btn-success mb-2" disabled>In cart</button>
+            }
+            @if (ViewBag.Title == "My Products" && product.BuyerId != null && product.IsActive == false)
+            {
+                <button class="btn btn-success mb-2" disabled>Purchased</button>
+            }
+        </div>
+    }
+</div>

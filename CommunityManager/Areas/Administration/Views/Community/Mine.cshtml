@@ -1,0 +1,47 @@
+﻿@model IEnumerable<CommunityViewModel>
+
+@{
+    int i = 0;
+}
+
+<div class="text-center">
+    <h1 class="display-4">My Communities</h1>
+</div>
+
+<div class="text-center row">
+    <div class="d-flex justify-content-lg-start flex-wrap">
+        @foreach (var community in Model)
+        {
+            <div class="card col-4" style="width: 20rem;">
+                <img class="card-img-top" style="width: 100%"
+                 src="@ViewBag.Base64StringCollection[i++]" alt="" />
+                <div class="card-body text-center">
+                    <h4 class="card-title mt-1">@community.Name</h4>
+                    @if (community.AgeRestricted)
+                    {
+                        <h5 class="mb-0 text-danger">This community is 18+ only!</h5>
+                    }
+                    <p class="mb-0">Description: @community.Description</p>
+                    
+                </div>
+
+                @if (community.IsActive ?? false)
+                {
+                    <span>
+                        <a asp-area="Administration" asp-controller="Community" asp-action="Open" asp-route-id="@community.Id" class="btn btn-success mb-2">Open</a>
+                        <a asp-area="Administration" asp-controller="Community" asp-action="Manage" asp-route-id="@community.Id" class="btn btn-primary mb-2">Manage</a>
+                        <a asp-area="Administration" asp-controller="Community" asp-action="Delete" asp-route-id="@community.Id" class="btn btn-danger mb-2">Delete</a>
+                    </span>
+                }
+            
+                @if (!community.IsActive ?? false)
+                {
+                    <span>
+                        <a asp-area="Administration" asp-controller="Community" asp-action="Restore" asp-route-id="@community.Id" class="btn btn-success mb-2">Restore</a>
+                    </span>
+                }
+            
+            </div>
+        }
+    </div>
+</div>

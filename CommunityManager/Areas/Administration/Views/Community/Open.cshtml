@@ -1,0 +1,70 @@
+﻿@using CommunityManager.Infrastructure.Data.Models
+@using Microsoft.AspNetCore.Identity
+
+@model CommunityDetailsViewModel
+
+@inject UserManager<ApplicationUser> userManager
+
+@{
+    int i = 1;
+}
+
+<h2 class="text-center">Welcome to @Model.Name</h2>
+<hr />
+
+<div class="text-center">
+    <h2>
+        <a asp-area="Administration" asp-controller="Community" asp-action="AllChatrooms" asp-route-id="@Model.Id" class="text-decoration-none">Chatrooms</a>
+        <a asp-area="Administration" asp-controller="Community" asp-action="AddChatroom" asp-route-id="@Model.Id" class="text-decoration-none"><i class="fa-solid fa-plus"></i></a>
+    </h2>
+</div>
+
+<div class="text-center">
+    <h2>
+        <a asp-area="Administration" asp-controller="Community" asp-action="AllMarketplaces" asp-route-id="@Model.Id" class="text-decoration-none">Marketplaces</a>
+        <a asp-area="Administration" asp-controller="Community" asp-action="AddMarketplace" asp-route-id="@Model.Id" class="text-decoration-none"><i class="fa-solid fa-plus"></i></a>
+    </h2>
+</div>
+
+<h3 class="text-center">Members</h3>
+
+<table class="table">
+    <thead class="thead-dark">
+        <tr>
+            <th scope="col">#</th>
+            <th scope="col">User name</th>
+            <th scope="col">Roles</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var member in Model.Members)
+        {
+            @if (member.Id != Model.CreatorId)
+            {
+                <tr>
+                    <th scope="row">@(i++)</th>
+                    <td>@member.Name</td>
+                    @if ((await userManager.GetRolesAsync(await userManager.FindByIdAsync(member.Id))).FirstOrDefault() == "Supervisor")
+                    {
+                        <td>Supervisor</td>
+                    }else
+                    {
+                        <td>User</td>
+                    }
+                    <td>
+                        <form asp-area="Administration" asp-controller="User" asp-action="AddUserToRoll" asp-route-id="@member.Id" asp-route-communityId="@((Guid)(Model.Id))" method="post">
+                            <span class="mb-3 d-flex justify-content-center">
+                                <label asp-for="@member.Role" class="form-label">Role</label>
+                                <select asp-for="@member.Role" class="form-control" name="Role">
+                                    <option value="Supervisor">Supervisor</option>
+                                    <option value="User">User</option>
+                                </select>
+                                <input class="btn btn-primary" type="submit" value="Edit" />
+                            </span>
+                        </form>
+                    </td>
+                </tr>
+            }
+        }
+    </tbody>
+</table>
